@@ -25,7 +25,7 @@ def find_version(*file_paths):
     raise RuntimeError('Unable to find version string.')
 
 
-long_description = read('README.md')
+long_description = read('README.rst')
 
 setup(
     name='biuletyn-bip',
@@ -33,7 +33,6 @@ setup(
     author='Jarek Zgoda',
     author_email='jarek.zgoda@gmail.com',
     long_description=long_description,
-    long_description_content_type='text/markdown',
     license='GPLv3',
     packages=find_packages('src'),
     package_dir={'': 'src'},
@@ -61,9 +60,6 @@ setup(
         'Authlib',
         'passlib[argon2]',
         'itsdangerous',
-    ),
-    setup_requires=(
-        'pytest-runner',
     ),
     tests_require=(
         'pytest',

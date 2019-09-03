@@ -5,4 +5,3 @@ pytest-mock
 pytest-cov
 pytest-factoryboy
 pytest-flask
-pytest-runner
