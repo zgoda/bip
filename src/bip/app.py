@@ -5,7 +5,7 @@ from flask import render_template
 from werkzeug.utils import ImportStringError
 
 from .auth import auth_bp
-from .ext import bootstrap, csrf, db, login_manager, oauth
+from .ext import babel, bootstrap, csrf, db, login_manager, oauth
 from .main import main_bp
 from .user import user_bp
 from .utils.app import BIPApplication
@@ -65,6 +65,7 @@ def configure_blueprints(app):
 
 def configure_extensions(app):
     db.init_app(app)
+    babel.init_app(app)
     csrf.init_app(app)
     oauth.init_app(app)
     bootstrap.init_app(app)

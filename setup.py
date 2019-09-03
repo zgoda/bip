@@ -28,7 +28,7 @@ def find_version(*file_paths):
 long_description = read('README.md')
 
 setup(
-    name='biuletyn',
+    name='biuletyn-bip',
     version=find_version('src', 'bip', '_version.py'),
     author='Jarek Zgoda',
     author_email='jarek.zgoda@gmail.com',
@@ -55,6 +55,12 @@ setup(
         'Flask',
         'Flask-SQLAlchemy',
         'Flask-Login',
+        'Flask-WTF',
+        'Flask-Babel',
+        'Bootstrap-Flask',
+        'Authlib',
+        'passlib[argon2]',
+        'itsdangerous',
     ),
     setup_requires=(
         'pytest-runner',
@@ -67,7 +73,10 @@ setup(
         'pytest-flask',
     ),
     extras_require={
-        'prod': ['uwsgi']
+        'prod': [
+            'uwsgi',
+            'psycopg2-binary',
+        ]
     },
     entry_points={
         'console_scripts': [
