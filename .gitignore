@@ -106,3 +106,6 @@ venv.bak/
 # editors, IDEs
 .vscode
 .idea
+
+# secrets, configs, etc
+conf/*.py

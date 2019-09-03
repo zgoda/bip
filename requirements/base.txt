@@ -5,5 +5,7 @@ Flask-SQLAlchemy
 Flask-Babel
 Authlib
 Bootstrap-Flask
+SQLAlchemy-Utils
 passlib[argon2]
 itsdangerous
+markdown2

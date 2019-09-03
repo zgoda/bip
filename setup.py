@@ -57,9 +57,11 @@ setup(
         'Flask-WTF',
         'Flask-Babel',
         'Bootstrap-Flask',
+        'SQLALchemy-Utils',
         'Authlib',
         'passlib[argon2]',
         'itsdangerous',
+        'markdown2',
     ),
     tests_require=(
         'pytest',
