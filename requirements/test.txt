@@ -1,0 +1,6 @@
+-r base.txt
+
+pytest
+pytest-mock
+pytest-cov
+pytest-factoryboy
