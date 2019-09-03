@@ -1,0 +1,6 @@
+DEBUG = False
+TESTING = False
+SECRET_KEY = 'not so secret'
+SQLALCHEMY_DATABASE_URI = 'sqlite://'
+SQLALCHEMY_TRACK_MODIFICATIONS = False
+CSRF_ENABLED = True

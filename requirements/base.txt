@@ -1,1 +1,7 @@
-Django
+Flask
+Flask-Login
+Flask-WTF
+Flask-SQLAlchemy
+Authlib
+Bootstrap-Flask
+

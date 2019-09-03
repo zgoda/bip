@@ -29,7 +29,7 @@ long_description = read('README.md')
 
 setup(
     name='biuletyn',
-    version=find_version('src', 'biuletyn', '_version.py'),
+    version=find_version('src', 'bip', '_version.py'),
     author='Jarek Zgoda',
     author_email='jarek.zgoda@gmail.com',
     long_description=long_description,
@@ -43,7 +43,7 @@ setup(
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Environment :: Web Environment',
-        'Framework :: Django',
+        'Framework :: Flask',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Natural Language :: Polish',
         'Operating System :: POSIX :: Linux',
@@ -52,7 +52,9 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content :: Content Management System',
     ],
     install_requires=(
-        'Django',
+        'Flask',
+        'Flask-SQLAlchemy',
+        'Flask-Login',
     ),
     setup_requires=(
         'pytest-runner',
@@ -62,13 +64,14 @@ setup(
         'pytest-mock',
         'pytest-cov',
         'pytest-factoryboy',
+        'pytest-flask',
     ),
     extras_require={
         'prod': ['uwsgi']
     },
     entry_points={
         'console_scripts': [
-            'bip=biuletyn.manage:main',
+            'bip=bip.cli:main',
         ]
     },
     python_requires='~=3.7',
