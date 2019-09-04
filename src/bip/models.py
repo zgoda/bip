@@ -24,7 +24,8 @@ class Directory(db.Model, Timestamp):
     __tablename__ = 'directory'
     pk = db.Column(db.Integer, primary_key=True)
     parent_pk = db.Column(db.Integer, db.ForeignKey('directory.pk'))
-    name = db.Column(db.String(200))
+    title = db.Column(db.String(200), nullable=False)
+    short_title = db.Column(db.String(100))
     children = db.relationship(
         'Directory', backref=db.backref('parent', remote_side=[pk])
     )
@@ -48,6 +49,7 @@ class Page(db.Model, Timestamp):
         'Directory', backref=db.backref('pages', lazy='dynamic')
     )
     title = db.Column(db.String(200), nullable=False)
+    short_title = db.Column(db.String(100))
     slug = db.Column(db.Text)
     text = db.Column(db.Text, nullable=False)
     text_html = db.Column(db.Text)
@@ -61,3 +63,18 @@ class Page(db.Model, Timestamp):
     )
     description = db.Column(db.Text)
     active = db.Column(db.Boolean, default=True)
+
+
+class Category(db.Model, Timestamp):
+    __tablename__ = 'category'
+    pk = db.Column(db.Integer, primary_key=True)
+    directory_pk = db.Column(db.Integer, db.ForeignKey('directory.pk'))
+    directory = db.relationship(
+        'Directory', backref=db.backref('categories', lazy='dynamic')
+    )
+    page_pk = db.Column(db.Integer, db.ForeignKey('page.pk'))
+    page = db.relationship('Page', backref=db.backref('categories', lazy='dynamic'))
+    title = db.Column(db.String(100))
+    description = db.Column(db.Text)
+    active = db.Column(db.Boolean, default=True)
+    menu_order = db.Column(db.Integer, nullable=False)
