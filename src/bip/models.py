@@ -20,7 +20,7 @@ class User(db.Model, UserMixin):
     remote_user_id = db.Column(db.String(200), index=True)
     email = db.Column(db.String(200))
     password = db.Column(db.Text)
-    active = db.Column(db.Boolean, default=True)
+    active = db.Column(db.Boolean, default=True, index=True)
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow())
 
     def is_active(self):
@@ -38,14 +38,14 @@ class Directory(db.Model, Timestamp):
     )
     created_by_pk = db.Column(db.Integer, db.ForeignKey('users.pk'), nullable=False)
     created_by = db.relationship(
-        'User', backref=db.backref('created_directories', lazy='dynamic')
+        'User', backref=db.backref('directories_created', lazy='dynamic')
     )
     updated_by_pk = db.Column(db.Integer, db.ForeignKey('users.pk'))
     updated_by = db.relationship(
-        'User', backref=db.backref('updated_directories', lazy='dynamic')
+        'User', backref=db.backref('directories_updated', lazy='dynamic')
     )
     description = db.Column(db.Text)
-    active = db.Column(db.Boolean, default=True)
+    active = db.Column(db.Boolean, default=True, index=True)
 
 
 class SubjectPage(db.Model, Timestamp):
@@ -62,14 +62,14 @@ class SubjectPage(db.Model, Timestamp):
     text_html = db.Column(db.Text)
     created_by_pk = db.Column(db.Integer, db.ForeignKey('users.pk'), nullable=False)
     created_by = db.relationship(
-        'User', backref=db.backref('created_pages', lazy='dynamic')
+        'User', backref=db.backref('pages_created', lazy='dynamic')
     )
     updated_by_pk = db.Column(db.Integer, db.ForeignKey('users.pk'))
     updated_by = db.relationship(
-        'User', backref=db.backref('updated_pages', lazy='dynamic')
+        'User', backref=db.backref('pages_updated', lazy='dynamic')
     )
     description = db.Column(db.Text)
-    active = db.Column(db.Boolean, default=True)
+    active = db.Column(db.Boolean, default=True, index=True)
 
 
 class ObjectMenuItem(db.Model, Timestamp):
@@ -81,9 +81,9 @@ class ObjectMenuItem(db.Model, Timestamp):
     )
     page_pk = db.Column(db.Integer, db.ForeignKey('page.pk'))
     page = db.relationship('Page', backref=db.backref('categories', lazy='dynamic'))
-    title = db.Column(db.String(100))
+    title = db.Column(db.String(100), index=True)
     description = db.Column(db.Text)
-    active = db.Column(db.Boolean, default=True)
+    active = db.Column(db.Boolean, default=True, index=True)
     menu_order = db.Column(db.Integer, nullable=False, default=0, index=True)
 
 
