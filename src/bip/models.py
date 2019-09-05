@@ -1,9 +1,16 @@
 import datetime
+import enum
 
 from flask_login import UserMixin
 from sqlalchemy_utils.models import Timestamp
 
 from .ext import db
+
+
+class ObjectType(enum.Enum):
+    directory = 1
+    page = 2
+    category = 3
 
 
 class User(db.Model, UserMixin):
@@ -41,7 +48,7 @@ class Directory(db.Model, Timestamp):
     active = db.Column(db.Boolean, default=True)
 
 
-class Page(db.Model, Timestamp):
+class SubjectPage(db.Model, Timestamp):
     __tablename__ = 'page'
     pk = db.Column(db.Integer, primary_key=True)
     directory_pk = db.Column(db.Integer, db.ForeignKey('directory.pk'))
@@ -65,7 +72,7 @@ class Page(db.Model, Timestamp):
     active = db.Column(db.Boolean, default=True)
 
 
-class Category(db.Model, Timestamp):
+class ObjectMenuItem(db.Model, Timestamp):
     __tablename__ = 'category'
     pk = db.Column(db.Integer, primary_key=True)
     directory_pk = db.Column(db.Integer, db.ForeignKey('directory.pk'))
@@ -77,4 +84,15 @@ class Category(db.Model, Timestamp):
     title = db.Column(db.String(100))
     description = db.Column(db.Text)
     active = db.Column(db.Boolean, default=True)
-    menu_order = db.Column(db.Integer, nullable=False)
+    menu_order = db.Column(db.Integer, nullable=False, default=0, index=True)
+
+
+class ChangeRegistry(db.Model):
+    __tablename__ = 'changelog'
+    pk = db.Column(db.Integer, primary_key=True)
+    object_pk = db.Column(db.Integer, nullable=False, index=True)
+    object_type = db.Column(db.Enum(ObjectType))
+    change_dt = db.Column(
+        db.DateTime, default=datetime.datetime.utcnow, nullable=False, index=True
+    )
+    description = db.Column(db.Text, nullable=False)
