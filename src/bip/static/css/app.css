@@ -1,0 +1,7 @@
+#hdr_main {
+    background-image: url(/static/img/logo_120.png);
+    background-position-x: left;
+    background-repeat: no-repeat;
+    height: 120px;
+    padding-left: 350px;
+}
