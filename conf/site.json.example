@@ -1,0 +1,30 @@
+{
+  "name": "Instytucja Publiczna",
+  "short_name": "instytucja",
+  "address": {
+    "street": "Ulica 21a",
+    "zip_code": "99-777",
+    "town": "Miejscowość"
+  },
+  "contacts": [
+    {
+      "phone": "666 777 888",
+      "email": "instytucja@serwer.pl"
+    }
+  ],
+  "departments": [
+    {
+      "name": "Instytucja Publiczna",
+      "staff": [
+        {
+          "role_name": "dyrektor",
+          "role_type": "manager",
+          "person_name": "Alicja Bębenek"
+        }
+      ]
+    }
+  ],
+  "bip_url": "http://bip.instytucja.pl",
+  "NIP": "111-222-33-44",
+  "REGON": "123456789"
+}

@@ -109,3 +109,6 @@ venv.bak/
 
 # secrets, configs, etc
 conf/*.py
+conf/*.json
+conf/*.yml
+conf/*.yaml
