@@ -63,12 +63,7 @@ class Site:
 
     @classmethod
     def from_dict(cls, d):
-        address = Address(**d['address'])
-        contacts = [Contact(**c) for c in d['contacts']]
-        departments = [Department.from_dict(data) for data in d['departments']]
-        site = cls(
-            name=d['name'], short_name=d['short_name'], address=address,
-            contacts=contacts, departments=departments,
-            bip_url=d['bip_url'], NIP=d['NIP'], REGON=d['REGON'], KRS=d.get('KRS'),
-        )
-        return site
+        address = Address(**d.pop('address'))
+        contacts = [Contact(**c) for c in d.pop('contacts')]
+        departments = [Department.from_dict(data) for data in d.pop('departments')]
+        return cls(address=address, contacts=contacts, departments=departments, **d)
