@@ -1,8 +1,10 @@
-{% macro render_dl(items) %}
+{% macro render_dl(items, render_empty=True) %}
 <dl class="row">
   {% for (name, value) in items %}
+  {% if value or render_empty %}
   <dt class="col-sm-3">{{ name }}</dt>
   <dd class="col-sm-9">{{ value }}</dd>
+  {% endif %}
   {% endfor %}
 </dl>
 {% endmacro %}

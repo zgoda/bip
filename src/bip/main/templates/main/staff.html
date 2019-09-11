@@ -1,5 +1,17 @@
 {% extends "main/base.html" %}
 
+{% from "macros/render.html" import render_dl %}
+
 {% block content %}
-<h2>Pracownicy</h2>
+<h2>Działy i pracownicy</h2>
+{% for department in site.departments %}
+  {% if site.departments|count > 1 %}
+  <h3>{{ department.name }}</h3>
+  {% endif %}
+  {{ render_dl(department.basic_information) }}
+  <h4>Pracownicy</h4>
+  {% for staff_member in department.staff %}
+  {{ render_dl(staff_member.basic_information, render_empty=False) }}
+  {% endfor %}
+{% endfor %}
 {% endblock %}

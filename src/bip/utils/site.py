@@ -7,6 +7,11 @@ from werkzeug.utils import cached_property
 
 RoleType = Enum('RoleType', ['manager', 'staff'])
 
+role_names = {
+    RoleType.manager: 'kierownik',
+    RoleType.staff: 'pracownik',
+}
+
 
 @dataclass
 class Address:
@@ -32,11 +37,22 @@ class StaffMember:
     phone: str = ''
     email: str = ''
 
+    @cached_property
+    def basic_information(self):
+        return (
+            ('nazwisko', self.person_name),
+            ('stanowisko', self.role_name),
+            ('zdjęcie', self.photo_url),
+            ('telefon', self.phone),
+            ('email', self.email),
+        )
+
 
 @dataclass
 class Department:
     name: str
     staff: List[StaffMember]
+    domain: str = ''
     location: str = ''
     phone: str = ''
     email: str = ''
@@ -45,6 +61,16 @@ class Department:
     def from_dict(cls, d):
         staff = [StaffMember(**s) for s in d.pop('staff', [])]
         return cls(staff=staff, **d)
+
+    @cached_property
+    def basic_information(self):
+        return (
+            ('nazwa', self.name),
+            ('zakres działalności', self.domain),
+            ('lokalizacja', self.location),
+            ('telefon', self.phone),
+            ('email', self.email),
+        )
 
 
 @dataclass
@@ -71,7 +97,7 @@ class Site:
         return cls(address=address, contacts=contacts, departments=departments, **d)
 
     @cached_property
-    def basic_info(self):
+    def basic_information(self):
         data = [
             ('nazwa', self.name),
             ('NIP', self.NIP),
