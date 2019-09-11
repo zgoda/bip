@@ -6,6 +6,7 @@ Flask-Babel
 Authlib
 Bootstrap-Flask
 SQLAlchemy-Utils
+WTForms-Components
 passlib[argon2]
 itsdangerous
 markdown2
