@@ -3,6 +3,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import List
 
+from werkzeug.utils import cached_property
+
 RoleType = Enum('RoleType', ['manager', 'staff'])
 
 
@@ -67,3 +69,14 @@ class Site:
         contacts = [Contact(**c) for c in d.pop('contacts')]
         departments = [Department.from_dict(data) for data in d.pop('departments')]
         return cls(address=address, contacts=contacts, departments=departments, **d)
+
+    @cached_property
+    def basic_info(self):
+        data = [
+            ('nazwa', self.name),
+            ('NIP', self.NIP),
+            ('REGON', self.REGON),
+        ]
+        if self.KRS:
+            data.append(('KRS', self.KRS))
+        return data

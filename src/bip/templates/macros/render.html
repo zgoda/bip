@@ -1,0 +1,8 @@
+{% macro render_dl(items) %}
+<dl class="row">
+  {% for (name, value) in items %}
+  <dt class="col-sm-3">{{ name }}</dt>
+  <dd class="col-sm-9">{{ value }}</dd>
+  {% endfor %}
+</dl>
+{% endmacro %}
