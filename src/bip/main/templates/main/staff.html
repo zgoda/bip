@@ -1,6 +1,6 @@
 {% extends "main/base.html" %}
 
-{% from "macros/render.html" import render_dl %}
+{% from "macros/render.html" import render_person, render_dl %}
 
 {% block content %}
 <h2>Działy i pracownicy</h2>
@@ -11,7 +11,7 @@
   {{ render_dl(department.basic_information) }}
   <h4>Pracownicy</h4>
   {% for staff_member in department.staff %}
-  {{ render_dl(staff_member.basic_information, render_empty=False) }}
+  {{ render_person(staff_member, render_empty=False) }}
   {% endfor %}
 {% endfor %}
 {% endblock %}

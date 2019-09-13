@@ -42,7 +42,6 @@ class StaffMember:
         return (
             ('nazwisko', self.person_name),
             ('stanowisko', self.role_name),
-            ('zdjęcie', self.photo_url),
             ('telefon', self.phone),
             ('email', self.email),
         )
