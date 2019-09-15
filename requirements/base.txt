@@ -3,6 +3,7 @@ Flask-Login
 Flask-WTF
 Flask-SQLAlchemy
 Flask-Babel
+Flask-Redis
 Authlib
 Bootstrap-Flask
 SQLAlchemy-Utils
@@ -10,3 +11,4 @@ WTForms-Components
 passlib[argon2]
 itsdangerous
 markdown2
+hiredis

@@ -52,6 +52,9 @@ def configure_app(app, env):
     if config_secrets:
         app.logger.info(f'secrets loaded from {config_secrets}')
         app.config.from_envvar('CONFIG_SECRETS')
+    upload_dir = os.path.abspath(os.path.join(app.instance_path, 'incoming'))
+    os.makedirs(upload_dir, exist_ok=True)
+    app.config['UPLOAD_DIRECTORY'] = upload_dir
 
 
 def configure_hooks(app):

@@ -20,12 +20,24 @@ class Address:
     zip_code: str
     town: str
 
+    @cached_property
+    def display_value(self):
+        return f'{self.street}, {self.zip_code} {self.town}'
+
 
 @dataclass
 class Contact:
     phone: str
     email: str
     name: str = ''
+
+    @cached_property
+    def basic_information(self):
+        return [
+            ('nazwa', self.name),
+            ('telefon', self.phone),
+            ('email', self.email),
+        ]
 
 
 @dataclass

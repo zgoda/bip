@@ -1,5 +1,7 @@
 from flask import Flask
 
+from ..config import ALLOWED_EXTENSIONS
+
 
 class BIPApplication(Flask):
 
@@ -11,3 +13,15 @@ class BIPApplication(Flask):
             'lstrip_blocks': True,
         })
         return options
+
+
+def file_allowed(filename):
+    """Determine if file is allowed to be uploaded. This is based only on file
+    extension.
+
+    :param filename: name of file
+    :type filename: str
+    :return: decision result
+    :rtype: bool
+    """
+    return '.' in filename and filename.rsplit('.', 1)[-1].lower() in ALLOWED_EXTENSIONS

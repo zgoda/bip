@@ -13,14 +13,7 @@
 <div class="row">
   <div class="col-sm-3">{% if p.photo_url %}<img src="{{ p.photo_url }}" title="{{ p.person_name }}">{% endif %}</div>
   <div class="col-sm-9">
-    <dl class="row">
-      {% for (name, value) in p.basic_information %}
-      {% if value or render_empty %}
-      <dt class="col-sm-3">{{ name }}</dt>
-      <dd class="col-sm-9">{{ value }}</dd>
-      {% endif %}
-      {% endfor %}
-    </dl>
+    {{ render_dl(p.basic_information, render_empty) }}
   </div>
 </div>
 {% endmacro %}
