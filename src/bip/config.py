@@ -1,9 +1,7 @@
-import os
-
 DEBUG = False
 TESTING = False
 SECRET_KEY = 'not so secret'
-SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI') or 'sqlite://'
+SQLALCHEMY_DATABASE_URI = 'sqlite://'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 CSRF_ENABLED = True
 REDIS_URL = 'redis://localhost:6379/0'

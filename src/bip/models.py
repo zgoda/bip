@@ -90,9 +90,15 @@ class ObjectMenuItem(db.Model, Timestamp):
 class ChangeRegistry(db.Model):
     __tablename__ = 'changelog'
     pk = db.Column(db.Integer, primary_key=True)
-    object_pk = db.Column(db.Integer, nullable=False, index=True)
-    object_type = db.Column(db.Enum(ObjectType))
+    object_pk = db.Column(db.Integer, nullable=False)
+    object_type = db.Column(db.Enum(ObjectType), nullable=False)
     change_dt = db.Column(
         db.DateTime, default=datetime.datetime.utcnow, nullable=False, index=True
     )
     description = db.Column(db.Text, nullable=False)
+    user_pk = db.Column(db.Integer, db.ForeignKey('users.pk'))
+    user = db.relationship('User', backref=db.backref('changes', lazy='dynamic'))
+
+    __table_args__ = (
+        db.Index('ix_changelog_object', 'object_pk', 'object_type'),
+    )
