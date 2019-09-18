@@ -38,11 +38,13 @@ class Directory(db.Model, Timestamp):
     )
     created_by_pk = db.Column(db.Integer, db.ForeignKey('users.pk'), nullable=False)
     created_by = db.relationship(
-        'User', backref=db.backref('directories_created', lazy='dynamic')
+        'User', foreign_keys=[created_by_pk],
+        backref=db.backref('directories_created', lazy='dynamic'),
     )
     updated_by_pk = db.Column(db.Integer, db.ForeignKey('users.pk'))
     updated_by = db.relationship(
-        'User', backref=db.backref('directories_updated', lazy='dynamic')
+        'User', foreign_keys=[updated_by_pk],
+        backref=db.backref('directories_updated', lazy='dynamic'),
     )
     description = db.Column(db.Text)
     active = db.Column(db.Boolean, default=True, index=True)
@@ -62,11 +64,13 @@ class SubjectPage(db.Model, Timestamp):
     text_html = db.Column(db.Text)
     created_by_pk = db.Column(db.Integer, db.ForeignKey('users.pk'), nullable=False)
     created_by = db.relationship(
-        'User', backref=db.backref('pages_created', lazy='dynamic')
+        'User', foreign_keys=[created_by_pk],
+        backref=db.backref('pages_created', lazy='dynamic'),
     )
     updated_by_pk = db.Column(db.Integer, db.ForeignKey('users.pk'))
     updated_by = db.relationship(
-        'User', backref=db.backref('pages_updated', lazy='dynamic')
+        'User', foreign_keys=[updated_by_pk],
+        backref=db.backref('pages_updated', lazy='dynamic'),
     )
     description = db.Column(db.Text)
     active = db.Column(db.Boolean, default=True, index=True)
@@ -80,7 +84,9 @@ class ObjectMenuItem(db.Model, Timestamp):
         'Directory', backref=db.backref('categories', lazy='dynamic')
     )
     page_pk = db.Column(db.Integer, db.ForeignKey('page.pk'))
-    page = db.relationship('Page', backref=db.backref('categories', lazy='dynamic'))
+    page = db.relationship(
+        'SubjectPage', backref=db.backref('categories', lazy='dynamic')
+    )
     title = db.Column(db.String(100), index=True)
     description = db.Column(db.Text)
     active = db.Column(db.Boolean, default=True, index=True)

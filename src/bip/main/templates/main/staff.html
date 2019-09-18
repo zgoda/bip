@@ -8,7 +8,7 @@
   {% if site.departments|count > 1 %}
   <h3>{{ department.name }}</h3>
   {% endif %}
-  {{ render_dl(department.basic_information) }}
+  {{ render_dl(department.basic_information, render_empty=False) }}
   <h4>Pracownicy</h4>
   {% for staff_member in department.staff %}
   {{ render_person(staff_member, render_empty=False) }}

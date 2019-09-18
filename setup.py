@@ -63,6 +63,7 @@ setup(
         'passlib[argon2]',
         'itsdangerous',
         'markdown2',
+        'Click',
     ),
     tests_require=(
         'pytest',
@@ -74,7 +75,6 @@ setup(
     extras_require={
         'prod': [
             'uwsgi',
-            'psycopg2-binary',
         ]
     },
     entry_points={

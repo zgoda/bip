@@ -12,3 +12,4 @@ passlib[argon2]
 itsdangerous
 markdown2
 hiredis
+Click
