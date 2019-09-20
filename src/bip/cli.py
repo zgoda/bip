@@ -1,10 +1,13 @@
 import click
 from dotenv import find_dotenv, load_dotenv
-from flask.cli import FlaskGroup
+from flask.cli import FlaskGroup, with_appcontext
+from flask_migrate.cli import db as migrate_ops
 
 from . import make_app
-from .models import User, db
+from .models import User, db, Directory, SubjectPage, ObjectMenuItem
 from .security import pwd_context
+
+migrate_ops.help = 'Operacje na bazie danych aplikacji'
 
 
 def create_app(info):
@@ -18,17 +21,20 @@ def cli():
     pass
 
 
-@cli.command('initdb', help='Initialize missing database objects')
+@migrate_ops.command(name='init', help='Initialize missing database objects')
+@with_appcontext
 def initdb():
     db.create_all()
 
 
-@cli.command('cleardb', help='Remove all database objects')
+@migrate_ops.command(name='clear', help='Remove all database objects')
+@with_appcontext
 def cleardb():
     db.drop_all()
 
 
-@cli.command('recreatedb', help='Recreate all database objects from scratch')
+@migrate_ops.command('recreate', help='Recreate all database objects from scratch')
+@with_appcontext
 def recreatedb():
     db.drop_all()
     db.create_all()
@@ -83,6 +89,20 @@ def category_create(title, directory, active, order, login, password):
     user = User.query.filter_by(name=login).one()
     if not pwd_context.verify(password, user.password):
         raise click.ClickException('nieprawidłowe dane logowania')
+    c_dir = None
+    if directory:
+        c_dir = Directory(title=title, created_by=user, active=active)
+        db.session.add(c_dir)
+    c_page = SubjectPage(
+        directory=c_dir, title=title, created_by=user, active=active, text=title
+    )
+    db.session.add(c_page)
+    c_menuitem = ObjectMenuItem(
+        directory=c_dir, page=c_page, title=title, active=active
+    )
+    db.session.add(c_menuitem)
+    db.session.commit()
+    click.echo(f'kategoria {title} została utworzona')
 
 
 def main():

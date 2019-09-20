@@ -46,6 +46,10 @@ class Directory(db.Model, Timestamp):
         'User', foreign_keys=[updated_by_pk],
         backref=db.backref('directories_updated', lazy='dynamic'),
     )
+    page_pk = db.Column(db.Integer, db.ForeignKey('page.pk'), nullable=False)
+    page = db.relationship(
+        'SubjectPage', backref=db.backref('directories', lazy='dynamic')
+    )
     description = db.Column(db.Text)
     active = db.Column(db.Boolean, default=True, index=True)
 
@@ -53,10 +57,6 @@ class Directory(db.Model, Timestamp):
 class SubjectPage(db.Model, Timestamp):
     __tablename__ = 'page'
     pk = db.Column(db.Integer, primary_key=True)
-    directory_pk = db.Column(db.Integer, db.ForeignKey('directory.pk'))
-    directory = db.relationship(
-        'Directory', backref=db.backref('pages', lazy='dynamic')
-    )
     title = db.Column(db.String(200), nullable=False)
     short_title = db.Column(db.String(100))
     slug = db.Column(db.Text)

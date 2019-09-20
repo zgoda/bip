@@ -4,6 +4,7 @@ Flask-WTF
 Flask-SQLAlchemy
 Flask-Babel
 Flask-Redis
+Flask-Migrate
 Authlib
 Bootstrap-Flask
 SQLAlchemy-Utils
