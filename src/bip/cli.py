@@ -1,4 +1,5 @@
 import click
+import keyring
 from dotenv import find_dotenv, load_dotenv
 from flask.cli import FlaskGroup, with_appcontext
 from flask_migrate.cli import db as migrate_ops
@@ -8,6 +9,8 @@ from .models import User, db, Directory, SubjectPage, ObjectMenuItem
 from .security import pwd_context
 
 migrate_ops.help = 'Operacje na bazie danych aplikacji'
+
+SYS_NAME = 'bip'
 
 
 def create_app(info):
@@ -40,6 +43,22 @@ def recreatedb():
     db.create_all()
 
 
+@cli.command(name='login', help='Zaloguj użytkownika i zachowaj dane logowania')
+@click.option('--user', '-u', required=True, help='Nazwa konta użytkownika')
+@click.option(
+    '--password', '-p', prompt=True, hide_input=True, required=True,
+    help='Hasło użytkownika',
+)
+def login(user, password):
+    user_obj = User.query.filter_by(name=user).first()
+    if not (user_obj and pwd_context.verify(password, user_obj.password)):
+        raise click.ClickException(
+            'nieprawidłowe dane logowania - '
+            'nie znaleziono użytkownika lub nieprawidłowe hasło'
+        )
+    keyring.set_password(SYS_NAME, user, password)
+
+
 @cli.group(name='user', help='Zarządzanie użytkownikami')
 def user_ops():
     pass
@@ -61,6 +80,16 @@ def user_create(name, password, email, active):
     click.echo(f'konto użytkownika {name} zostało założone')
 
 
+@user_ops.command(name='info', help='Informacje o zalogowanym użytkowniku')
+@click.option('--user', '-u', required=True, help='Nazwa konta użytkownika')
+def user_info(user):
+    password = keyring.get_password(SYS_NAME, user)
+    if password:
+        click.echo(f'użytkownik {user}: zalogowany')
+    else:
+        click.echo(f'użytkownik {user}: niezalogowany')
+
+
 @cli.group(name='category', help='Zarządzanie kategoriami w menu')
 def category_ops():
     pass
@@ -78,17 +107,19 @@ def category_ops():
     '--order', '-o', type=int, default=None, help='Kolejność kategorii w menu'
 )
 @click.option(
-    '--login', '-l', required=True,
-    help='Zaloguj się do systemu jako wskazany użytkownik',
+    '--user', '-u', required=True, help='Wykonaj operację jako wskazany użytkownik'
 )
-@click.option(
-    '--password', '-p', prompt=True, hide_input=True, required=True,
-    help='Hasło użytkownika',
-)
-def category_create(title, directory, active, order, login, password):
-    user = User.query.filter_by(name=login).one()
-    if not pwd_context.verify(password, user.password):
-        raise click.ClickException('nieprawidłowe dane logowania')
+def category_create(title, directory, active, order, user):
+    password = keyring.get_password(SYS_NAME, user)
+    if not password:
+        password = click.prompt('Hasło: ', hide_input=True)
+    user_obj = User.query.filter_by(name=user).first()
+    if not (user_obj and pwd_context.verify(password, user_obj.password)):
+        raise click.ClickException(
+            'nieprawidłowe dane logowania - '
+            'nie znaleziono użytkownika lub nieprawidłowe hasło'
+        )
+    keyring.set_password(SYS_NAME, user, password)
     c_dir = None
     if directory:
         c_dir = Directory(title=title, created_by=user, active=active)

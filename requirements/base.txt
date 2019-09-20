@@ -14,3 +14,4 @@ itsdangerous
 markdown2
 hiredis
 Click
+keyring
