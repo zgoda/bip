@@ -49,15 +49,23 @@ def recreatedb():
     '--password', '-p', prompt=True, hide_input=True, required=True,
     help='Hasło użytkownika',
 )
-def login(user, password):
+@click.option(
+    '--clear', '-c', is_flag=True, default=False,
+    help='Wyczyść dane logowania (domyślnie: NIE)',
+)
+def login(user, password, clear):
     user_obj = User.query.filter_by(name=user).first()
     if not (user_obj and pwd_context.verify(password, user_obj.password)):
         raise click.ClickException(
             'nieprawidłowe dane logowania - '
             'nie znaleziono użytkownika lub nieprawidłowe hasło'
         )
-    keyring.set_password(SYS_NAME, user, password)
-    click.echo(f'dane logowania użytkownika {user} zostały zapisane')
+    if clear:
+        keyring.delete_password(SYS_NAME, user)
+        click.echo(f'dane logowania użytkownika {user} zostały usunięte')
+    else:
+        keyring.set_password(SYS_NAME, user, password)
+        click.echo(f'dane logowania użytkownika {user} zostały zapisane')
 
 
 @cli.group(name='user', help='Zarządzanie użytkownikami')
