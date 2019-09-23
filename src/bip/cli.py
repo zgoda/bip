@@ -57,6 +57,7 @@ def login(user, password):
             'nie znaleziono użytkownika lub nieprawidłowe hasło'
         )
     keyring.set_password(SYS_NAME, user, password)
+    click.echo(f'dane logowania użytkownika {user} zostały zapisane')
 
 
 @cli.group(name='user', help='Zarządzanie użytkownikami')
@@ -69,7 +70,8 @@ def user_ops():
 @click.password_option('--password', '-p', required=True, help='Hasło użytkownika')
 @click.option('--email', '-e', required=False, help='Email użytkownika')
 @click.option(
-    '--active/--inactive', default=False, help='Czy konto ma być od razu aktywne'
+    '--active/--inactive', default=False,
+    help='Czy konto ma być od razu aktywne (domyślnie: NIE)',
 )
 def user_create(name, password, email, active):
     user = User(
@@ -95,16 +97,32 @@ def category_ops():
     pass
 
 
+@category_ops.command(name='list', help='Wyświetl listę kategorii')
+@click.option(
+    '--active/--inactive', default=None,
+    help='Wyświetl tylko aktywne lub nieaktywne (domyślnie: wszystkie)',
+)
+def category_list(active):
+    q = ObjectMenuItem.query
+    if active is not None:
+        q = q.filter(ObjectMenuItem.active.is_(active))
+    for category in q.order_by(ObjectMenuItem.title).all():
+        click.echo(category.title)
+
+
 @category_ops.command(name='create', help='Utwórz nową kategorię w menu')
 @click.option('--title', '-t', required=True, help='Tytuł kategorii')
 @click.option(
-    '--directory/--no-directory', default=False, help='Czy kategoria jest katalogiem'
+    '--directory/--no-directory', default=False,
+    help='Czy kategoria jest katalogiem (domyślnie: NIE)',
 )
 @click.option(
-    '--active/--inactive', default=False, help='Czy kategoria ma być od razu aktywna'
+    '--active/--inactive', default=False,
+    help='Czy kategoria ma być od razu aktywna (domyślnie: NIE)',
 )
 @click.option(
-    '--order', '-o', type=int, default=None, help='Kolejność kategorii w menu'
+    '--order', '-o', type=int, default=None,
+    help='Kolejność kategorii w menu (domyślnie: bez ustalania kolejności)',
 )
 @click.option(
     '--user', '-u', required=True, help='Wykonaj operację jako wskazany użytkownik'
@@ -120,13 +138,13 @@ def category_create(title, directory, active, order, user):
             'nie znaleziono użytkownika lub nieprawidłowe hasło'
         )
     keyring.set_password(SYS_NAME, user, password)
+    c_page = SubjectPage(
+        title=title, created_by=user_obj, active=active, text=title
+    )
     c_dir = None
     if directory:
-        c_dir = Directory(title=title, created_by=user, active=active)
+        c_dir = Directory(title=title, created_by=user_obj, active=active, page=c_page)
         db.session.add(c_dir)
-    c_page = SubjectPage(
-        directory=c_dir, title=title, created_by=user, active=active, text=title
-    )
     db.session.add(c_page)
     c_menuitem = ObjectMenuItem(
         directory=c_dir, page=c_page, title=title, active=active
@@ -134,6 +152,11 @@ def category_create(title, directory, active, order, user):
     db.session.add(c_menuitem)
     db.session.commit()
     click.echo(f'kategoria {title} została utworzona')
+
+
+@cli.group(name='directory', help='Operacje na katalogach')
+def directory_ops():
+    pass
 
 
 def main():
