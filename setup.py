@@ -32,6 +32,8 @@ setup(
     version=find_version('src', 'bip', '_version.py'),
     author='Jarek Zgoda',
     author_email='jarek.zgoda@gmail.com',
+    description='Polish BIP (Biuletyn Informacji Publicznej) as Flask application',
+    keywords='bip public information bulletin',
     long_description=long_description,
     license='GPLv3',
     packages=find_packages('src'),
