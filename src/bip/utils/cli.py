@@ -1,9 +1,8 @@
-import keyring
 import click
+import keyring
 
 from ..models import User
 from ..security import pwd_context
-
 
 SYS_NAME = 'bip'
 

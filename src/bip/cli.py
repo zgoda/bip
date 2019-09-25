@@ -1,3 +1,4 @@
+import difflib
 import shutil
 
 import click
@@ -189,6 +190,10 @@ def category_create(title, directory, active, order, user):
 
 @category_ops.command(name='change', help='Zmień dane kategorii w menu')
 @click.option('--category', '-c', type=int, help='ID kategorii do zmiany')
+@click.option(
+    '--description', '-d', is_flag=True, default=False,
+    help='Zmień opis kategorii (domyślnie: NIE); uruchamia zdefiniowany edytor tekstu',
+)
 @click.option('--title', '-t', default=None, help='Zmień tytuł kategorii')
 @click.option(
     '--active/--inactive', default=None, help='Zmień stan aktywności kategorii',
@@ -199,31 +204,49 @@ def category_create(title, directory, active, order, user):
 @click.option(
     '--user', '-u', required=True, help='Wykonaj operację jako wskazany użytkownik'
 )
-def category_change(category, title, active, order, user):
+def category_change(category, description, title, active, order, user):
     user_obj = user_login(user)
     cat_obj = ObjectMenuItem.query.get(category)
     if cat_obj is None:
         raise click.ClickException(f'Nie znaleziono kategorii o ID {category}')
-    changes = []
     orig_title = cat_obj.title
-    title = title.strip()
-    if title:
-        changes.append(f'tytuł: {cat_obj.title} -> {title}')
-        cat_obj.title = title
-    if active is not None:
-        changes.append(f'aktywna: {yesno(cat_obj.active)} -> {yesno(active)}')
-        cat_obj.active = active
-    if order is not None:
-        changes.append(f'kolejność: {cat_obj.menu_order} -> {order}')
-        cat_obj.menu_order = order
-    db.session.add(cat_obj)
-    db.session.add(
-        log_change(
-            cat_obj, ChangeType.updated, user_obj, description='\n'.join(changes)
+    changes = []
+    if description:
+        orig_description = cat_obj.description or ''
+        new_description = click.edit(orig_description)
+        if new_description:
+            data_diff = list(
+                difflib.unified_diff(
+                    orig_description.splitlines(keepends=True),
+                    new_description.splitlines(keepends=True),
+                )
+            )
+            if data_diff:
+                diff_s = '\n'.join(data_diff)
+                changes.append(f'opis, diff:\n{diff_s}')
+                cat_obj.description = new_description
+    else:
+        title = title.strip()
+        if title:
+            changes.append(f'tytuł: {cat_obj.title} -> {title}')
+            cat_obj.title = title
+        if active is not None:
+            changes.append(f'aktywna: {yesno(cat_obj.active)} -> {yesno(active)}')
+            cat_obj.active = active
+        if order is not None:
+            changes.append(f'kolejność: {cat_obj.menu_order} -> {order}')
+            cat_obj.menu_order = order
+    if changes:
+        db.session.add(cat_obj)
+        db.session.add(
+            log_change(
+                cat_obj, ChangeType.updated, user_obj, description='\n'.join(changes)
+            )
         )
-    )
-    db.session.commit()
-    click.echo(f'kategoria {orig_title} została zmieniona')
+        db.session.commit()
+        click.echo(f'kategoria {orig_title} została zmieniona')
+    else:
+        click.echo(f'bez zmian kategorii {orig_title}')
 
 
 @cli.group(name='directory', help='Operacje na katalogach')
