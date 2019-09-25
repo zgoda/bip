@@ -13,6 +13,12 @@ class ObjectType(enum.Enum):
     category = 3
 
 
+class ChangeType(enum.Enum):
+    created = 1
+    updated = 2
+    deleted = 3
+
+
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
     pk = db.Column(db.Integer, primary_key=True)
@@ -93,7 +99,7 @@ class ObjectMenuItem(db.Model, Timestamp):
     menu_order = db.Column(db.Integer, nullable=False, default=0, index=True)
 
 
-class ChangeRegistry(db.Model):
+class ChangeRecord(db.Model):
     __tablename__ = 'changelog'
     pk = db.Column(db.Integer, primary_key=True)
     object_pk = db.Column(db.Integer, nullable=False)
@@ -101,10 +107,18 @@ class ChangeRegistry(db.Model):
     change_dt = db.Column(
         db.DateTime, default=datetime.datetime.utcnow, nullable=False, index=True
     )
+    change_type = db.Column(db.Enum(ChangeType), nullable=False)
     description = db.Column(db.Text, nullable=False)
     user_pk = db.Column(db.Integer, db.ForeignKey('users.pk'))
     user = db.relationship('User', backref=db.backref('changes', lazy='dynamic'))
 
     __table_args__ = (
         db.Index('ix_changelog_object', 'object_pk', 'object_type'),
+    )
+
+
+def log_change(obj, change_type, user, description):
+    return ChangeRecord(
+        object_pk=obj.pk, object_type=obj.__tablename__, user=user,
+        description=description, change_type=change_type,
     )

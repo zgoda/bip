@@ -1,16 +1,19 @@
+import shutil
+
 import click
 import keyring
 from dotenv import find_dotenv, load_dotenv
 from flask.cli import FlaskGroup, with_appcontext
 from flask_migrate.cli import db as migrate_ops
+from texttable import Texttable
 
 from . import make_app
-from .models import User, db, Directory, SubjectPage, ObjectMenuItem
+from .ext import db
+from .models import ChangeType, Directory, ObjectMenuItem, SubjectPage, User, log_change
 from .security import pwd_context
+from .utils.cli import SYS_NAME, user_login, yesno
 
 migrate_ops.help = 'Operacje na bazie danych aplikacji'
-
-SYS_NAME = 'bip'
 
 
 def create_app(info):
@@ -43,7 +46,12 @@ def recreatedb():
     db.create_all()
 
 
-@cli.command(name='login', help='Zaloguj użytkownika i zachowaj dane logowania')
+@cli.group(name='user', help='Zarządzanie użytkownikami')
+def user_ops():
+    pass
+
+
+@user_ops.command(name='login', help='Zaloguj użytkownika i zachowaj dane logowania')
 @click.option('--user', '-u', required=True, help='Nazwa konta użytkownika')
 @click.option(
     '--password', '-p', prompt=True, hide_input=True, required=True,
@@ -66,11 +74,6 @@ def login(user, password, clear):
     else:
         keyring.set_password(SYS_NAME, user, password)
         click.echo(f'dane logowania użytkownika {user} zostały zapisane')
-
-
-@cli.group(name='user', help='Zarządzanie użytkownikami')
-def user_ops():
-    pass
 
 
 @user_ops.command(name='create', help='Zakładanie nowego konta użytkownika')
@@ -111,11 +114,36 @@ def category_ops():
     help='Wyświetl tylko aktywne lub nieaktywne (domyślnie: wszystkie)',
 )
 def category_list(active):
+    cat_prop_map = {
+        True: 'aktywne',
+        False: 'nieaktywne',
+        None: 'wszystkie',
+    }
+    cat_prop = cat_prop_map[active]
     q = ObjectMenuItem.query
     if active is not None:
         q = q.filter(ObjectMenuItem.active.is_(active))
-    for category in q.order_by(ObjectMenuItem.title).all():
-        click.echo(category.title)
+    cat_count = q.count()
+    if cat_count == 0:
+        click.echo('Nie ma żadnych kategorii')
+    else:
+        click.echo(f'Znaleziono: {cat_count}, wyświetlanie: {cat_prop}')
+        table = Texttable()
+        table.set_deco(Texttable.HEADER | Texttable.BORDER)
+        table.set_cols_align(['r', 'l', 'c', 'r', 'c'])
+        table.set_cols_dtype(['i', 't', 't', 'i', 't'])
+        table.header(['ID', 'Tytuł', 'Katalog', 'Kolejność', 'Aktywna'])
+        q = q.order_by(ObjectMenuItem.menu_order, ObjectMenuItem.title)
+        for category in q.all():
+            table.add_row([
+                category.pk, category.title,
+                yesno(category.directory is not None), category.menu_order,
+                yesno(category.active),
+            ])
+        if cat_count > shutil.get_terminal_size().lines - 5:
+            click.echo_via_pager(table.draw())
+        else:
+            click.echo(table.draw())
 
 
 @category_ops.command(name='create', help='Utwórz nową kategorię w menu')
@@ -136,16 +164,7 @@ def category_list(active):
     '--user', '-u', required=True, help='Wykonaj operację jako wskazany użytkownik'
 )
 def category_create(title, directory, active, order, user):
-    password = keyring.get_password(SYS_NAME, user)
-    if not password:
-        password = click.prompt('Hasło: ', hide_input=True)
-    user_obj = User.query.filter_by(name=user).first()
-    if not (user_obj and pwd_context.verify(password, user_obj.password)):
-        raise click.ClickException(
-            'nieprawidłowe dane logowania - '
-            'nie znaleziono użytkownika lub nieprawidłowe hasło'
-        )
-    keyring.set_password(SYS_NAME, user, password)
+    user_obj = user_login(user)
     c_page = SubjectPage(
         title=title, created_by=user_obj, active=active, text=title
     )
@@ -155,11 +174,56 @@ def category_create(title, directory, active, order, user):
         db.session.add(c_dir)
     db.session.add(c_page)
     c_menuitem = ObjectMenuItem(
-        directory=c_dir, page=c_page, title=title, active=active
+        directory=c_dir, page=c_page, title=title, active=active, menu_order=order,
     )
     db.session.add(c_menuitem)
+    db.session.flush()
+    msg = 'utworzono'
+    db.session.add(log_change(c_page, ChangeType.created, user_obj, msg))
+    if c_dir is not None:
+        db.session.add(log_change(c_dir, ChangeType.created, user_obj, msg))
+    db.session.add(log_change(c_menuitem, ChangeType.created, user_obj, msg))
     db.session.commit()
     click.echo(f'kategoria {title} została utworzona')
+
+
+@category_ops.command(name='change', help='Zmień dane kategorii w menu')
+@click.option('--category', '-c', type=int, help='ID kategorii do zmiany')
+@click.option('--title', '-t', default=None, help='Zmień tytuł kategorii')
+@click.option(
+    '--active/--inactive', default=None, help='Zmień stan aktywności kategorii',
+)
+@click.option(
+    '--order', '-o', type=int, default=None, help='Zmień kolejność kategorii w menu',
+)
+@click.option(
+    '--user', '-u', required=True, help='Wykonaj operację jako wskazany użytkownik'
+)
+def category_change(category, title, active, order, user):
+    user_obj = user_login(user)
+    cat_obj = ObjectMenuItem.query.get(category)
+    if cat_obj is None:
+        raise click.ClickException(f'Nie znaleziono kategorii o ID {category}')
+    changes = []
+    orig_title = cat_obj.title
+    title = title.strip()
+    if title:
+        changes.append(f'tytuł: {cat_obj.title} -> {title}')
+        cat_obj.title = title
+    if active is not None:
+        changes.append(f'aktywna: {yesno(cat_obj.active)} -> {yesno(active)}')
+        cat_obj.active = active
+    if order is not None:
+        changes.append(f'kolejność: {cat_obj.menu_order} -> {order}')
+        cat_obj.menu_order = order
+    db.session.add(cat_obj)
+    db.session.add(
+        log_change(
+            cat_obj, ChangeType.updated, user_obj, description='\n'.join(changes)
+        )
+    )
+    db.session.commit()
+    click.echo(f'kategoria {orig_title} została zmieniona')
 
 
 @cli.group(name='directory', help='Operacje na katalogach')
