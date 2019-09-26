@@ -1,5 +1,5 @@
 from flask import flash, redirect, render_template, request
-from flask_login import login_user
+from flask_login import login_required, login_user, logout_user
 
 from ..utils.views import next_redirect
 from . import auth_bp
@@ -23,3 +23,10 @@ def login():
         'form': form or LoginForm(),
     }
     return render_template('auth/login.html', **context)
+
+
+@auth_bp.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(next_redirect('main.home'))

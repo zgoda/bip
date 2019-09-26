@@ -59,6 +59,16 @@
             </li>
             {% endfor %}
           </ul>
+          <hr>
+          <ul class="nav flex-column">
+            {% for item in tools %}
+            {% if (current_user.is_authenticated and not item.hide_authenticated) or (current_user.is_anonymous and not item.hide_anonymous) %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ item.url }}">{{ item.title }}</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+          </ul>
         </div>
         <div class="col col-md-9">
           {% block content %}
