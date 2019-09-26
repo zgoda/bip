@@ -1,5 +1,5 @@
 import difflib
-import shutil
+import sys
 
 import click
 import keyring
@@ -12,7 +12,7 @@ from . import make_app
 from .ext import db
 from .models import ChangeType, Directory, ObjectMenuItem, SubjectPage, User, log_change
 from .security import pwd_context
-from .utils.cli import ACTIVITY_NAME_MAP, SYS_NAME, user_login, yesno
+from .utils.cli import ACTIVITY_NAME_MAP, SYS_NAME, login_user, print_table, yesno
 
 migrate_ops.help = 'Operacje na bazie danych aplikacji'
 
@@ -62,7 +62,7 @@ def user_ops():
     '--clear', '-c', is_flag=True, default=False,
     help='Wyczyść dane logowania (domyślnie: NIE)',
 )
-def login(user, password, clear):
+def user_login(user, password, clear):
     user_obj = User.query.filter_by(name=user).first()
     if not (user_obj and pwd_context.verify(password, user_obj.password)):
         raise click.ClickException(
@@ -94,18 +94,15 @@ def user_list(active):
         click.echo(f'Znaleziono {acct_count}, wyświetlanie: {acct_prop}')
         table = Texttable()
         table.set_deco(Texttable.HEADER | Texttable.BORDER)
-        table.set_cols_align(['r', 'l', 'c'])
-        table.set_cols_dtype(['i', 't', 't'])
-        table.header(['ID', 'Nazwa', 'Aktywne'])
+        table.set_cols_align(['r', 'l', 'l', 'c', 'c'])
+        table.set_cols_dtype(['i', 't', 't', 't', 't'])
+        table.header(['ID', 'Nazwa', 'Email', 'Aktywne', 'Administrator'])
         q = q.order_by(User.name)
         for user in q.all():
             table.add_row([
-                user.pk, user.name, yesno(user.active),
+                user.pk, user.name, user.email, yesno(user.active), yesno(user.admin),
             ])
-        if acct_count > shutil.get_terminal_size().lines - 5:
-            click.echo_via_pager(table.draw())
-        else:
-            click.echo(table.draw())
+        print_table(table)
 
 
 @user_ops.command(name='create', help='Zakładanie nowego konta użytkownika')
@@ -116,13 +113,53 @@ def user_list(active):
     '--active/--inactive', default=False,
     help='Czy konto ma być od razu aktywne (domyślnie: NIE)',
 )
-def user_create(name, password, email, active):
+@click.option(
+    '--admin/--regular', default=False,
+    help='Czy konto ma mieć uprawnienia administracyjne (domyślnie: NIE)',
+)
+def user_create(name, password, email, active, admin):
     user = User(
-        name=name, password=pwd_context.hash(password), email=email, active=active
+        name=name, password=pwd_context.hash(password), email=email, active=active,
+        admin=admin,
     )
     db.session.add(user)
     db.session.commit()
     click.echo(f'konto użytkownika {name} zostało założone')
+
+
+@user_ops.command(name='change', help='Zmiana danych konta użytkownika')
+@click.option(
+    '--name', '-n', required=True,
+    help='Nazwa konta użytkownika które ma zostać zmienione',
+)
+@click.option(
+    '--email', '-e', default=None, required=False,
+    help='Email użytkownika (domyślnie: bez zmiany)',
+)
+@click.option(
+    '--active/--inactive', default=None,
+    help='Zmiana aktywacji konta (domyślnie: bez zmiany)',
+)
+@click.option(
+    '--user', '-u', required=True, help='Wykonaj operację jako wskazany użytkownik'
+)
+def user_change(name, email, active, user):
+    if email is not None:
+        email = email.strip()
+    if not any([email, active]):
+        click.echo('nic do zrobienia')
+        sys.exit(0)
+    login_user(user)
+    user_obj = User.query.filter_by(name=name).first()
+    if user_obj is None:
+        raise click.ClickException(f'nie znaleziono konta użytkownika {name}')
+    if email:
+        user_obj.email = email
+    if active is not None:
+        user_obj.active = active
+    db.session.add(user_obj)
+    db.session.commit()
+    click.echo(f'dane konta użytkownika {name} zostały zmienione')
 
 
 @user_ops.command(name='info', help='Informacje o zalogowanym użytkowniku')
@@ -167,10 +204,7 @@ def category_list(active):
                 yesno(category.directory is not None), category.menu_order,
                 yesno(category.active),
             ])
-        if cat_count > shutil.get_terminal_size().lines - 5:
-            click.echo_via_pager(table.draw())
-        else:
-            click.echo(table.draw())
+        print_table(table)
 
 
 @category_ops.command(name='create', help='Utwórz nową kategorię w menu')
@@ -191,7 +225,7 @@ def category_list(active):
     '--user', '-u', required=True, help='Wykonaj operację jako wskazany użytkownik'
 )
 def category_create(title, directory, active, order, user):
-    user_obj = user_login(user)
+    user_obj = login_user(user)
     c_page = SubjectPage(
         title=title, created_by=user_obj, active=active, text=title
     )
@@ -231,7 +265,7 @@ def category_create(title, directory, active, order, user):
     '--user', '-u', required=True, help='Wykonaj operację jako wskazany użytkownik'
 )
 def category_change(category, description, title, active, order, user):
-    user_obj = user_login(user)
+    user_obj = login_user(user)
     cat_obj = ObjectMenuItem.query.get(category)
     if cat_obj is None:
         raise click.ClickException(f'Nie znaleziono kategorii o ID {category}')
