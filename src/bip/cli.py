@@ -286,7 +286,8 @@ def category_change(category, description, title, active, order, user):
                 changes.append(f'opis, diff:\n{diff_s}')
                 cat_obj.description = new_description
     else:
-        title = title.strip()
+        if title is not None:
+            title = title.strip()
         if title:
             changes.append(f'tytuł: {cat_obj.title} -> {title}')
             cat_obj.title = title
