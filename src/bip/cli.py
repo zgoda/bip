@@ -12,7 +12,7 @@ from . import make_app
 from .ext import db
 from .models import ChangeType, Directory, ObjectMenuItem, SubjectPage, User, log_change
 from .security import pwd_context
-from .utils.cli import SYS_NAME, user_login, yesno
+from .utils.cli import ACTIVITY_NAME_MAP, SYS_NAME, user_login, yesno
 
 migrate_ops.help = 'Operacje na bazie danych aplikacji'
 
@@ -77,6 +77,37 @@ def login(user, password, clear):
         click.echo(f'dane logowania użytkownika {user} zostały zapisane')
 
 
+@user_ops.command(name='list', help='Wyświetl listę użytkowników')
+@click.option(
+    '--active/--inactive', default=None,
+    help='Wyświetl tylko aktywne lub nieaktywne (domyślnie: wszystkie)',
+)
+def user_list(active):
+    acct_prop = ACTIVITY_NAME_MAP[active]
+    q = User.query
+    if active is not None:
+        q = q.filter(User.active.is_(active))
+    acct_count = q.count()
+    if acct_count == 0:
+        click.echo('Nie ma żadnych kont użytkowników')
+    else:
+        click.echo(f'Znaleziono {acct_count}, wyświetlanie: {acct_prop}')
+        table = Texttable()
+        table.set_deco(Texttable.HEADER | Texttable.BORDER)
+        table.set_cols_align(['r', 'l', 'c'])
+        table.set_cols_dtype(['i', 't', 't'])
+        table.header(['ID', 'Nazwa', 'Aktywne'])
+        q = q.order_by(User.name)
+        for user in q.all():
+            table.add_row([
+                user.pk, user.name, yesno(user.active),
+            ])
+        if acct_count > shutil.get_terminal_size().lines - 5:
+            click.echo_via_pager(table.draw())
+        else:
+            click.echo(table.draw())
+
+
 @user_ops.command(name='create', help='Zakładanie nowego konta użytkownika')
 @click.option('--name', '-n', required=True, help='Nazwa konta użytkownika')
 @click.password_option('--password', '-p', required=True, help='Hasło użytkownika')
@@ -115,12 +146,7 @@ def category_ops():
     help='Wyświetl tylko aktywne lub nieaktywne (domyślnie: wszystkie)',
 )
 def category_list(active):
-    cat_prop_map = {
-        True: 'aktywne',
-        False: 'nieaktywne',
-        None: 'wszystkie',
-    }
-    cat_prop = cat_prop_map[active]
+    cat_prop = ACTIVITY_NAME_MAP[active]
     q = ObjectMenuItem.query
     if active is not None:
         q = q.filter(ObjectMenuItem.active.is_(active))

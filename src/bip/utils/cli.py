@@ -6,6 +6,12 @@ from ..security import pwd_context
 
 SYS_NAME = 'bip'
 
+ACTIVITY_NAME_MAP = {
+    True: 'aktywne',
+    False: 'nieaktywne',
+    None: 'wszystkie',
+}
+
 
 def user_login(username):
     password = keyring.get_password(SYS_NAME, username)
