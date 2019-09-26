@@ -1,0 +1,10 @@
+{% extends "auth/base.html" %}
+
+{% from "macros/forms.html" import render_form %}
+
+{% block headpagetitle %}Logowanie redaktora BIP{% endblock %}
+
+{% block content %}
+<h1>Logowanie redaktora BIP</h1>
+{{ render_form(form, url_for('auth.login')) }}
+{% endblock %}
