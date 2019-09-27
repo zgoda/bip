@@ -1,12 +1,6 @@
-import collections
 from urllib.parse import urljoin, urlparse
 
 from flask import request, session, url_for
-
-
-MenuTool = collections.namedtuple(
-    'MenuTool', ['title', 'url', 'hide_authenticated', 'hide_anonymous']
-)
 
 
 def next_redirect(fallback_endpoint, *args, **kwargs):

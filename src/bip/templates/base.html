@@ -60,9 +60,10 @@
             {% endfor %}
           </ul>
           <hr>
+          <h6>Konto redaktora</h6>
           <ul class="nav flex-column">
             {% for item in tools %}
-            {% if (current_user.is_authenticated and not item.hide_authenticated) or (current_user.is_anonymous and not item.hide_anonymous) %}
+            {% if (current_user.is_authenticated and not item.hide.authenticated) or (current_user.is_anonymous and not item.hide.anonymous) %}
             <li class="nav-item">
               <a class="nav-link" href="{{ item.url }}">{{ item.title }}</a>
             </li>

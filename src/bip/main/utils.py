@@ -1,7 +1,7 @@
 from flask import url_for
 
 from ..models import ObjectMenuItem
-from ..utils.views import MenuTool
+from ..utils.menu import MenuItem, VisibilityOptions
 
 
 def menu_items():
@@ -13,12 +13,13 @@ def menu_items():
 
 def menu_tools():
     return [
-        MenuTool(
-            'logowanie', url_for('auth.login'),
-            hide_authenticated=True, hide_anonymous=False,
+        MenuItem(
+            'logowanie', url_for('auth.login'), VisibilityOptions(True, False),
         ),
-        MenuTool(
-            'wyloguj', url_for('auth.logout'),
-            hide_authenticated=False, hide_anonymous=True,
-        )
+        MenuItem(
+            'profil', url_for('user.profile'), VisibilityOptions(False, True)
+        ),
+        MenuItem(
+            'wyloguj', url_for('auth.logout'), VisibilityOptions(False, True),
+        ),
     ]
