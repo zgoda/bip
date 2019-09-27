@@ -27,7 +27,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(200))
     password = db.Column(db.Text)
     active = db.Column(db.Boolean, default=True, index=True)
-    created = db.Column(db.DateTime, default=datetime.datetime.utcnow())
+    created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     admin = db.Column(db.Boolean, default=False, index=True)
 
     def is_active(self):
