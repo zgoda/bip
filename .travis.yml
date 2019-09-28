@@ -9,7 +9,7 @@ install:
   - pip install -U codacy-coverage
 script:
   - pytest --cov-branch --cov-report xml --cov=bip tests
-  - python setup.py build_sphinx
-  - python setup.py sdist bdist_wheel
+  - python setup.py --quiet build_sphinx
+  - python setup.py --quiet sdist bdist_wheel
 after_success:
   - python-codacy-coverage -r coverage.xml
