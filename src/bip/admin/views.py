@@ -4,6 +4,7 @@ from flask_login import current_user, login_required
 from ..models import User
 from . import admin_bp
 from ..utils.pagination import paginate
+from .forms import UserForm
 
 
 @admin_bp.before_request
@@ -25,3 +26,14 @@ def user_list():
         'pagination': paginate(query)
     }
     return render_template('admin/user_list.html', **context)
+
+
+@admin_bp.route('/users/<int:user_pk>', methods=['POST', 'GET'])
+def user_detail(user_pk):
+    user = User.query.get_or_404(user_pk)
+    form = None
+    context = {
+        'user': user,
+        'form': form or UserForm(),
+    }
+    return render_template('admin/user_detail.html', **context)
