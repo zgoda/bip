@@ -70,6 +70,17 @@
             {% endif %}
             {% endfor %}
           </ul>
+          {% if current_user.is_authenticated and current_user.admin %}
+          <hr>
+          <h6>Administracja</h6>
+          <ul class="nav flex-column">
+            {% for item in admintools %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ item.url }}">{{ item.title }}</a>
+            </li>
+            {% endfor %}
+          </ul>
+          {% endif %}
         </div>
         <div class="col col-md-9">
           {% block content %}

@@ -1,5 +1,5 @@
-from flask import flash, redirect, render_template, request
-from flask_login import login_required, login_user, logout_user, current_user
+from flask import flash, redirect, render_template, request, session
+from flask_login import current_user, login_required, login_user, logout_user
 
 from ..utils.views import next_redirect
 from . import auth_bp
@@ -17,6 +17,7 @@ def login():
                 flash('nieprawidłowe dane logowania', category='danger')
                 return redirect(request.path)
             login_user(user)
+            session.permanent = True
             flash(f'użytkownik {user.name} zalogowany pomyślnie', category='success')
             return redirect(next_redirect('main.home'))
     context = {

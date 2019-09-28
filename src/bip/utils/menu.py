@@ -1,7 +1,7 @@
 import collections
 
 VisibilityOptions = collections.namedtuple(
-    'VisibilityOptions', ['authenticated', 'anonymous']
+    'VisibilityOptions', ['authenticated', 'anonymous'],
 )
 
 MenuItem = collections.namedtuple(

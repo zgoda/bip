@@ -23,3 +23,11 @@ def menu_tools():
             'wyloguj', url_for('auth.logout'), VisibilityOptions(False, True),
         ),
     ]
+
+
+def admin_tools():
+    return [
+        MenuItem(
+            'administracja', '#', VisibilityOptions(False, True),
+        ),
+    ]
