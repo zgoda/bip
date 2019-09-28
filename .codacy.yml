@@ -5,3 +5,4 @@ exclude_paths:
   - 'tests/**'
   - 'requirements/**'
   - '**/static/vendor/**'
+  - '*.y*ml'
