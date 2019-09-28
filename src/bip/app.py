@@ -28,7 +28,7 @@ def make_app(env=None):
         configure_error_handlers(app)
 
     @app.shell_context_processor
-    def make_shell_context():
+    def make_shell_context():  # pylint: disable=unused-variable
         return {
             'db': db,
         }
@@ -59,7 +59,7 @@ def configure_app(app, env):
 def configure_hooks(app):
 
     @app.before_first_request
-    def load_site_object():
+    def load_site_object():  # pylint: disable=unused-variable
         if app.testing:
             site = test_site()
         else:
@@ -89,7 +89,7 @@ def configure_extensions(app):
     login_manager.login_message = 'Musisz się zalogować by uzyskać dostęp do tej strony'
 
     @login_manager.user_loader
-    def get_user(userid):
+    def get_user(userid):  # pylint: disable=unused-variable
         from .models import User
         return User.query.get(userid)
 
@@ -124,13 +124,13 @@ def configure_logging():
 def configure_error_handlers(app):
 
     @app.errorhandler(403)
-    def forbidden_page(error):
+    def forbidden_page(error):  # pylint: disable=unused-variable
         return render_template('errors/403.html'), 403
 
     @app.errorhandler(404)
-    def page_not_found(error):
+    def page_not_found(error):  # pylint: disable=unused-variable
         return render_template('errors/404.html'), 404
 
     @app.errorhandler(500)
-    def server_error_page(error):
+    def server_error_page(error):  # pylint: disable=unused-variable
         return render_template('errors/500.html'), 500
