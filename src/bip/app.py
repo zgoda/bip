@@ -4,6 +4,7 @@ from logging.config import dictConfig
 from flask import render_template
 from werkzeug.utils import ImportStringError
 
+from .admin import admin_bp
 from .auth import auth_bp
 from .ext import babel, bootstrap, csrf, db, login_manager, oauth
 from .main import main_bp
@@ -69,6 +70,7 @@ def configure_hooks(app):
 
 def configure_blueprints(app):
     app.register_blueprint(main_bp)
+    app.register_blueprint(admin_bp, url_prefix='/admin')
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(user_bp, url_prefix='/user')
 
