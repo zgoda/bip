@@ -1,4 +1,3 @@
-dist: xenial
 language: python
 cache: pip
 python:
@@ -9,7 +8,7 @@ install:
   - pip install -e .
   - pip install -U codacy-coverage
 script:
-  - pytest --cov-branch --cov-report xml --cov=devlog tests
+  - pytest --cov-branch --cov-report xml --cov=bip tests
   - python setup.py build_sphinx
   - python setup.py sdist bdist_wheel
 after_success:
