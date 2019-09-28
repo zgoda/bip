@@ -5,6 +5,7 @@ from flask_login import UserMixin
 from sqlalchemy_utils.models import Timestamp
 
 from .ext import db
+from .security import pwd_context
 
 
 class ObjectType(enum.Enum):
@@ -32,6 +33,12 @@ class User(db.Model, UserMixin):
 
     def is_active(self):
         return self.active
+
+    def set_password(self, password):
+        self.password = pwd_context.hash(password)
+
+    def check_password(self, password):
+        return pwd_context.verify(password, self.password)
 
 
 class Directory(db.Model, Timestamp):

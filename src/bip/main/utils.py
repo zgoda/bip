@@ -14,7 +14,7 @@ def menu_items():
 def menu_tools():
     return [
         MenuItem(
-            'logowanie', url_for('auth.login'), VisibilityOptions(True, False),
+            'zaloguj', url_for('auth.login'), VisibilityOptions(True, False),
         ),
         MenuItem(
             'profil', url_for('user.profile'), VisibilityOptions(False, True),

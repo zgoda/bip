@@ -10,7 +10,7 @@ from .ext import babel, bootstrap, csrf, db, login_manager, oauth
 from .main import main_bp
 from .user import user_bp
 from .utils.app import BIPApplication
-from .utils.site import Site
+from .utils.site import Site, test_site
 from .utils.templates import extra_context, extra_filters
 
 
@@ -60,10 +60,13 @@ def configure_hooks(app):
 
     @app.before_first_request
     def load_site_object():
-        site_object_path = os.path.abspath(os.environ.get('SITE_JSON'))
-        if os.path.isfile(site_object_path):
+        if app.testing:
+            site = test_site()
+        else:
+            site_object_path = os.path.abspath(os.environ['SITE_JSON'])
             with open(site_object_path) as fp:
-                app.site = app.jinja_env.globals['site'] = Site.from_json(fp.read())
+                site = Site.from_json(fp.read())
+        app.site = app.jinja_env.globals['site'] = site
 
 
 def configure_blueprints(app):

@@ -3,7 +3,6 @@ from wtforms.fields import PasswordField, StringField
 from wtforms.validators import DataRequired
 
 from ..models import User
-from ..security import pwd_context
 from ..utils.forms import Button
 
 
@@ -17,5 +16,5 @@ class LoginForm(FlaskForm):
 
     def save(self):
         user = User.query.filter_by(name=self.username.data).first()
-        if user is not None and pwd_context.verify(self.password.data, user.password):
+        if user is not None and user.check_password(self.password.data):
             return user

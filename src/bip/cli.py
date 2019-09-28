@@ -11,7 +11,6 @@ from texttable import Texttable
 from . import make_app
 from .ext import db
 from .models import ChangeType, Directory, ObjectMenuItem, SubjectPage, User, log_change
-from .security import pwd_context
 from .utils.cli import ACTIVITY_NAME_MAP, SYS_NAME, login_user, print_table
 from .utils.text import yesno
 
@@ -65,7 +64,7 @@ def user_ops():
 )
 def user_login(user, password, clear):
     user_obj = User.query.filter_by(name=user).first()
-    if not (user_obj and pwd_context.verify(password, user_obj.password)):
+    if not (user_obj and user_obj.check_password(password)):
         raise click.ClickException(
             'nieprawidłowe dane logowania - '
             'nie znaleziono użytkownika lub nieprawidłowe hasło'
@@ -119,10 +118,8 @@ def user_list(active):
     help='Czy konto ma mieć uprawnienia administracyjne (domyślnie: NIE)',
 )
 def user_create(name, password, email, active, admin):
-    user = User(
-        name=name, password=pwd_context.hash(password), email=email, active=active,
-        admin=admin,
-    )
+    user = User(name=name, email=email, active=active, admin=admin)
+    user.set_password(password)
     db.session.add(user)
     db.session.commit()
     click.echo(f'konto użytkownika {name} zostało założone')

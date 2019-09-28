@@ -117,3 +117,12 @@ class Site:
         if self.KRS:
             data.append(('KRS', self.KRS))
         return data
+
+
+def test_site():
+    site = Site(
+        name='Test Site', short_name='Test',
+        address=Address(street='Street 1', zip_code='05-200', town='Test Town'),
+        contacts=[], departments=[],
+    )
+    return site
