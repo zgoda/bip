@@ -1,0 +1,17 @@
+---
+engines:
+  bandit:
+    enabled: true
+exclude_paths:
+  - 'docs/**'
+  - 'secrets/**'
+  - 'tests/**'
+  - 'conf/**'
+  - 'requirements/**'
+  - '**/config*'
+  - '**/app.py'
+  - '**/cli.py'
+  - '*.py'
+  - '*.md'
+  - '*.yml'
+  - '**/static/vendor/**'
