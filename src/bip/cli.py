@@ -12,7 +12,8 @@ from . import make_app
 from .ext import db
 from .models import ChangeType, Directory, ObjectMenuItem, SubjectPage, User, log_change
 from .security import pwd_context
-from .utils.cli import ACTIVITY_NAME_MAP, SYS_NAME, login_user, print_table, yesno
+from .utils.cli import ACTIVITY_NAME_MAP, SYS_NAME, login_user, print_table
+from .utils.text import yesno
 
 migrate_ops.help = 'Operacje na bazie danych aplikacji'
 

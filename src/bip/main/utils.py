@@ -17,7 +17,7 @@ def menu_tools():
             'logowanie', url_for('auth.login'), VisibilityOptions(True, False),
         ),
         MenuItem(
-            'profil', url_for('user.profile'), VisibilityOptions(False, True)
+            'profil', url_for('user.profile'), VisibilityOptions(False, True),
         ),
         MenuItem(
             'wyloguj', url_for('auth.logout'), VisibilityOptions(False, True),
@@ -28,6 +28,6 @@ def menu_tools():
 def admin_tools():
     return [
         MenuItem(
-            'administracja', '#', VisibilityOptions(False, True),
+            'administracja', url_for('admin.home'), VisibilityOptions(False, True),
         ),
     ]

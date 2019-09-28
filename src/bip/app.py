@@ -11,7 +11,7 @@ from .main import main_bp
 from .user import user_bp
 from .utils.app import BIPApplication
 from .utils.site import Site
-from .utils.templates import extra_context
+from .utils.templates import extra_context, extra_filters
 
 
 def make_app(env=None):
@@ -29,10 +29,8 @@ def make_app(env=None):
 
     @app.shell_context_processor
     def make_shell_context():
-        from .models import User
         return {
             'db': db,
-            'User': User,
         }
 
     return app
@@ -95,6 +93,7 @@ def configure_extensions(app):
 
 def configure_templating(app):
     app.jinja_env.globals.update(extra_context())
+    app.jinja_env.filters.update(extra_filters())
 
 
 def configure_logging():

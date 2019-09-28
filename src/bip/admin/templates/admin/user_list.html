@@ -1,0 +1,34 @@
+{% extends "admin/base.html" %}
+
+{% from "macros/pagination.html" import render_pagination %}
+
+{% block headpagetitle %}Konta użytkowników{% endblock %}
+
+{% block content %}
+<h2>Konta użytkowników</h2>
+{% if pagination.items %}
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">nazwa</th>
+      <th scope="col">zarejestrowany</th>
+      <th scope="col">email</th>
+      <th scope="col">aktywny</th>
+      <th scope="col">administrator</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for user in pagination.items %}
+    <tr>
+      <td>{{ user.name }}</td>
+      <td>{{ user.created|dateformat(format='long') }}</td>
+      <td>{{ user.email }}</td>
+      <td>{{ user.active|yesno }}</td>
+      <td>{{ user.admin|yesno }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{{ render_pagination(pagination) }}
+{% endif %}
+{% endblock %}

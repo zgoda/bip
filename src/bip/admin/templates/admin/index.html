@@ -1,1 +1,15 @@
 {% extends "admin/base.html" %}
+
+{% block headpagetitle %}Administracja serwisu BIP{% endblock %}
+
+{% block content %}
+<h2>Administracja serwisu BIP</h2>
+<div class="row my-2">
+  <div class="card col-md-4">
+    <div class="card-body">
+      <h4 class="card-tile">Użytkownicy</h4>
+      <p class="card-text"><a href="{{ url_for('admin.user_list') }}" class="card-link">konta</a></p>
+    </div>
+  </div>
+</div>
+{% endblock %}
