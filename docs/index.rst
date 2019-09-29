@@ -3,7 +3,7 @@ Dokumentacja aplikacji BIP
 
 Aplikacja BIP implementuje Biuletyn Informacji Publicznej w Pythonie przy
 użyciu ramówki aplikacyjnej Flask. Jest to aplikacja samodzielna, przeznaczona
-do uruchamiania w kontenerze lub do samodzielnej instalacji w systemie Linux.
+do uruchamiania w kontenerze lub do pełnej instalacji w systemie Linux.
 
 .. toctree::
     :maxdepth: 2
@@ -16,6 +16,15 @@ do uruchamiania w kontenerze lub do samodzielnej instalacji w systemie Linux.
     :caption: Instalacja i administracja
 
     adminguide
+
+.. toctree::
+    :maxdepth: 2
+    :caption: Project documentation (in English)
+
+    devguide
+    coc
+    contributing
+    license
 
 
 
