@@ -6,3 +6,4 @@ exclude_paths:
   - 'requirements/**'
   - '**/static/vendor/**'
   - '*.y*ml'
+  - 'src/bip/wsgi.py'
