@@ -3,16 +3,12 @@ Flask-Login
 Flask-WTF
 Flask-SQLAlchemy
 Flask-Babel
-Flask-Redis
 Flask-Migrate
-Authlib
 Bootstrap-Flask
 SQLAlchemy-Utils
 WTForms-Components
 passlib[argon2]
-itsdangerous
-markdown2
-hiredis
+Werkzeug
 Click
 keyring
 texttable
