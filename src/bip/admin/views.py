@@ -1,9 +1,9 @@
-from flask import abort, render_template
+from flask import abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from ..models import User
-from . import admin_bp
 from ..utils.pagination import paginate
+from . import admin_bp
 from .forms import UserForm
 
 
@@ -32,8 +32,14 @@ def user_list():
 def user_detail(user_pk):
     user = User.query.get_or_404(user_pk)
     form = None
+    if request.method == 'POST':
+        form = UserForm()
+        if form.validate_on_submit():
+            user = form.save(obj=user)
+            flash(f'dane użytkownika {user.name} zostały zmienione', category='success')
+            return redirect(url_for('admin.user_list'))
     context = {
         'user': user,
-        'form': form or UserForm(),
+        'form': form or UserForm(obj=user),
     }
     return render_template('admin/user_detail.html', **context)

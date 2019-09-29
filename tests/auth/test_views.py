@@ -1,7 +1,7 @@
 import pytest
 from flask import url_for
 
-from . import BIPTests
+from .. import BIPTests
 
 
 @pytest.mark.usefixtures('client_class')
