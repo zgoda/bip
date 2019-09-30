@@ -20,6 +20,9 @@ def menu_tools():
             'profil', url_for('user.profile'), VisibilityOptions(False, True),
         ),
         MenuItem(
+            'hasło', url_for('user.password_change'), VisibilityOptions(False, True),
+        ),
+        MenuItem(
             'wyloguj', url_for('auth.logout'), VisibilityOptions(False, True),
         ),
     ]

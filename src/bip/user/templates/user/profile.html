@@ -6,5 +6,6 @@
 
 {% block content %}
 <h2>Dane użytkownika {{ current_user.name }}</h2>
+<p>Użyj poniższego formularza aby zmienić swoje dane.</p>
 {{ render_form(form, action=request.path) }}
 {% endblock %}

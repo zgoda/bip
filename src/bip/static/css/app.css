@@ -5,3 +5,14 @@
   height: 120px;
   padding-left: 350px;
 }
+
+.help-block, .help {
+  font-size: 75%;
+  font-style: italic;
+  color: gray;
+  line-height: 1.1em;
+}
+
+.required label {
+  font-weight: bold;
+}

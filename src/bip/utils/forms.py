@@ -52,12 +52,15 @@ class ConfirmationForm(FlaskForm):
         return False
 
 
-class ObjectForm(FlaskForm):
+class BaseForm(FlaskForm):
 
     buttons = [
         Button(text='zapisz'),
         Link(href='javascript:history.back()', text='powrót'),
     ]
+
+
+class ObjectForm(BaseForm):
 
     def save(self, obj, save=True):
         self.populate_obj(obj)
