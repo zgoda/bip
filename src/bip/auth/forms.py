@@ -18,3 +18,4 @@ class LoginForm(FlaskForm):
         user = User.query.filter_by(name=self.username.data).first()
         if user is not None and user.check_password(self.password.data):
             return user
+        return None
