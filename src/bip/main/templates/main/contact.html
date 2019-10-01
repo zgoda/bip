@@ -1,5 +1,10 @@
 {% extends "main/base.html" %}
 
+{% from "macros/render.html" import render_dl %}
+
 {% block content %}
 <h2>Informacje kontaktowe</h2>
+{% for contact in site.contacts %}
+{{ render_dl(contact.basic_information) }}
+{% endfor %}
 {% endblock %}

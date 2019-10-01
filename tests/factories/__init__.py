@@ -1,1 +1,1 @@
-from .user import UserFactory  # noqa
+from .user import UserFactory  # noqa: F401

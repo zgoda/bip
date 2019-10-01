@@ -120,9 +120,23 @@ class Site:
 
 
 def test_site():
+    name = 'Test Site'
     site = Site(
-        name='Test Site', short_name='Test',
+        name=name, short_name='Test',
         address=Address(street='Street 1', zip_code='05-200', town='Test Town'),
-        contacts=[], departments=[],
+        contacts=[
+            Contact(phone='+48 500 666 777 888', email='contact@bip.instytucja.info')
+        ],
+        departments=[
+            Department(
+                name=name,
+                staff=[
+                    StaffMember(
+                        role_name='dyrektor', role_type=RoleType.manager,
+                        person_name='Leokadia Iksińska',
+                    )
+                ]
+            )
+        ],
     )
     return site
