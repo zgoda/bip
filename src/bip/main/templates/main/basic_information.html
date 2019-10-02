@@ -2,6 +2,8 @@
 
 {% from "macros/render.html" import render_dl %}
 
+{% block headpagetitle %}{{ site.name }} - Informacje podstawowe{% endblock %}
+
 {% block content %}
 <h2>Informacje podstawowe</h2>
 {{ render_dl(site.basic_information) }}

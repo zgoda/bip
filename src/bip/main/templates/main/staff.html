@@ -2,6 +2,8 @@
 
 {% from "macros/render.html" import render_person, render_dl %}
 
+{% block headpagetitle %}{{ site.name }} - Działy i pracownicy{% endblock %}
+
 {% block content %}
 <h2>Działy i pracownicy</h2>
 {% for department in site.departments %}
