@@ -7,3 +7,4 @@ exclude_paths:
   - '**/static/vendor/**'
   - '*.y*ml'
   - 'src/bip/wsgi.py'
+  - 'src/bip/app.py'
