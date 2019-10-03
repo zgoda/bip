@@ -124,9 +124,9 @@ class ChangeRecord(db.Model):
         db.Index('ix_changelog_object', 'object_pk', 'object_type'),
     )
 
-
-def log_change(obj, change_type, user, description):
-    return ChangeRecord(
-        object_pk=obj.pk, object_type=obj.__tablename__, user=user,
-        description=description, change_type=change_type,
-    )
+    @classmethod
+    def log_change(cls, obj, change_type, user, description):
+        return cls(
+            object_pk=obj.pk, object_type=obj.__tablename__, user=user,
+            description=description, change_type=change_type,
+        )

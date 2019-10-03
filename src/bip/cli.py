@@ -10,7 +10,9 @@ from texttable import Texttable
 
 from . import make_app
 from .ext import db
-from .models import ChangeType, Directory, ObjectMenuItem, SubjectPage, User, log_change
+from .models import (
+    ChangeRecord, ChangeType, Directory, ObjectMenuItem, SubjectPage, User,
+)
 from .utils.cli import ACTIVITY_NAME_MAP, SYS_NAME, login_user, print_table
 from .utils.text import yesno
 
@@ -238,10 +240,14 @@ def category_create(title, directory, active, order, user):
     db.session.add(c_menuitem)
     db.session.flush()
     msg = 'utworzono'
-    db.session.add(log_change(c_page, ChangeType.created, user_obj, msg))
+    db.session.add(ChangeRecord.log_change(c_page, ChangeType.created, user_obj, msg))
     if c_dir is not None:
-        db.session.add(log_change(c_dir, ChangeType.created, user_obj, msg))
-    db.session.add(log_change(c_menuitem, ChangeType.created, user_obj, msg))
+        db.session.add(
+            ChangeRecord.log_change(c_dir, ChangeType.created, user_obj, msg)
+        )
+    db.session.add(
+        ChangeRecord.log_change(c_menuitem, ChangeType.created, user_obj, msg)
+    )
     db.session.commit()
     click.echo(f'kategoria {title} została utworzona')
 
@@ -298,7 +304,7 @@ def category_change(category, description, title, active, order, user):
     if changes:
         db.session.add(cat_obj)
         db.session.add(
-            log_change(
+            ChangeRecord.log_change(
                 cat_obj, ChangeType.updated, user_obj, description='\n'.join(changes)
             )
         )
