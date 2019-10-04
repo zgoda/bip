@@ -38,7 +38,7 @@ class TestUserAdminViews(BIPTests):
         assert f'value="{user.email}"' in rv.text
         assert f'action="{url}"' in rv.text
 
-    def test_detail_post(self, user_factory):
+    def test_detail_post_ok(self, user_factory):
         name = pw = 'user_1'
         user = user_factory(name=name, password=pw)
         user_pk = user.pk
@@ -54,3 +54,21 @@ class TestUserAdminViews(BIPTests):
         user = User.query.get(user_pk)
         assert user.email == new_email
         assert user.email in rv.text
+
+    def test_detail_post_fail(self, user_factory):
+        name = pw = 'user_1'
+        user = user_factory(name=name, password=pw)
+        user_pk = user.pk
+        new_email = 'very invalid email'
+        url = self.detail_url(user)
+        self.login(self.admin_name, self.admin_pw)
+        data = {
+            'email': new_email,
+            'active': user.active,
+            'admin': user.admin,
+        }
+        rv = self.client.post(url, data=data, follow_redirects=True)
+        assert 'is-invalid' in rv.text
+        assert 'Nieprawidłowy adres e-mail' in rv.text
+        user = User.query.get(user_pk)
+        assert user.email != new_email

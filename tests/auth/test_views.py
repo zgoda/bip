@@ -5,7 +5,7 @@ from .. import BIPTests
 
 
 @pytest.mark.usefixtures('client_class')
-class TestAuthViews(BIPTests):
+class TestLogin(BIPTests):
 
     def test_login_user_exists(self, user_factory):
         url = url_for('main.home')
@@ -38,3 +38,41 @@ class TestAuthViews(BIPTests):
         rv = self.logout(follow_redirects=False)
         assert rv.status_code == 302
         assert url_for('auth.login') in rv.headers['Location']
+
+
+@pytest.mark.usefixtures('client_class')
+class TestLoginView(BIPTests):
+
+    @pytest.fixture(autouse=True)
+    def set_up(self):
+        self.url = url_for('auth.login')
+
+    def test_get(self):
+        rv = self.client.get(self.url)
+        assert rv.status_code == 200
+
+    def test_post_invalid_login(self):
+        data = {
+            'username': 'invalid',
+            'password': 'invalid',
+        }
+        rv = self.client.post(self.url, data=data, follow_redirects=True)
+        assert 'nieprawidłowe dane logowania' in rv.text
+
+    def test_post_empty_username(self):
+        data = {
+            'username': '',
+            'password': 'invalid',
+        }
+        rv = self.client.post(self.url, data=data, follow_redirects=True)
+        assert 'is-invalid' in rv.text
+        assert 'To pole jest wymagane' in rv.text
+
+    def test_post_empty_password(self):
+        data = {
+            'username': 'invalid',
+            'password': '',
+        }
+        rv = self.client.post(self.url, data=data, follow_redirects=True)
+        assert 'is-invalid' in rv.text
+        assert 'To pole jest wymagane' in rv.text
