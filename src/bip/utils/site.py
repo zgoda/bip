@@ -15,7 +15,6 @@ role_names = {
 
 @dataclass
 class Address:
-    __slots__ = ['street', 'zip_code', 'town']
     street: str
     zip_code: str
     town: str
