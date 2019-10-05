@@ -52,6 +52,10 @@ class StaffMember:
     phone: str = ''
     email: str = ''
 
+    def __post_init__(self):
+        if not isinstance(self.role_type, RoleType):
+            raise ValueError('invalid role type')
+
     @cached_property
     def basic_information(self):
         return (
