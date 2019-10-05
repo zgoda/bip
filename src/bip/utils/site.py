@@ -5,7 +5,11 @@ from typing import List
 
 from werkzeug.utils import cached_property
 
-RoleType = Enum('RoleType', ['manager', 'staff'])
+
+class RoleType(Enum):
+    manager = 'manager'
+    staff = 'staff'
+
 
 role_names = {
     RoleType.manager: 'kierownik',
