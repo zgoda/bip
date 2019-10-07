@@ -1,19 +1,13 @@
 import json
 from dataclasses import dataclass
-from enum import Enum
 from typing import List
 
 from werkzeug.utils import cached_property
 
 
-class RoleType(Enum):
-    manager = 'manager'
-    staff = 'staff'
-
-
 role_names = {
-    RoleType.manager: 'kierownik',
-    RoleType.staff: 'pracownik',
+    'manager': 'kierownik',
+    'staff': 'pracownik',
 }
 
 
@@ -46,15 +40,15 @@ class Contact:
 @dataclass
 class StaffMember:
     role_name: str
-    role_type: RoleType
+    role_type: str
     person_name: str
     photo_url: str = ''
     phone: str = ''
     email: str = ''
 
     def __post_init__(self):
-        if not isinstance(self.role_type, RoleType):
-            raise ValueError('invalid role type')
+        if self.role_type not in role_names.keys():
+            raise ValueError('Invalid role type')
 
     @cached_property
     def basic_information(self):
@@ -126,7 +120,7 @@ class Site:
         return data
 
 
-def test_site():
+def test_site():  # pragma: no cover
     name = 'Test Site'
     site = Site(
         name=name, short_name='Test',
@@ -139,7 +133,7 @@ def test_site():
                 name=name,
                 staff=[
                     StaffMember(
-                        role_name='dyrektor', role_type=RoleType.manager,
+                        role_name='dyrektor', role_type='manager',
                         person_name='Leokadia Iksińska',
                     )
                 ]

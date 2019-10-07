@@ -60,7 +60,7 @@ def configure_hooks(app):
 
     @app.before_first_request
     def load_site_object():  # pylint: disable=unused-variable
-        if app.testing:
+        if app.testing and not os.environ.get('SITE_JSON'):
             site = test_site()
         else:
             site_object_path = os.path.abspath(os.environ['SITE_JSON'])
