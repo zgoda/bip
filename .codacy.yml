@@ -8,3 +8,4 @@ exclude_paths:
   - '*.y*ml'
   - 'src/bip/wsgi.py'
   - 'src/bip/app.py'
+  - 'src/bip/utils/templates.py'
