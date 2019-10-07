@@ -47,7 +47,7 @@ class StaffMember:
     email: str = ''
 
     def __post_init__(self):
-        if self.role_type not in role_names.keys():
+        if self.role_type not in role_names:
             raise ValueError('Invalid role type')
 
     @cached_property
