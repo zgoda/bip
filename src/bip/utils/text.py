@@ -1,8 +1,12 @@
-def yesno(value: bool, capitalize: bool = True) -> str:
-    """Return "yes" or "no" as textual representation of Boolean value.
-    Returned string is capitalized by default.
+VALUE_YES = 'tak'
+VALUE_NO = 'nie'
 
-    :param value: value to be represented as `str`
+
+def yesno(value: bool, capitalize: bool = True) -> str:
+    """Return "yes" or "no" as textual representation of Boolean value in
+    Polish. Returned string is capitalized by default.
+
+    :param value: value to be represented
     :type value: bool
     :param capitalize: whether to capitalize output string, defaults to True
     :type capitalize: bool, optional
@@ -11,9 +15,9 @@ def yesno(value: bool, capitalize: bool = True) -> str:
     """
 
     if value:
-        ret = 'tak'
+        ret = VALUE_YES
     else:
-        ret = 'nie'
+        ret = VALUE_NO
     if capitalize:
         return ret.capitalize()
     return ret
