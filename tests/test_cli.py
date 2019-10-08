@@ -1,6 +1,6 @@
 import pytest
 
-from bip.cli import user_login
+from bip.cli import user_login, user_list
 
 
 class TestCLI:
@@ -32,3 +32,32 @@ class TestCLI:
         assert rv.exit_code == 0
         assert 'zostały usunięte' in rv.output
         fake_delpassword.assert_called_once()
+
+    def test_user_list_empty(self):
+        rv = self.runner.invoke(user_list)
+        assert rv.exit_code == 0
+        assert 'żadnych kont' in rv.output
+
+    def test_user_list_all(self, user_factory):
+        u1 = user_factory(name='u1', password='p1', active=True)
+        u2 = user_factory(name='u2', password='p2', active=False)
+        rv = self.runner.invoke(user_list)
+        assert rv.exit_code == 0
+        assert u1.email in rv.output
+        assert u2.email in rv.output
+
+    def test_user_list_active_only(self, user_factory):
+        u1 = user_factory(name='u1', password='p1', active=True)
+        u2 = user_factory(name='u2', password='p2', active=False)
+        rv = self.runner.invoke(user_list, ['--active'])
+        assert rv.exit_code == 0
+        assert u1.email in rv.output
+        assert u2.email not in rv.output
+
+    def test_user_list_inactive_only(self, user_factory):
+        u1 = user_factory(name='u1', password='p1', active=True)
+        u2 = user_factory(name='u2', password='p2', active=False)
+        rv = self.runner.invoke(user_list, ['--inactive'])
+        assert rv.exit_code == 0
+        assert u1.email not in rv.output
+        assert u2.email in rv.output

@@ -82,7 +82,7 @@ def user_list(active):
     acct_prop = ACTIVITY_NAME_MAP[active]
     filters = None
     if active is not None:
-        filters = [Filter(field='active', op='eq', value=True)]
+        filters = [Filter(field='active', op='eq', value=active)]
     q = user.query(sort=[Sort(field='name')], filters=filters)
     acct_count = q.count()
     if acct_count == 0:
