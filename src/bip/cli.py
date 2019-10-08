@@ -232,7 +232,7 @@ def category_create(title, is_directory, active, order, user_name):
         title=title, created_by=user_obj, active=active, text=title, save=False,
     )
     c_dir = None
-    if directory:
+    if is_directory:
         c_dir = directory.create(
             title=title, created_by=user_obj, active=active, page=c_page, save=False
         )
