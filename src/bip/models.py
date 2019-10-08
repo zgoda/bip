@@ -5,6 +5,7 @@ from flask_login import UserMixin
 
 from .ext import db
 from .security import pwd_context
+from .utils.db import Timestamp
 
 
 class ObjectType(enum.Enum):
@@ -40,7 +41,7 @@ class User(db.Model, UserMixin):
         return pwd_context.verify(password, self.password)
 
 
-class Directory(db.Model):
+class Directory(db.Model, Timestamp):
     __tablename__ = 'directory'
     pk = db.Column(db.Integer, primary_key=True)
     parent_pk = db.Column(db.Integer, db.ForeignKey('directory.pk'))
@@ -65,11 +66,9 @@ class Directory(db.Model):
     )
     description = db.Column(db.Text)
     active = db.Column(db.Boolean, default=True, index=True)
-    created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    updated = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
 
 
-class Page(db.Model):
+class Page(db.Model, Timestamp):
     __tablename__ = 'page'
     pk = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
@@ -89,11 +88,9 @@ class Page(db.Model):
     )
     description = db.Column(db.Text)
     active = db.Column(db.Boolean, default=True, index=True)
-    created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    updated = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
 
 
-class Category(db.Model):
+class Category(db.Model, Timestamp):
     __tablename__ = 'category'
     pk = db.Column(db.Integer, primary_key=True)
     directory_pk = db.Column(db.Integer, db.ForeignKey('directory.pk'))
@@ -108,8 +105,6 @@ class Category(db.Model):
     description = db.Column(db.Text)
     active = db.Column(db.Boolean, default=True, index=True)
     menu_order = db.Column(db.Integer, nullable=False, default=0, index=True)
-    created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    updated = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
 
 
 class ChangeRecord(db.Model):
