@@ -9,9 +9,8 @@ from flask_migrate.cli import db as migrate_ops
 from texttable import Texttable
 
 from . import make_app
-from .data import Filter, Sort, user, category, page, directory
+from .data import Filter, Sort, category, change, directory, page, user
 from .ext import db
-from .models import ChangeRecord, ChangeType
 from .utils.cli import ACTIVITY_NAME_MAP, SYS_NAME, login_user, print_table
 from .utils.text import yesno
 
@@ -94,7 +93,7 @@ def user_list(active):
         table.set_cols_align(['r', 'l', 'l', 'c', 'c'])
         table.set_cols_dtype(['i', 't', 't', 't', 't'])
         table.header(['ID', 'Nazwa', 'Email', 'Aktywne', 'Administrator'])
-        for user_obj in q.all():
+        for user_obj in q:
             table.add_row([
                 user_obj.pk, user_obj.name, user_obj.email,
                 yesno(user_obj.active), yesno(user_obj.admin),
@@ -199,7 +198,7 @@ def category_list(active):
         table.set_cols_align(['r', 'l', 'c', 'r', 'c'])
         table.set_cols_dtype(['i', 't', 't', 'i', 't'])
         table.header(['ID', 'Tytuł', 'Katalog', 'Kolejność', 'Aktywna'])
-        for cat_obj in q.all():
+        for cat_obj in q:
             table.add_row([
                 cat_obj.pk, cat_obj.title,
                 yesno(cat_obj.directory is not None), cat_obj.menu_order,
@@ -244,15 +243,18 @@ def category_create(title, is_directory, active, order, user_name):
     )
     db.session.add(c_menuitem)
     db.session.flush()
+    changes = []
     msg = 'utworzono'
-    db.session.add(ChangeRecord.log_change(c_page, ChangeType.created, user_obj, msg))
+    ctype = 'created'
+    changes.append(change.record(c_page, ctype, user_obj, msg))
     if c_dir is not None:
-        db.session.add(
-            ChangeRecord.log_change(c_dir, ChangeType.created, user_obj, msg)
+        changes.append(
+            change.record(c_dir, ctype, user_obj, msg)
         )
-    db.session.add(
-        ChangeRecord.log_change(c_menuitem, ChangeType.created, user_obj, msg)
+    changes.append(
+        change.record(c_menuitem, ctype, user_obj, msg)
     )
+    db.session.add_all(changes)
     db.session.commit()
     click.echo(f'kategoria {title} została utworzona')
 
@@ -310,8 +312,8 @@ def category_change(cat_pk, description, title, active, order, user_name):
     if changes:
         db.session.add(cat_obj)
         db.session.add(
-            ChangeRecord.log_change(
-                cat_obj, ChangeType.updated, user_obj, description='\n'.join(changes)
+            change.record(
+                cat_obj, 'updated', user_obj, description='\n'.join(changes)
             )
         )
         db.session.commit()
