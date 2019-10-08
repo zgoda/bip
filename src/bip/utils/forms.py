@@ -62,11 +62,8 @@ class BaseForm(FlaskForm):
 
 class ObjectForm(BaseForm):
 
-    def save(self, obj, save=True):
+    def save(self, obj):
         self.populate_obj(obj)
         db.session.add(obj)
-        if save:
-            db.session.commit()
-        else:
-            db.session.flush()
+        db.session.commit()
         return obj

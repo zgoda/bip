@@ -31,7 +31,7 @@ class User(db.Model, UserMixin):
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     admin = db.Column(db.Boolean, default=False, index=True)
 
-    def is_active(self):
+    def is_active(self):  # pragma: no cover
         return self.active
 
     def set_password(self, password):
