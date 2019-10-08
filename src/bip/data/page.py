@@ -3,7 +3,8 @@ from ..models import Page
 
 
 def create(save=True, **kwargs):
-    c = Page(**kwargs)
+    p = Page(**kwargs)
     if save:
-        db.session.add(c)
+        db.session.add(p)
         db.session.commit()
+    return p

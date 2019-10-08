@@ -16,6 +16,7 @@ def create(save=True, **kwargs):
     if save:
         db.session.add(c)
         db.session.commit()
+    return c
 
 
 def query(sort: Optional[List[Sort]] = None, filters: Optional[List[Filter]] = None):
