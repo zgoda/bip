@@ -1,14 +1,16 @@
 from flask import url_for
 
-from ..models import ObjectMenuItem
+from ..data import category, Filter, Sort
 from ..utils.menu import MenuItem, VisibilityOptions
 
 
 def menu_items():
-    q = ObjectMenuItem.query.filter_by(
-        active=True
-    ).order_by(ObjectMenuItem.menu_order, ObjectMenuItem.title)
-    return q
+    filters = [Filter(field='active', op='eq', value=True)]
+    sort = [
+        Sort(field='menu_order'),
+        Sort(field='title'),
+    ]
+    return category.query(sort, filters=filters)
 
 
 def menu_tools():

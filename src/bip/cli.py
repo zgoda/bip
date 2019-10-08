@@ -9,47 +9,47 @@ from flask_migrate.cli import db as migrate_ops
 from texttable import Texttable
 
 from . import make_app
-from .data import Filter, Sort, user
+from .data import Filter, Sort, user, category, page, directory
 from .ext import db
-from .models import ChangeRecord, ChangeType, Directory, ObjectMenuItem, SubjectPage
+from .models import ChangeRecord, ChangeType
 from .utils.cli import ACTIVITY_NAME_MAP, SYS_NAME, login_user, print_table
 from .utils.text import yesno
 
 migrate_ops.help = 'Operacje na bazie danych aplikacji'
 
 
-def create_app(_unused):
+def create_app(_unused):  # pragma: no cover
     return make_app('dev')
 
 
 @click.group(
     cls=FlaskGroup, create_app=create_app, help='Zarządzanie aplikacją BIP'
 )
-def cli():
+def cli():  # pragma: no cover
     pass
 
 
 @migrate_ops.command(name='init', help='Initialize missing database objects')
 @with_appcontext
-def initdb():
+def initdb():  # pragma: no cover
     db.create_all()
 
 
 @migrate_ops.command(name='clear', help='Remove all database objects')
 @with_appcontext
-def cleardb():
+def cleardb():  # pragma: no cover
     db.drop_all()
 
 
 @migrate_ops.command('recreate', help='Recreate all database objects from scratch')
 @with_appcontext
-def recreatedb():
+def recreatedb():  # pragma: no cover
     db.drop_all()
     db.create_all()
 
 
 @cli.group(name='user', help='Zarządzanie użytkownikami')
-def user_ops():
+def user_ops():  # pragma: no cover
     pass
 
 
@@ -64,12 +64,7 @@ def user_ops():
     help='Wyczyść dane logowania (domyślnie: NIE)',
 )
 def user_login(user_name, password, clear):
-    user_obj = user.by_name(user_name)
-    if not (user_obj and user_obj.check_password(password)):
-        raise click.ClickException(
-            'nieprawidłowe dane logowania - '
-            'nie znaleziono użytkownika lub nieprawidłowe hasło'
-        )
+    login_user(user_name, admin=False)
     if clear:
         keyring.delete_password(SYS_NAME, user_name)
         click.echo(f'dane logowania użytkownika {user_name} zostały usunięte')
@@ -150,6 +145,8 @@ def user_change(name, email, active, user_name):
         click.echo('nic do zrobienia')
         sys.exit(0)
     user_obj = login_user(user_name)
+    if user_obj.name != name:
+        user_obj = user.by_name(name)
     if user_obj is None:
         raise click.ClickException(f'nie znaleziono konta użytkownika {name}')
     if email:
@@ -174,7 +171,7 @@ def user_info(user_name):
 
 
 @cli.group(name='category', help='Zarządzanie kategoriami w menu')
-def category_ops():
+def category_ops():  # pragma: no cover
     pass
 
 
@@ -185,9 +182,13 @@ def category_ops():
 )
 def category_list(active):
     cat_prop = ACTIVITY_NAME_MAP[active]
-    q = ObjectMenuItem.query
+    sort = [
+        Sort('menu_order'), Sort('title')
+    ]
+    filters = None
     if active is not None:
-        q = q.filter(ObjectMenuItem.active.is_(active))
+        filters = [Filter(field='active', op='eq', value=True)]
+    q = category.query(sort, filters)
     cat_count = q.count()
     if cat_count == 0:
         click.echo('Nie ma żadnych kategorii')
@@ -198,12 +199,11 @@ def category_list(active):
         table.set_cols_align(['r', 'l', 'c', 'r', 'c'])
         table.set_cols_dtype(['i', 't', 't', 'i', 't'])
         table.header(['ID', 'Tytuł', 'Katalog', 'Kolejność', 'Aktywna'])
-        q = q.order_by(ObjectMenuItem.menu_order, ObjectMenuItem.title)
-        for category in q.all():
+        for cat_obj in q.all():
             table.add_row([
-                category.pk, category.title,
-                yesno(category.directory is not None), category.menu_order,
-                yesno(category.active),
+                cat_obj.pk, cat_obj.title,
+                yesno(cat_obj.directory is not None), cat_obj.menu_order,
+                yesno(cat_obj.active),
             ])
         print_table(table)
 
@@ -211,7 +211,7 @@ def category_list(active):
 @category_ops.command(name='create', help='Utwórz nową kategorię w menu')
 @click.option('--title', '-t', required=True, help='Tytuł kategorii')
 @click.option(
-    '--directory/--no-directory', default=False,
+    '--directory/--no-directory', 'is_directory', default=False,
     help='Czy kategoria jest katalogiem (domyślnie: NIE)',
 )
 @click.option(
@@ -226,18 +226,21 @@ def category_list(active):
     '--user', '-u', 'user_name', required=True,
     help='Wykonaj operację jako wskazany użytkownik',
 )
-def category_create(title, directory, active, order, user_name):
+def category_create(title, is_directory, active, order, user_name):
     user_obj = login_user(user_name)
-    c_page = SubjectPage(
-        title=title, created_by=user_obj, active=active, text=title
+    c_page = page.create(
+        title=title, created_by=user_obj, active=active, text=title, save=False,
     )
     c_dir = None
     if directory:
-        c_dir = Directory(title=title, created_by=user_obj, active=active, page=c_page)
+        c_dir = directory.create(
+            title=title, created_by=user_obj, active=active, page=c_page, save=False
+        )
         db.session.add(c_dir)
     db.session.add(c_page)
-    c_menuitem = ObjectMenuItem(
+    c_menuitem = category.create(
         directory=c_dir, page=c_page, title=title, active=active, menu_order=order,
+        save=False,
     )
     db.session.add(c_menuitem)
     db.session.flush()
@@ -255,7 +258,7 @@ def category_create(title, directory, active, order, user_name):
 
 
 @category_ops.command(name='change', help='Zmień dane kategorii w menu')
-@click.option('--category', '-c', type=int, help='ID kategorii do zmiany')
+@click.option('--category', '-c', 'cat_pk', type=int, help='ID kategorii do zmiany')
 @click.option(
     '--description', '-d', is_flag=True, default=False,
     help='Zmień opis kategorii (domyślnie: NIE); uruchamia zdefiniowany edytor tekstu',
@@ -271,9 +274,9 @@ def category_create(title, directory, active, order, user_name):
     '--user', '-u', 'user_name', required=True,
     help='Wykonaj operację jako wskazany użytkownik',
 )
-def category_change(category, description, title, active, order, user_name):
+def category_change(cat_pk, description, title, active, order, user_name):
     user_obj = login_user(user_name)
-    cat_obj = ObjectMenuItem.query.get(category)
+    cat_obj = category.get(cat_pk)
     if cat_obj is None:
         raise click.ClickException(f'Nie znaleziono kategorii o ID {category}')
     orig_title = cat_obj.title
@@ -318,7 +321,7 @@ def category_change(category, description, title, active, order, user_name):
 
 
 @cli.group(name='directory', help='Operacje na katalogach')
-def directory_ops():
+def directory_ops():  # pragma: no cover
     pass
 
 

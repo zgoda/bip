@@ -61,7 +61,7 @@ class Directory(db.Model):
     )
     page_pk = db.Column(db.Integer, db.ForeignKey('page.pk'), nullable=False)
     page = db.relationship(
-        'SubjectPage', backref=db.backref('directories', lazy='dynamic')
+        'Page', backref=db.backref('directories', lazy='dynamic')
     )
     description = db.Column(db.Text)
     active = db.Column(db.Boolean, default=True, index=True)
@@ -69,7 +69,7 @@ class Directory(db.Model):
     updated = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
 
 
-class SubjectPage(db.Model):
+class Page(db.Model):
     __tablename__ = 'page'
     pk = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
@@ -93,7 +93,7 @@ class SubjectPage(db.Model):
     updated = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
 
 
-class ObjectMenuItem(db.Model):
+class Category(db.Model):
     __tablename__ = 'category'
     pk = db.Column(db.Integer, primary_key=True)
     directory_pk = db.Column(db.Integer, db.ForeignKey('directory.pk'))
@@ -102,7 +102,7 @@ class ObjectMenuItem(db.Model):
     )
     page_pk = db.Column(db.Integer, db.ForeignKey('page.pk'))
     page = db.relationship(
-        'SubjectPage', backref=db.backref('categories', lazy='dynamic')
+        'Page', backref=db.backref('categories', lazy='dynamic')
     )
     title = db.Column(db.String(100), index=True)
     description = db.Column(db.Text)
