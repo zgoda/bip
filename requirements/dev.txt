@@ -22,8 +22,6 @@ isort
 towncrier
 Sphinx
 
-python-dotenv
-
 flask-shell-ipython
 termcolor
 watchdog

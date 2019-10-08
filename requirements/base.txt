@@ -12,3 +12,4 @@ Werkzeug
 Click
 keyring
 texttable
+python-dotenv
