@@ -14,9 +14,13 @@ def next_redirect(fallback_endpoint, *args, **kwargs):
     :rtype: str
     """
 
-    return is_redirect_safe(request.args.get('next')) \
-        or is_redirect_safe(session.pop('next', None)) \
-        or url_for(fallback_endpoint, *args, **kwargs)
+    candidates = [
+        request.args.get('next'),
+        session.pop('next', None),
+    ]
+    candidates = [c for c in candidates if is_redirect_safe(c)]
+    candidates.append(url_for(fallback_endpoint, *args, **kwargs))
+    return candidates[0]
 
 
 def is_redirect_safe(target):
