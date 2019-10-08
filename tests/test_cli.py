@@ -1,6 +1,6 @@
 import pytest
 
-from bip.cli import user_login, user_list
+from bip.cli import user_login, user_list, user_create
 
 
 class TestCLI:
@@ -61,3 +61,10 @@ class TestCLI:
         assert rv.exit_code == 0
         assert u1.email not in rv.output
         assert u2.email in rv.output
+
+    def test_user_create(self):
+        rv = self.runner.invoke(
+            user_create, ['-n', self.username, '-p', self.password, '--active']
+        )
+        assert rv.exit_code == 0
+        assert 'zostało założone' in rv.output
