@@ -17,7 +17,8 @@ class TestUserAdminViews(BIPTests):
             name=self.admin_name, password=self.admin_pw, admin=True,
         )
 
-    def detail_url(self, user):
+    @staticmethod
+    def detail_url(user):
         return url_for('admin.user_detail', user_pk=user.pk)
 
     def test_list_view(self, user_factory):

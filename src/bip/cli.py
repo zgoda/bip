@@ -19,7 +19,7 @@ from .utils.text import yesno
 migrate_ops.help = 'Operacje na bazie danych aplikacji'
 
 
-def create_app(info):
+def create_app(_unused):
     return make_app('dev')
 
 
