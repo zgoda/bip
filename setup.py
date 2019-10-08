@@ -60,7 +60,7 @@ setup(
         'Flask-Babel',
         'Flask-Migrate',
         'Bootstrap-Flask',
-        'SQLALchemy-Utils',
+        'SQLAlchemy-Filters',
         'WTForms-Components',
         'passlib[argon2]',
         'Werkzeug',

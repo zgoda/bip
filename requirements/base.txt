@@ -5,7 +5,7 @@ Flask-SQLAlchemy
 Flask-Babel
 Flask-Migrate
 Bootstrap-Flask
-SQLAlchemy-Utils
+SQLAlchemy-Filters
 WTForms-Components
 passlib[argon2]
 Werkzeug

@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms.fields import PasswordField, StringField
 from wtforms.validators import DataRequired
 
-from ..models import User
+from ..data import user
 from ..utils.forms import Button
 
 
@@ -15,7 +15,7 @@ class LoginForm(FlaskForm):
     ]
 
     def save(self):
-        user = User.query.filter_by(name=self.username.data).first()
-        if user is not None and user.check_password(self.password.data):
-            return user
+        user_obj = user.by_name(self.username.data)
+        if user_obj is not None and user_obj.check_password(self.password.data):
+            return user_obj
         return None

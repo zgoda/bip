@@ -1,7 +1,7 @@
 from flask import abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
-from ..models import User
+from ..data import Sort, user
 from ..utils.pagination import paginate
 from . import admin_bp
 from .forms import UserForm
@@ -21,7 +21,7 @@ def home():
 
 @admin_bp.route('/users/list')
 def user_list():
-    query = User.query.order_by(User.name)
+    query = user.query(sort=[Sort(field='name')])
     context = {
         'pagination': paginate(query)
     }
@@ -30,16 +30,19 @@ def user_list():
 
 @admin_bp.route('/users/<int:user_pk>', methods=['POST', 'GET'])
 def user_detail(user_pk):
-    user = User.query.get_or_404(user_pk)
+    user_obj = user.get_or_404(user_pk)
     form = None
     if request.method == 'POST':
         form = UserForm()
         if form.validate_on_submit():
-            user = form.save(obj=user)
-            flash(f'dane użytkownika {user.name} zostały zmienione', category='success')
+            user_obj = form.save(obj=user_obj)
+            flash(
+                f'dane użytkownika {user_obj.name} zostały zmienione',
+                category='success',
+            )
             return redirect(url_for('admin.user_list'))
     context = {
-        'user': user,
-        'form': form or UserForm(obj=user),
+        'user': user_obj,
+        'form': form or UserForm(obj=user_obj),
     }
     return render_template('admin/user_detail.html', **context)

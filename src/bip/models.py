@@ -2,7 +2,6 @@ import datetime
 import enum
 
 from flask_login import UserMixin
-from sqlalchemy_utils.models import Timestamp
 
 from .ext import db
 from .security import pwd_context
@@ -41,7 +40,7 @@ class User(db.Model, UserMixin):
         return pwd_context.verify(password, self.password)
 
 
-class Directory(db.Model, Timestamp):
+class Directory(db.Model):
     __tablename__ = 'directory'
     pk = db.Column(db.Integer, primary_key=True)
     parent_pk = db.Column(db.Integer, db.ForeignKey('directory.pk'))
@@ -66,9 +65,11 @@ class Directory(db.Model, Timestamp):
     )
     description = db.Column(db.Text)
     active = db.Column(db.Boolean, default=True, index=True)
+    created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    updated = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
 
 
-class SubjectPage(db.Model, Timestamp):
+class SubjectPage(db.Model):
     __tablename__ = 'page'
     pk = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
@@ -88,9 +89,11 @@ class SubjectPage(db.Model, Timestamp):
     )
     description = db.Column(db.Text)
     active = db.Column(db.Boolean, default=True, index=True)
+    created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    updated = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
 
 
-class ObjectMenuItem(db.Model, Timestamp):
+class ObjectMenuItem(db.Model):
     __tablename__ = 'category'
     pk = db.Column(db.Integer, primary_key=True)
     directory_pk = db.Column(db.Integer, db.ForeignKey('directory.pk'))
@@ -105,6 +108,8 @@ class ObjectMenuItem(db.Model, Timestamp):
     description = db.Column(db.Text)
     active = db.Column(db.Boolean, default=True, index=True)
     menu_order = db.Column(db.Integer, nullable=False, default=0, index=True)
+    created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    updated = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
 
 
 class ChangeRecord(db.Model):

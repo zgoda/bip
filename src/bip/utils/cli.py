@@ -4,8 +4,8 @@ import click
 import keyring
 from texttable import Texttable
 
+from ..data import user
 from ..models import User
-from ..security import pwd_context
 
 SYS_NAME = 'bip'
 
@@ -25,18 +25,15 @@ def login_user(username: str, admin: bool = True) -> User:
     :type admin: bool, optional
     :raises click.ClickException: if credentials are not valid
     :return: logged in user object
-    :rtype: :class:`~models.User`
+    :rtype: :class:`~bip.models.User`
     """
 
     password = keyring.get_password(SYS_NAME, username)
     if not password:
         click.echo(f'użytkownik {username} nie ma zapisanego hasła w pęku kluczy')
         password = click.prompt('Hasło: ', hide_input=True)
-    user_q = User.query.filter_by(name=username)
-    if admin:
-        user_q = user_q.filter_by(admin=True)
-    user_obj = user_q.first()
-    if not (user_obj and pwd_context.verify(password, user_obj.password)):
+    user_obj = user.by_name(username, admin=True)
+    if not (user_obj and user_obj.check_password(password)):
         raise click.ClickException(
             'nieprawidłowe dane logowania lub niewystarczające uprawnienia - '
             f'nie znaleziono konta {username} lub nieprawidłowe hasło'

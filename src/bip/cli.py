@@ -9,10 +9,9 @@ from flask_migrate.cli import db as migrate_ops
 from texttable import Texttable
 
 from . import make_app
+from .data import Filter, Sort, user
 from .ext import db
-from .models import (
-    ChangeRecord, ChangeType, Directory, ObjectMenuItem, SubjectPage, User,
-)
+from .models import ChangeRecord, ChangeType, Directory, ObjectMenuItem, SubjectPage
 from .utils.cli import ACTIVITY_NAME_MAP, SYS_NAME, login_user, print_table
 from .utils.text import yesno
 
@@ -55,7 +54,7 @@ def user_ops():
 
 
 @user_ops.command(name='login', help='Zaloguj użytkownika i zachowaj dane logowania')
-@click.option('--user', '-u', required=True, help='Nazwa konta użytkownika')
+@click.option('--user-name', '-u', required=True, help='Nazwa konta użytkownika')
 @click.option(
     '--password', '-p', prompt=True, hide_input=True, required=True,
     help='Hasło użytkownika',
@@ -64,19 +63,19 @@ def user_ops():
     '--clear', '-c', is_flag=True, default=False,
     help='Wyczyść dane logowania (domyślnie: NIE)',
 )
-def user_login(user, password, clear):
-    user_obj = User.query.filter_by(name=user).first()
+def user_login(user_name, password, clear):
+    user_obj = user.by_name(user_name)
     if not (user_obj and user_obj.check_password(password)):
         raise click.ClickException(
             'nieprawidłowe dane logowania - '
             'nie znaleziono użytkownika lub nieprawidłowe hasło'
         )
     if clear:
-        keyring.delete_password(SYS_NAME, user)
-        click.echo(f'dane logowania użytkownika {user} zostały usunięte')
+        keyring.delete_password(SYS_NAME, user_name)
+        click.echo(f'dane logowania użytkownika {user_name} zostały usunięte')
     else:
-        keyring.set_password(SYS_NAME, user, password)
-        click.echo(f'dane logowania użytkownika {user} zostały zapisane')
+        keyring.set_password(SYS_NAME, user_name, password)
+        click.echo(f'dane logowania użytkownika {user_name} zostały zapisane')
 
 
 @user_ops.command(name='list', help='Wyświetl listę użytkowników')
@@ -86,9 +85,10 @@ def user_login(user, password, clear):
 )
 def user_list(active):
     acct_prop = ACTIVITY_NAME_MAP[active]
-    q = User.query
+    filters = None
     if active is not None:
-        q = q.filter(User.active.is_(active))
+        filters = [Filter(field='active', op='eq', value=True)]
+    q = user.query(sort=[Sort(field='name')], filters=filters)
     acct_count = q.count()
     if acct_count == 0:
         click.echo('Nie ma żadnych kont użytkowników')
@@ -99,10 +99,10 @@ def user_list(active):
         table.set_cols_align(['r', 'l', 'l', 'c', 'c'])
         table.set_cols_dtype(['i', 't', 't', 't', 't'])
         table.header(['ID', 'Nazwa', 'Email', 'Aktywne', 'Administrator'])
-        q = q.order_by(User.name)
-        for user in q.all():
+        for user_obj in q.all():
             table.add_row([
-                user.pk, user.name, user.email, yesno(user.active), yesno(user.admin),
+                user_obj.pk, user_obj.name, user_obj.email,
+                yesno(user_obj.active), yesno(user_obj.admin),
             ])
         print_table(table)
 
@@ -120,10 +120,9 @@ def user_list(active):
     help='Czy konto ma mieć uprawnienia administracyjne (domyślnie: NIE)',
 )
 def user_create(name, password, email, active, admin):
-    user = User(name=name, email=email, active=active, admin=admin)
-    user.set_password(password)
-    db.session.add(user)
-    db.session.commit()
+    user.create(
+        name=name, password=password, email=email, active=active, admin=admin
+    )
     click.echo(f'konto użytkownika {name} zostało założone')
 
 
@@ -141,16 +140,16 @@ def user_create(name, password, email, active, admin):
     help='Zmiana aktywacji konta (domyślnie: bez zmiany)',
 )
 @click.option(
-    '--user', '-u', required=True, help='Wykonaj operację jako wskazany użytkownik'
+    '--user', '-u', 'user_name', required=True,
+    help='Wykonaj operację jako wskazany użytkownik',
 )
-def user_change(name, email, active, user):
+def user_change(name, email, active, user_name):
     if email is not None:
         email = email.strip()
     if not any([email, active]):
         click.echo('nic do zrobienia')
         sys.exit(0)
-    login_user(user)
-    user_obj = User.query.filter_by(name=name).first()
+    user_obj = login_user(user_name)
     if user_obj is None:
         raise click.ClickException(f'nie znaleziono konta użytkownika {name}')
     if email:
@@ -163,13 +162,15 @@ def user_change(name, email, active, user):
 
 
 @user_ops.command(name='info', help='Informacje o zalogowanym użytkowniku')
-@click.option('--user', '-u', required=True, help='Nazwa konta użytkownika')
-def user_info(user):
-    password = keyring.get_password(SYS_NAME, user)
+@click.option(
+    '--user', '-u', 'user_name', required=True, help='Nazwa konta użytkownika'
+)
+def user_info(user_name):
+    password = keyring.get_password(SYS_NAME, user_name)
     if password:
-        click.echo(f'użytkownik {user}: zalogowany')
+        click.echo(f'użytkownik {user_name}: zalogowany')
     else:
-        click.echo(f'użytkownik {user}: niezalogowany')
+        click.echo(f'użytkownik {user_name}: niezalogowany')
 
 
 @cli.group(name='category', help='Zarządzanie kategoriami w menu')
@@ -222,10 +223,11 @@ def category_list(active):
     help='Kolejność kategorii w menu (domyślnie: bez ustalania kolejności)',
 )
 @click.option(
-    '--user', '-u', required=True, help='Wykonaj operację jako wskazany użytkownik'
+    '--user', '-u', 'user_name', required=True,
+    help='Wykonaj operację jako wskazany użytkownik',
 )
-def category_create(title, directory, active, order, user):
-    user_obj = login_user(user)
+def category_create(title, directory, active, order, user_name):
+    user_obj = login_user(user_name)
     c_page = SubjectPage(
         title=title, created_by=user_obj, active=active, text=title
     )
@@ -266,10 +268,11 @@ def category_create(title, directory, active, order, user):
     '--order', '-o', type=int, default=None, help='Zmień kolejność kategorii w menu',
 )
 @click.option(
-    '--user', '-u', required=True, help='Wykonaj operację jako wskazany użytkownik'
+    '--user', '-u', 'user_name', required=True,
+    help='Wykonaj operację jako wskazany użytkownik',
 )
-def category_change(category, description, title, active, order, user):
-    user_obj = login_user(user)
+def category_change(category, description, title, active, order, user_name):
+    user_obj = login_user(user_name)
     cat_obj = ObjectMenuItem.query.get(category)
     if cat_obj is None:
         raise click.ClickException(f'Nie znaleziono kategorii o ID {category}')
