@@ -140,10 +140,11 @@ def user_create(name, password, email, active, admin):
 def user_change(name, email, active, user_name):
     if email is not None:
         email = email.strip()
-    if not any([email, active]):
+    if email is None and active is None:
         click.echo('nic do zrobienia')
         sys.exit(0)
-    user_obj = login_user(user_name)
+    require_admin = name != user_name
+    user_obj = login_user(user_name, admin=require_admin)
     if user_obj.name != name:
         user_obj = user.by_name(name)
     if user_obj is None:
