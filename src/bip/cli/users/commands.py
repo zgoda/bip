@@ -1,13 +1,13 @@
 import sys
-import keyring
+
 import click
+import keyring
 from texttable import Texttable
 
+from ...data import Filter, Sort, user
 from ...ext import db
-from ...utils.cli import SYS_NAME, login_user, ACTIVITY_NAME_MAP, print_table
+from ...utils.cli import ACTIVITY_NAME_MAP, SYS_NAME, login_user, print_table
 from ...utils.text import yesno
-from ...data import user, Filter, Sort
-
 
 user_ops = click.Group(name='user', help='Zarządzanie kontami użytkowników')
 
