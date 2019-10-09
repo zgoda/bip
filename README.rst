@@ -5,13 +5,14 @@ Biuletyn Informacji Publicznej
     :target: https://travis-ci.com/zgoda/bip
     :alt: Travis-CI build status
 
-.. image:: https://api.codacy.com/project/badge/Grade/0f475803793e4774be186f7e4c937d15
-    :target: https://www.codacy.com/manual/jarek.zgoda/bip
-    :alt: Codacy code quality report
+.. image:: https://api.codeclimate.com/v1/badges/6f0fbf642b7e4ebc10ae/maintainability
+   :target: https://codeclimate.com/github/zgoda/bip/maintainability
+   :alt: Code Climate maintainability report
 
-.. image:: https://api.codacy.com/project/badge/Coverage/0f475803793e4774be186f7e4c937d15
-    :target: https://www.codacy.com/manual/jarek.zgoda/bip
-    :alt: Codacy coverage report
+.. image:: https://api.codeclimate.com/v1/badges/6f0fbf642b7e4ebc10ae/test_coverage
+   :target: https://codeclimate.com/github/zgoda/bip/test_coverage
+   :alt: Code Climate test coverage report
+
 
 Flask application that implements Polish BIP baseline
 (`Bulletin of Public Information <https://en.wikipedia.org/wiki/Biuletyn_Informacji_Publicznej>`_)
