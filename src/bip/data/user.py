@@ -4,33 +4,16 @@ from sqlalchemy_filters import apply_filters, apply_sort
 
 from ..ext import db
 from ..models import User
-from . import Filter, Sort
+from . import Filter, Sort, create_object
 
 
-def create(
-            name: str, password: str, email: Optional[str] = None,
-            active: bool = False, admin: bool = False,
-        ) -> User:
-    """Create and return :class:`~bip.models.User` object.
-
-    :param name: user name
-    :type name: str
-    :param password: password
-    :type password: str
-    :param email: email, defaults to None
-    :type email: str, optional
-    :param active: should the account be created active, defaults to False
-    :type active: bool, optional
-    :param admin: should user have administrative privileges, defaults to
-                  False
-    :type admin: bool, optional
-    :return: user object
-    :rtype: :class:`~bip.models.User`
-    """
-    user = User(name=name, email=email, active=active, admin=admin)
+def create(save=True, **kwargs):
+    password = kwargs.pop('password')
+    user = create_object(User, save=False, **kwargs)
     user.set_password(password)
-    db.session.add(user)
-    db.session.commit()
+    if save:
+        db.session.add(user)
+        db.session.commit()
     return user
 
 

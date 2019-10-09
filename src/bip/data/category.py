@@ -2,9 +2,8 @@ from typing import List, Optional
 
 from sqlalchemy_filters import apply_filters, apply_sort
 
-from ..ext import db
 from ..models import Category
-from . import Filter, Sort
+from . import Filter, Sort, create_object
 
 
 def get(pk):
@@ -12,11 +11,7 @@ def get(pk):
 
 
 def create(save=True, **kwargs):
-    c = Category(**kwargs)
-    if save:
-        db.session.add(c)
-        db.session.commit()
-    return c
+    return create_object(Category, save, **kwargs)
 
 
 def query(sort: Optional[List[Sort]] = None, filters: Optional[List[Filter]] = None):

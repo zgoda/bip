@@ -1,10 +1,6 @@
-from ..ext import db
 from ..models import Page
+from . import create_object
 
 
 def create(save=True, **kwargs):
-    p = Page(**kwargs)
-    if save:
-        db.session.add(p)
-        db.session.commit()
-    return p
+    return create_object(Page, save, **kwargs)

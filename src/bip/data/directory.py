@@ -1,10 +1,6 @@
-from ..ext import db
 from ..models import Directory
+from . import create_object
 
 
 def create(save=True, **kwargs):
-    d = Directory(**kwargs)
-    if save:
-        db.session.add(d)
-        db.session.commit()
-    return d
+    return create_object(Directory, save, **kwargs)
