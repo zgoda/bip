@@ -1,0 +1,16 @@
+version: "2"
+exclude_patterns:
+  - "docs/"
+  - "tests/"
+  - "requirements/"
+  - "conf/"
+  - "src/bip/static/vendor/"
+  - 'src/bip/wsgi.py'
+  - 'src/bip/app.py'
+checks:
+  argument-count:
+    config:
+      threshold: 8
+  method-complexity:
+    config:
+      threshold: 10

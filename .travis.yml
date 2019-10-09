@@ -2,14 +2,17 @@ language: python
 cache: pip
 python:
   - "3.7"
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
 install:
-  - pip install -U -r requirements/test.txt
-  - pip install -U Sphinx wheel
-  - pip install -e .
-  - pip install -U codacy-coverage
+  - pip install -q -U -r requirements/test.txt
+  - pip install -q -U Sphinx wheel
+  - pip install -q -e .
 script:
   - pytest --cov-branch --cov-report xml --cov=bip tests
   - python setup.py --quiet build_sphinx
   - python setup.py --quiet sdist bdist_wheel
-after_success:
-  - python-codacy-coverage -r coverage.xml
+after_script:
+  - ./cc-test-reporter after-build -t coverage.py --exit-code $TRAVIS_TEST_RESULT
