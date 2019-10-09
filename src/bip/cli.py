@@ -1,4 +1,3 @@
-import difflib
 import sys
 
 import click
@@ -12,7 +11,7 @@ from . import make_app
 from .data import Filter, Sort, category, change, directory, page, user
 from .ext import db
 from .utils.cli import ACTIVITY_NAME_MAP, SYS_NAME, login_user, print_table
-from .utils.text import yesno
+from .utils.text import text_changes, yesno
 
 migrate_ops.help = 'Operacje na bazie danych aplikacji'
 
@@ -262,10 +261,6 @@ def category_create(title, is_directory, active, order, user_name):
 
 @category_ops.command(name='change', help='Zmień dane kategorii w menu')
 @click.option('--category', '-c', 'cat_pk', type=int, help='ID kategorii do zmiany')
-@click.option(
-    '--description', '-d', is_flag=True, default=False,
-    help='Zmień opis kategorii (domyślnie: NIE); uruchamia zdefiniowany edytor tekstu',
-)
 @click.option('--title', '-t', default=None, help='Zmień tytuł kategorii')
 @click.option(
     '--active/--inactive', default=None, help='Zmień stan aktywności kategorii',
@@ -277,39 +272,24 @@ def category_create(title, is_directory, active, order, user_name):
     '--user', '-u', 'user_name', required=True,
     help='Wykonaj operację jako wskazany użytkownik',
 )
-def category_change(cat_pk, description, title, active, order, user_name):
+def category_change(cat_pk, title, active, order, user_name):
     user_obj = login_user(user_name)
     cat_obj = category.get(cat_pk)
     if cat_obj is None:
         raise click.ClickException(f'Nie znaleziono kategorii o ID {category}')
     orig_title = cat_obj.title
     changes = []
-    if description:
-        orig_description = cat_obj.description or ''
-        new_description = click.edit(orig_description)
-        if new_description:
-            data_diff = list(
-                difflib.unified_diff(
-                    orig_description.splitlines(keepends=True),
-                    new_description.splitlines(keepends=True),
-                )
-            )
-            if data_diff:
-                diff_s = '\n'.join(data_diff)
-                changes.append(f'opis, diff:\n{diff_s}')
-                cat_obj.description = new_description
-    else:
-        if title is not None:
-            title = title.strip()
+    if title is not None:
+        title = title.strip()
         if title:
             changes.append(f'tytuł: {cat_obj.title} -> {title}')
             cat_obj.title = title
-        if active is not None:
-            changes.append(f'aktywna: {yesno(cat_obj.active)} -> {yesno(active)}')
-            cat_obj.active = active
-        if order is not None:
-            changes.append(f'kolejność: {cat_obj.menu_order} -> {order}')
-            cat_obj.menu_order = order
+    if active is not None:
+        changes.append(f'aktywna: {yesno(cat_obj.active)} -> {yesno(active)}')
+        cat_obj.active = active
+    if order is not None:
+        changes.append(f'kolejność: {cat_obj.menu_order} -> {order}')
+        cat_obj.menu_order = order
     if changes:
         db.session.add(cat_obj)
         db.session.add(
@@ -321,6 +301,36 @@ def category_change(cat_pk, description, title, active, order, user_name):
         click.echo(f'kategoria {orig_title} została zmieniona')
     else:
         click.echo(f'bez zmian kategorii {orig_title}')
+
+
+@category_ops.command(name='description', help='Zmień opis kategorii w menu')
+@click.option('--category', '-c', 'cat_pk', type=int, help='ID kategorii do zmiany')
+@click.option(
+    '--user', '-u', 'user_name', required=True,
+    help='Wykonaj operację jako wskazany użytkownik',
+)
+def category_change_description(cat_pk, user_name):
+    user_obj = login_user(user_name)
+    cat_obj = category.get(cat_pk)
+    if cat_obj is None:
+        raise click.ClickException(f'Nie znaleziono kategorii o ID {category}')
+    orig_description = cat_obj.description or ''
+    new_description = click.edit(orig_description)
+    data_diff = text_changes(orig_description, new_description)
+    if data_diff:
+        diff_s = '\n'.join(data_diff)
+        change_msg = f'opis, diff:\n{diff_s}'
+        cat_obj.description = new_description
+        db.session.add(cat_obj)
+        db.session.add(
+            change.record(
+                cat_obj, 'updated', user_obj, description='\n'.join(change_msg)
+            )
+        )
+        db.session.commit()
+        click.echo(f'opis kategorii {cat_obj.title} został zmieniony')
+    else:
+        click.echo(f'opis kategorii {cat_obj.title} bez zmian')
 
 
 @cli.group(name='directory', help='Operacje na katalogach')

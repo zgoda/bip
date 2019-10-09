@@ -1,3 +1,6 @@
+import difflib
+from typing import List
+
 VALUE_YES = 'tak'
 VALUE_NO = 'nie'
 
@@ -21,3 +24,14 @@ def yesno(value: bool, capitalize: bool = True) -> str:
     if capitalize:
         return ret.capitalize()
     return ret
+
+
+def text_changes(from_str: str, to_str: str) -> List[str]:
+    changes = []
+    from_lines = from_str.splitlines(keepends=True)
+    to_lines = to_str.splitlines(keepends=True)
+    for line in difflib.ndiff(from_lines, to_lines):
+        line = line.strip()
+        if line[0] in ('+', '-'):
+            changes.append(line)
+    return changes
