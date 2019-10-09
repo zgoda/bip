@@ -6,6 +6,7 @@ from sqlalchemy_filters import apply_filters, apply_sort
 from ..ext import db
 
 Filter = namedtuple('Filter', 'field,op,value,model', defaults=(None, None))
+
 Sort = namedtuple(
     'Sort', 'field,direction,model,nullsfirst,nullslast',
     defaults=('asc', None, None, None),

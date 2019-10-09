@@ -5,7 +5,7 @@ from ..models import User
 from . import Filter, Sort, create_object, get_query
 
 
-def create(save=True, **kwargs):
+def create(save: bool = True, **kwargs) -> User:
     password = kwargs.pop('password')
     user = create_object(User, save=False, **kwargs)
     user.set_password(password)

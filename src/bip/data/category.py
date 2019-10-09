@@ -4,11 +4,11 @@ from ..models import Category
 from . import Filter, Sort, create_object, get_query
 
 
-def get(pk):
+def get(pk: int) -> Optional[Category]:
     return Category.query.get(pk)
 
 
-def create(save=True, **kwargs):
+def create(save: bool = True, **kwargs) -> Category:
     return create_object(Category, save, **kwargs)
 
 
