@@ -1,10 +1,8 @@
 from typing import List, Optional
 
-from sqlalchemy_filters import apply_filters, apply_sort
-
 from ..ext import db
 from ..models import User
-from . import Filter, Sort, create_object
+from . import Filter, Sort, create_object, get_query
 
 
 def create(save=True, **kwargs):
@@ -41,9 +39,12 @@ def get_or_404(pk: int) -> User:
 
 
 def query(sort: Optional[List[Sort]] = None, filters: Optional[List[Filter]] = None):
-    q = User.query
-    if filters:
-        q = apply_filters(q, [f._asdict() for f in filters])
-    if sort:
-        q = apply_sort(q, [s._asdict() for s in sort])
-    return q
+    """Build and return query over :class:`~bip.models.User` objects.
+
+    :param sort: list of sort specs, defaults to None
+    :type sort: Optional[List[Sort]], optional
+    :param filters: list of filter specs, defaults to None
+    :type filters: Optional[List[Filter]], optional
+    :return: SQLAlchemy query object
+    """
+    return get_query(User, sort, filters)

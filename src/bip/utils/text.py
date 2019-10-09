@@ -16,7 +16,6 @@ def yesno(value: bool, capitalize: bool = True) -> str:
     :return: textual representation of Boolean value
     :rtype: str
     """
-
     if value:
         ret = VALUE_YES
     else:
@@ -27,6 +26,15 @@ def yesno(value: bool, capitalize: bool = True) -> str:
 
 
 def text_changes(from_str: str, to_str: str) -> List[str]:
+    """Generate a diff for the list of strings.
+
+    :param from_str: left (existing)
+    :type from_str: str
+    :param to_str: right (incoming)
+    :type to_str: str
+    :return: list of differencies
+    :rtype: List[str]
+    """
     changes = []
     from_lines = from_str.splitlines(keepends=True)
     to_lines = to_str.splitlines(keepends=True)
