@@ -9,3 +9,11 @@ class TestCategoryOps(BIPCLITests):
         rv = self.runner.invoke(category_list)
         assert rv.exit_code == 0
         assert 'żadnych kategorii' in rv.output
+
+    def test_list_all(self, category_factory):
+        c1 = category_factory(active=True)
+        c2 = category_factory(active=False)
+        rv = self.runner.invoke(category_list)
+        assert rv.exit_code == 0
+        assert c1.title in rv.output
+        assert c2.title in rv.output

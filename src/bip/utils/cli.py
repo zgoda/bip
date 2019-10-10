@@ -1,4 +1,6 @@
 import shutil
+from collections import namedtuple
+from typing import List
 
 import click
 import keyring
@@ -14,6 +16,9 @@ ACTIVITY_NAME_MAP = {
     False: 'nieaktywne',
     None: 'wszystkie',
 }
+
+
+ColSpec = namedtuple('ColSpec', ['align', 'dtype', 'title'])
 
 
 def login_user(username: str, admin: bool = True) -> User:
@@ -40,6 +45,34 @@ def login_user(username: str, admin: bool = True) -> User:
         )
     keyring.set_password(SYS_NAME, username, password)
     return user_obj
+
+
+def create_table(is_testing: bool, cols: List[ColSpec]) -> Texttable:
+    """Create table for term display. The table has unlimited size if
+    application is in testing state, otherwise term size.
+
+    :param is_testing: flag whether application is in testing state
+    :type is_testing: bool
+    :param cols: list of columns for the table
+    :type cols: List[ColSpec]
+    :return: table object
+    :rtype: :class:`~texttable.Texttable`
+    """
+    if is_testing:
+        width = 0
+    else:
+        width = shutil.get_terminal_size().columns
+    table = Texttable(max_width=width)
+    table.set_deco(Texttable.HEADER | Texttable.BORDER)
+    align, dtypes, titles = [], [], []
+    for col in cols:
+        align.append(col.align)
+        dtypes.append(col.dtype)
+        titles.append(col.title)
+    table.set_cols_align(align)
+    table.set_cols_dtype(dtypes)
+    table.header(titles)
+    return table
 
 
 def print_table(table: Texttable):

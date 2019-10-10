@@ -1,10 +1,14 @@
-import click
 import sys
-from texttable import Texttable
+
+import click
+from flask import current_app
+from flask.cli import with_appcontext
 
 from ...data import Filter, Sort, category, change, directory, page
 from ...ext import db
-from ...utils.cli import ACTIVITY_NAME_MAP, login_user, print_table
+from ...utils.cli import (
+    ACTIVITY_NAME_MAP, ColSpec, create_table, login_user, print_table,
+)
 from ...utils.text import text_changes, yesno
 
 category_ops = click.Group(name='category', help='Zarządzanie kategoriami w menu')
@@ -15,6 +19,7 @@ category_ops = click.Group(name='category', help='Zarządzanie kategoriami w men
     '--active/--inactive', default=None,
     help='Wyświetl tylko aktywne lub nieaktywne (domyślnie: wszystkie)',
 )
+@with_appcontext
 def category_list(active):
     cat_prop = ACTIVITY_NAME_MAP[active]
     sort = [
@@ -29,11 +34,14 @@ def category_list(active):
         click.echo('Nie ma żadnych kategorii')
         sys.exit(0)
     click.echo(f'Znaleziono: {cat_count}, wyświetlanie: {cat_prop}')
-    table = Texttable()
-    table.set_deco(Texttable.HEADER | Texttable.BORDER)
-    table.set_cols_align(['r', 'l', 'c', 'r', 'c'])
-    table.set_cols_dtype(['i', 't', 't', 'i', 't'])
-    table.header(['ID', 'Tytuł', 'Katalog', 'Kolejność', 'Aktywna'])
+    columns = [
+        ColSpec('r', 'i', 'ID'),
+        ColSpec('l', 't', 'Tytuł'),
+        ColSpec('c', 't', 'Katalog'),
+        ColSpec('r', 'i', 'Kolejność'),
+        ColSpec('c', 't', 'Aktywna'),
+    ]
+    table = create_table(current_app.testing, columns)
     for cat_obj in q:
         table.add_row([
             cat_obj.pk, cat_obj.title,
@@ -61,6 +69,7 @@ def category_list(active):
     '--user', '-u', 'user_name', required=True,
     help='Wykonaj operację jako wskazany użytkownik',
 )
+@with_appcontext
 def category_create(title, is_directory, active, order, user_name):
     user_obj = login_user(user_name)
     c_page = page.create(
@@ -108,6 +117,7 @@ def category_create(title, is_directory, active, order, user_name):
     '--user', '-u', 'user_name', required=True,
     help='Wykonaj operację jako wskazany użytkownik',
 )
+@with_appcontext
 def category_change(cat_pk, title, active, order, user_name):
     user_obj = login_user(user_name)
     cat_obj = category.get(cat_pk)
@@ -145,6 +155,7 @@ def category_change(cat_pk, title, active, order, user_name):
     '--user', '-u', 'user_name', required=True,
     help='Wykonaj operację jako wskazany użytkownik',
 )
+@with_appcontext
 def category_change_description(cat_pk, user_name):
     user_obj = login_user(user_name)
     cat_obj = category.get(cat_pk)

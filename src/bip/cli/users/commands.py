@@ -2,11 +2,14 @@ import sys
 
 import click
 import keyring
-from texttable import Texttable
+from flask import current_app
+from flask.cli import with_appcontext
 
 from ...data import Filter, Sort, user
 from ...ext import db
-from ...utils.cli import ACTIVITY_NAME_MAP, SYS_NAME, login_user, print_table
+from ...utils.cli import (
+    ACTIVITY_NAME_MAP, SYS_NAME, ColSpec, create_table, login_user, print_table,
+)
 from ...utils.text import yesno
 
 user_ops = click.Group(name='user', help='Zarządzanie kontami użytkowników')
@@ -37,6 +40,7 @@ def user_login(user_name, password, clear):
     '--active/--inactive', default=None,
     help='Wyświetl tylko aktywne lub nieaktywne (domyślnie: wszystkie)',
 )
+@with_appcontext
 def user_list(active):
     acct_prop = ACTIVITY_NAME_MAP[active]
     filters = None
@@ -48,11 +52,14 @@ def user_list(active):
         click.echo('Nie ma żadnych kont użytkowników')
     else:
         click.echo(f'Znaleziono {acct_count}, wyświetlanie: {acct_prop}')
-        table = Texttable()
-        table.set_deco(Texttable.HEADER | Texttable.BORDER)
-        table.set_cols_align(['r', 'l', 'l', 'c', 'c'])
-        table.set_cols_dtype(['i', 't', 't', 't', 't'])
-        table.header(['ID', 'Nazwa', 'Email', 'Aktywne', 'Administrator'])
+        columns = [
+            ColSpec('r', 'i', 'ID'),
+            ColSpec('l', 't', 'Nazwa'),
+            ColSpec('l', 't', 'Email'),
+            ColSpec('c', 't', 'Aktywne'),
+            ColSpec('c', 't', 'Administrator'),
+        ]
+        table = create_table(current_app.testing, columns)
         for user_obj in q:
             table.add_row([
                 user_obj.pk, user_obj.name, user_obj.email,
@@ -73,6 +80,7 @@ def user_list(active):
     '--admin/--regular', default=False,
     help='Czy konto ma mieć uprawnienia administracyjne (domyślnie: NIE)',
 )
+@with_appcontext
 def user_create(name, password, email, active, admin):
     user.create(
         name=name, password=password, email=email, active=active, admin=admin
@@ -97,6 +105,7 @@ def user_create(name, password, email, active, admin):
     '--user', '-u', 'user_name', required=True,
     help='Wykonaj operację jako wskazany użytkownik',
 )
+@with_appcontext
 def user_change(name, email, active, user_name):
     if email is not None:
         email = email.strip()
