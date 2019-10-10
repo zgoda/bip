@@ -7,7 +7,8 @@ from flask.cli import with_appcontext
 from ...data import Filter, Sort, category, change, directory, page
 from ...ext import db
 from ...utils.cli import (
-    ACTIVITY_NAME_MAP, ColSpec, create_table, login_user, print_table,
+    ACTIVITY_NAME_MAP, ColAlign as ColA, ColDataType as ColDT, ColSpec, create_table,
+    login_user, print_table,
 )
 from ...utils.text import text_changes, yesno
 
@@ -35,11 +36,11 @@ def category_list(active):
         sys.exit(0)
     click.echo(f'Znaleziono: {cat_count}, wyświetlanie: {cat_prop}')
     columns = [
-        ColSpec('r', 'i', 'ID'),
-        ColSpec('l', 't', 'Tytuł'),
-        ColSpec('c', 't', 'Katalog'),
-        ColSpec('r', 'i', 'Kolejność'),
-        ColSpec('c', 't', 'Aktywna'),
+        ColSpec(ColA.right, ColDT.int, 'ID'),
+        ColSpec(ColA.left, ColDT.text, 'Tytuł'),
+        ColSpec(ColA.center, ColDT.text, 'Katalog'),
+        ColSpec(ColA.right, ColDT.int, 'Kolejność'),
+        ColSpec(ColA.center, ColDT.text, 'Aktywna'),
     ]
     table = create_table(current_app.testing, columns)
     for cat_obj in q:

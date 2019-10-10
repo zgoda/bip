@@ -18,6 +18,20 @@ ACTIVITY_NAME_MAP = {
 }
 
 
+class ColAlign:
+    right = 'r'
+    center = 'c'
+    left = 'l'
+
+
+class ColDataType:
+    auto = 'a'
+    text = 't'
+    float = 'f'  # noqa: A003
+    exp = 'e'
+    int = 'i'  # noqa: A003
+
+
 ColSpec = namedtuple('ColSpec', ['align', 'dtype', 'title'])
 
 
@@ -34,7 +48,7 @@ def login_user(username: str, admin: bool = True) -> User:
     """
 
     password = keyring.get_password(SYS_NAME, username)
-    if not password:
+    if not password:  # pragma: no cover
         click.echo(f'użytkownik {username} nie ma zapisanego hasła w pęku kluczy')
         password = click.prompt('Hasło: ', hide_input=True)
     user_obj = user.by_name(username, admin=True)
@@ -60,7 +74,7 @@ def create_table(is_testing: bool, cols: List[ColSpec]) -> Texttable:
     """
     if is_testing:
         width = 0
-    else:
+    else:  # pragma: no cover
         width = shutil.get_terminal_size().columns
     table = Texttable(max_width=width)
     table.set_deco(Texttable.HEADER | Texttable.BORDER)
@@ -84,7 +98,7 @@ def print_table(table: Texttable):
 
     text = table.draw()
     num_rows = len(text.splitlines())
-    if num_rows + 1 > shutil.get_terminal_size().lines:
+    if num_rows + 1 > shutil.get_terminal_size().lines:  # pragma: no cover
         click.echo_via_pager(text)
     else:
         click.echo(text)

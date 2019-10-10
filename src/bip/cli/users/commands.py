@@ -8,7 +8,8 @@ from flask.cli import with_appcontext
 from ...data import Filter, Sort, user
 from ...ext import db
 from ...utils.cli import (
-    ACTIVITY_NAME_MAP, SYS_NAME, ColSpec, create_table, login_user, print_table,
+    ACTIVITY_NAME_MAP, SYS_NAME, ColAlign, ColDataType as ColDT, ColSpec, create_table,
+    login_user, print_table,
 )
 from ...utils.text import yesno
 
@@ -53,11 +54,11 @@ def user_list(active):
     else:
         click.echo(f'Znaleziono {acct_count}, wyświetlanie: {acct_prop}')
         columns = [
-            ColSpec('r', 'i', 'ID'),
-            ColSpec('l', 't', 'Nazwa'),
-            ColSpec('l', 't', 'Email'),
-            ColSpec('c', 't', 'Aktywne'),
-            ColSpec('c', 't', 'Administrator'),
+            ColSpec(ColAlign.right, ColDT.int, 'ID'),
+            ColSpec(ColAlign.left, ColDT.text, 'Nazwa'),
+            ColSpec(ColAlign.left, ColDT.text, 'Email'),
+            ColSpec(ColAlign.center, ColDT.text, 'Aktywne'),
+            ColSpec(ColAlign.center, ColDT.text, 'Administrator'),
         ]
         table = create_table(current_app.testing, columns)
         for user_obj in q:
