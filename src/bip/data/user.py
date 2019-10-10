@@ -1,5 +1,7 @@
 from typing import List, Optional
 
+from flask_sqlalchemy import BaseQuery
+
 from ..ext import db
 from ..models import User
 from . import Filter, Sort, create_object, get_query
@@ -38,7 +40,9 @@ def get_or_404(pk: int) -> User:
     return User.query.get_or_404(pk)
 
 
-def query(sort: Optional[List[Sort]] = None, filters: Optional[List[Filter]] = None):
+def query(
+            sort: Optional[List[Sort]] = None, filters: Optional[List[Filter]] = None
+        ) -> BaseQuery:
     """Build and return query over :class:`~bip.models.User` objects.
 
     :param sort: list of sort specs, defaults to None
@@ -46,5 +50,6 @@ def query(sort: Optional[List[Sort]] = None, filters: Optional[List[Filter]] = N
     :param filters: list of filter specs, defaults to None
     :type filters: Optional[List[Filter]], optional
     :return: SQLAlchemy query object
+    :rtype: :class:`~flask_sqlalchemy.BaseQuery`
     """
     return get_query(User, sort, filters)
