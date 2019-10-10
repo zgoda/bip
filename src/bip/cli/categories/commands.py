@@ -27,7 +27,7 @@ def category_list(active):
     ]
     filters = None
     if active is not None:
-        filters = [Filter(field='active', op='eq', value=True)]
+        filters = [Filter(field='active', op='eq', value=active)]
     q = category.query(sort, filters)
     cat_count = q.count()
     if cat_count == 0:
