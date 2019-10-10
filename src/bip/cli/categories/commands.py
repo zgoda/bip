@@ -1,4 +1,5 @@
 import click
+import sys
 from texttable import Texttable
 
 from ...data import Filter, Sort, category, change, directory, page
@@ -26,20 +27,20 @@ def category_list(active):
     cat_count = q.count()
     if cat_count == 0:
         click.echo('Nie ma żadnych kategorii')
-    else:
-        click.echo(f'Znaleziono: {cat_count}, wyświetlanie: {cat_prop}')
-        table = Texttable()
-        table.set_deco(Texttable.HEADER | Texttable.BORDER)
-        table.set_cols_align(['r', 'l', 'c', 'r', 'c'])
-        table.set_cols_dtype(['i', 't', 't', 'i', 't'])
-        table.header(['ID', 'Tytuł', 'Katalog', 'Kolejność', 'Aktywna'])
-        for cat_obj in q:
-            table.add_row([
-                cat_obj.pk, cat_obj.title,
-                yesno(cat_obj.directory is not None), cat_obj.menu_order,
-                yesno(cat_obj.active),
-            ])
-        print_table(table)
+        sys.exit(0)
+    click.echo(f'Znaleziono: {cat_count}, wyświetlanie: {cat_prop}')
+    table = Texttable()
+    table.set_deco(Texttable.HEADER | Texttable.BORDER)
+    table.set_cols_align(['r', 'l', 'c', 'r', 'c'])
+    table.set_cols_dtype(['i', 't', 't', 'i', 't'])
+    table.header(['ID', 'Tytuł', 'Katalog', 'Kolejność', 'Aktywna'])
+    for cat_obj in q:
+        table.add_row([
+            cat_obj.pk, cat_obj.title,
+            yesno(cat_obj.directory is not None), cat_obj.menu_order,
+            yesno(cat_obj.active),
+        ])
+    print_table(table)
 
 
 @category_ops.command(name='create', help='Utwórz nową kategorię w menu')

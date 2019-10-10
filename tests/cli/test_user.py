@@ -5,14 +5,10 @@ from bip.cli.users.commands import (
 )
 from bip.data import user
 
+from . import BIPCLITests
 
-class TestUserOps:
 
-    @pytest.fixture(autouse=True)
-    def set_up(self, app):
-        self.runner = app.test_cli_runner()
-        self.username = 'user_1'
-        self.password = 'pass'
+class TestUserOps(BIPCLITests):
 
     def test_user_login(self, mocker):
         mocker.patch('bip.cli.users.commands.login_user')
