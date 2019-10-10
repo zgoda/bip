@@ -39,12 +39,12 @@ class TestTextUtils:
         t1 = '\n'.join([
             'A',
             'B',
-        ]) + '\n'
+        ])
         t2 = '\n'.join([
             'A',
             'B',
             extra
-        ]) + '\n'
+        ])
         rv = text_changes(t1, t2)
         assert rv[0].strip().startswith('+')
         assert rv[0].strip().endswith(extra)
@@ -54,10 +54,10 @@ class TestTextUtils:
         t1 = '\n'.join([
             'A',
             extra,
-        ]) + '\n'
+        ])
         t2 = '\n'.join([
             'A',
-        ]) + '\n'
+        ])
         rv = text_changes(t1, t2)
         assert rv[0].strip().startswith('-')
         assert rv[0].strip().endswith(extra)
@@ -68,11 +68,21 @@ class TestTextUtils:
         t1 = '\n'.join([
             'A',
             c1,
-        ]) + '\n'
+        ])
         t2 = '\n'.join([
             'A',
             c2,
-        ]) + '\n'
+        ])
         rv = text_changes(t1, t2)
         assert len(rv) == 2
         assert rv[0][0] != rv[1][0]
+
+    @pytest.mark.parametrize('from_str,to_str', [
+        ('A\nB\n', 'A\nB\n'),
+        ('A\nB', 'A\nB\n'),
+        ('A\nB\n', 'A\nB'),
+        ('A\nB', 'A\nB'),
+    ], ids=['both-have', 'no-left', 'no-right', 'none-has'])
+    def test_lineends_normalized(self, from_str, to_str):
+        rv = text_changes(from_str, to_str)
+        assert len(rv) == 0

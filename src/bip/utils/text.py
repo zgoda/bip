@@ -36,7 +36,11 @@ def text_changes(from_str: str, to_str: str) -> List[str]:
     :rtype: List[str]
     """
     changes = []
+    if not from_str.endswith('\n'):
+        from_str = f'{from_str}\n'
     from_lines = from_str.splitlines(keepends=True)
+    if not to_str.endswith('\n'):
+        to_str = f'{to_str}\n'
     to_lines = to_str.splitlines(keepends=True)
     for line in difflib.ndiff(from_lines, to_lines):
         line = line.strip()
