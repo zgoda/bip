@@ -1,7 +1,7 @@
 from flask import Flask
 
 
-class BIPApplication(Flask):
+class Application(Flask):
 
     @property
     def jinja_options(self):

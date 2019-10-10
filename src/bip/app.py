@@ -9,7 +9,7 @@ from .auth import auth_bp
 from .ext import babel, bootstrap, csrf, db, login_manager
 from .main import main_bp
 from .user import user_bp
-from .utils.app import BIPApplication
+from .utils.app import Application
 from .utils.site import Site, test_site
 from .utils.templates import extra_context, extra_filters
 
@@ -18,7 +18,7 @@ def make_app(env=None):
     flask_environment = os.environ.get('FLASK_ENV', '')
     if flask_environment == 'production':
         configure_logging()
-    app = BIPApplication(__name__.split('.')[0])
+    app = Application(__name__.split('.')[0])
     configure_app(app, env)
     configure_extensions(app)
     configure_templating(app)
