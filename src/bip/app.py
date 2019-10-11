@@ -1,7 +1,9 @@
 import os
 from logging.config import dictConfig
 
+import keyring
 from flask import render_template
+from keyrings.cryptfile.cryptfile import CryptFileKeyring
 from werkzeug.utils import ImportStringError
 
 from .admin import admin_bp
@@ -18,6 +20,8 @@ def make_app(env=None):
     flask_environment = os.environ.get('FLASK_ENV', '')
     if flask_environment == 'production':
         configure_logging()
+        # production is headless
+        keyring.set_keyring(CryptFileKeyring())
     app = Application(__name__.split('.')[0])
     configure_app(app, env)
     configure_extensions(app)
@@ -51,9 +55,6 @@ def configure_app(app, env):
     if config_secrets:
         app.logger.info(f'secrets loaded from {config_secrets}')
         app.config.from_envvar('CONFIG_SECRETS')
-    upload_dir = os.path.abspath(os.path.join(app.instance_path, 'incoming'))
-    os.makedirs(upload_dir, exist_ok=True)
-    app.config['UPLOAD_DIRECTORY'] = upload_dir
 
 
 def configure_hooks(app):
