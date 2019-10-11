@@ -11,5 +11,6 @@ passlib[argon2]
 Werkzeug
 Click
 keyring
+keyrings.cryptfile
 texttable
 python-dotenv
