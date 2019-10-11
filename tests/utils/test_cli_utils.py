@@ -28,6 +28,10 @@ class TestCLIUtils:
 
     def test_user_login_no_account(self, mocker):
         mocker.patch('bip.utils.cli.click.echo')
+        mocker.patch(
+            'bip.utils.cli.keyring',
+            mocker.MagicMock(get_password=mocker.Mock(return_value=None)),
+        )
         mocker.patch('bip.utils.cli.click.prompt', mocker.Mock(return_value='pass'))
         with pytest.raises(click.ClickException):
             login_user('user2', admin=False)
