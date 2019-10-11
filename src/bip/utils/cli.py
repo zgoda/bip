@@ -50,8 +50,8 @@ def login_user(username: str, admin: bool = True) -> User:
     password = keyring.get_password(SYS_NAME, username)
     if not password:  # pragma: no cover
         click.echo(f'użytkownik {username} nie ma zapisanego hasła w pęku kluczy')
-        password = click.prompt('Hasło: ', hide_input=True)
-    user_obj = user.by_name(username, admin=True)
+        password = click.prompt('Hasło', hide_input=True)
+    user_obj = user.by_name(username, admin=admin)
     if not (user_obj and user_obj.check_password(password)):
         raise click.ClickException(
             'nieprawidłowe dane logowania lub niewystarczające uprawnienia - '
