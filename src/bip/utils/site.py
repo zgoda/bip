@@ -99,7 +99,7 @@ class Site:
 
     @classmethod
     def from_json(cls, s):
-        return cls.from_dict(json.loads(s, encoding='utf-8'))
+        return cls.from_dict(json.loads(s))
 
     @classmethod
     def from_dict(cls, d):
