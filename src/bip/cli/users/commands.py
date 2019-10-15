@@ -19,21 +19,15 @@ user_ops = click.Group(name='user', help='Zarządzanie kontami użytkowników')
 @user_ops.command(name='login', help='Zaloguj użytkownika i zachowaj dane logowania')
 @click.option('--user-name', '-u', required=True, help='Nazwa konta użytkownika')
 @click.option(
-    '--password', '-p', prompt=True, hide_input=True, required=True,
-    help='Hasło użytkownika',
-)
-@click.option(
     '--clear', '-c', is_flag=True, default=False,
     help='Wyczyść dane logowania (domyślnie: NIE)',
 )
-def user_login(user_name, password, clear):
+@with_appcontext
+def user_login(user_name, clear):
     login_user(user_name, admin=False)
     if clear:
         keyring.delete_password(SYS_NAME, user_name)
         click.echo(f'dane logowania użytkownika {user_name} zostały usunięte')
-    else:
-        keyring.set_password(SYS_NAME, user_name, password)
-        click.echo(f'dane logowania użytkownika {user_name} zostały zapisane')
 
 
 @user_ops.command(name='list', help='Wyświetl listę użytkowników')
