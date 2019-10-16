@@ -10,23 +10,26 @@ from . import BIPCLITests
 
 class TestUserOps(BIPCLITests):
 
-    def test_user_login(self, mocker):
-        mocker.patch('bip.cli.users.commands.login_user')
+    def test_user_login(self, mocker, user_factory):
+        user_factory(name=self.username, password=self.password)
         fake_setpassword = mocker.Mock()
-        fake_keyring = mocker.Mock(set_password=fake_setpassword)
-        mocker.patch('bip.cli.users.commands.keyring', fake_keyring)
-        rv = self.runner.invoke(user_login, ['-u', self.username, '-p', self.password])
+        fake_keyring = mocker.Mock(
+            set_password=fake_setpassword,
+            get_password=mocker.Mock(return_value=self.password),
+        )
+        mocker.patch('bip.utils.cli.keyring', fake_keyring)
+        rv = self.runner.invoke(user_login, ['-u', self.username])
         assert rv.exit_code == 0
-        assert 'zostały zapisane' in rv.output
         fake_setpassword.assert_called_once()
 
-    def test_user_login_clear(self, mocker):
+    def test_user_login_clear(self, mocker, user_factory):
+        user_factory(name=self.username, password=self.password)
         mocker.patch('bip.cli.users.commands.login_user')
         fake_delpassword = mocker.Mock()
         fake_keyring = mocker.Mock(delete_password=fake_delpassword)
         mocker.patch('bip.cli.users.commands.keyring', fake_keyring)
         rv = self.runner.invoke(
-            user_login, ['-u', self.username, '-p', self.password, '-c']
+            user_login, ['-u', self.username, '-c']
         )
         assert rv.exit_code == 0
         assert 'zostały usunięte' in rv.output

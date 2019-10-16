@@ -36,7 +36,7 @@ ColSpec = namedtuple('ColSpec', ['align', 'dtype', 'title'])
 
 
 def login_user(username: str, admin: bool = True) -> User:
-    """Verify administrative user login.
+    """Verify user login.
 
     :param username: user account name
     :type username: str
@@ -61,6 +61,7 @@ def login_user(username: str, admin: bool = True) -> User:
             f'nie znaleziono konta {username} lub nieprawidłowe hasło'
         )
     keyring.set_password(SYS_NAME, username, password)
+    click.echo(f'dane logowania użytkownika {username} zostały zapisane')
     return user_obj
 
 
