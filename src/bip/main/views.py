@@ -25,9 +25,9 @@ def contact():
     return render_template('main/contact.html')
 
 
-@main_bp.route('/kategoria/<int:category_id>', endpoint='category')
-def category_display(category_id):
-    cat_obj = or_404(category.get(category_id))
+@main_bp.route('/kategoria/<int:category_pk>', endpoint='category')
+def category_display(category_pk):
+    cat_obj = or_404(category.get(category_pk))
     context = {
         'category': cat_obj,
     }

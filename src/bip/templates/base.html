@@ -55,7 +55,7 @@
           <ul class="nav flex-column">
             {% for item in menu %}
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.category', category_id=item.pk) }}">{{ item.title }}</a>
+              <a class="nav-link" href="{{ url_for('main.category', category_pk=item.pk) }}">{{ item.title }}</a>
             </li>
             {% endfor %}
           </ul>

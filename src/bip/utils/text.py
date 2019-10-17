@@ -1,8 +1,14 @@
 import difflib
+import re
 from typing import List
+
+from jinja2.filters import do_truncate
+from text_unidecode import unidecode
 
 VALUE_YES = 'tak'
 VALUE_NO = 'nie'
+
+_punctuation_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
 
 
 def yesno(value: bool, capitalize: bool = True) -> str:
@@ -44,6 +50,35 @@ def text_changes(from_str: str, to_str: str) -> List[str]:
     to_lines = to_str.splitlines(keepends=True)
     for line in difflib.ndiff(from_lines, to_lines):
         line = line.strip()
-        if line[0] in ('+', '-'):
+        if line and line[0] in ('+', '-'):
             changes.append(line)
     return changes
+
+
+def slugify(text: str, delim: str = '-') -> str:
+    """Create slug (url-safe ASCII representation) of given string.
+
+    :param text: text to slugify
+    :type text: str
+    :param delim: delimiter, defaults to '-'
+    :type delim: str, optional
+    :return: slugified text
+    :rtype: str
+    """
+    result = []
+    for word in _punctuation_re.split(text.lower()):
+        result.extend(unidecode(word).split())
+    return delim.join(result)
+
+
+def truncate_string(s: str, length: int) -> str:
+    """Truncate string at word boundary.
+
+    :param s: string to be truncated
+    :type s: str
+    :param length: max length of result string
+    :type length: int
+    :return: truncated text
+    :rtype: str
+    """
+    return do_truncate(None, s, length, leeway=5)

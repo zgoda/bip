@@ -2,10 +2,12 @@ import datetime
 import enum
 
 from flask_login import UserMixin
+from markdown2 import markdown
 
 from .ext import db
 from .security import pwd_context
 from .utils.db import Timestamp
+from .utils.text import slugify, truncate_string
 
 
 class ObjectType(enum.Enum):
@@ -88,6 +90,15 @@ class Page(db.Model, Timestamp):
     )
     description = db.Column(db.Text)
     active = db.Column(db.Boolean, default=True, index=True)
+
+
+@db.event.listens_for(Page, 'before_insert')
+@db.event.listens_for(Page, 'before_update')
+def page_before_save(mapper, connection, target):
+    target.slug = slugify(target.title)
+    target.text_html = markdown(target.text, safe_mode='replace')
+    if not target.short_title:
+        target.short_title = truncate_string(target.title, 100)
 
 
 class Category(db.Model, Timestamp):

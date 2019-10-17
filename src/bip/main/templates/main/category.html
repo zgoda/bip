@@ -4,4 +4,9 @@
 
 {% block content %}
 <h2>{{ category.title }}</h2>
+{% if category.page %}
+{{ category.page.text_html|safe }}
+{% else %}
+{{ category.description }}
+{% endif %}
 {% endblock %}
