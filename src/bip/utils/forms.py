@@ -44,7 +44,7 @@ class Button(Renderable):
 class ConfirmationForm(FlaskForm):
     is_confirmed = BooleanField('potwierdź', default=False)
 
-    buttons = [Button(text='potwierdź', icon='skull-crossbones')]
+    buttons = [Button(text='potwierdź')]
 
     def confirm(self):
         if self.is_confirmed.data:

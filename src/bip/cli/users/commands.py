@@ -28,6 +28,8 @@ def user_login(user_name, clear):
     if clear:
         keyring.delete_password(SYS_NAME, user_name)
         click.echo(f'dane logowania użytkownika {user_name} zostały usunięte')
+    else:
+        click.echo(f'dane logowania użytkownika {user_name} zostały zapisane')
 
 
 @user_ops.command(name='list', help='Wyświetl listę użytkowników')
