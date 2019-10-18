@@ -4,7 +4,7 @@ from flask_sqlalchemy import BaseQuery
 
 from ..ext import db
 from ..models import User
-from . import Filter, Sort, create_object, get_query
+from . import Filter, Sort, create_object, get_query, get_object
 
 
 def create(save: bool = True, **kwargs) -> User:
@@ -37,7 +37,7 @@ def get_or_404(pk: int) -> User:
     :return: user object
     :rtype: :class:`~bip.models.User`
     """
-    return User.query.get_or_404(pk)
+    return get_object(User, pk, abort_on_none=True)
 
 
 def query(
