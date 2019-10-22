@@ -43,13 +43,4 @@ def get_or_404(pk: int) -> User:
 def query(
             sort: Optional[List[Sort]] = None, filters: Optional[List[Filter]] = None
         ) -> BaseQuery:
-    """Build and return query over :class:`~bip.models.User` objects.
-
-    :param sort: list of sort specs, defaults to None
-    :type sort: Optional[List[Sort]], optional
-    :param filters: list of filter specs, defaults to None
-    :type filters: Optional[List[Filter]], optional
-    :return: SQLAlchemy query object
-    :rtype: :class:`~flask_sqlalchemy.BaseQuery`
-    """
     return get_query(User, sort, filters)
