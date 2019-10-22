@@ -1,0 +1,34 @@
+{% extends "admin/base.html" %}
+
+{% from "macros/pagination.html" import render_pagination %}
+
+{% block headpagetitle %}Pozycje w menu{% endblock %}
+
+{% block content %}
+<h2>Pozycje w menu</h2>
+{% if pagination.items %}
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">tytuł</th>
+      <th scope="col">porządek</th>
+      <th scope="col">aktywna</th>
+      <th scope="col">jest katalogiem</th>
+      <th scope="col">ma stronę</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for category in pagination.items %}
+    <tr>
+      <td><a href="">{{ category.title }}</a></td>
+      <td>{{ category.menu_order }}</td>
+      <td>{{ category.active|yesno }}</td>
+      <td>{{ category.directory|yesno }}</td>
+      <td>{{ category.page|yesno }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{{ render_pagination(pagination) }}
+{% endif %}
+{% endblock %}
