@@ -1,9 +1,10 @@
+from __future__ import annotations
+
 import json
 from dataclasses import dataclass
-from typing import List
+from typing import List, Tuple
 
 from werkzeug.utils import cached_property
-
 
 role_names = {
     'manager': 'kierownik',
@@ -29,7 +30,7 @@ class Contact:
     name: str = ''
 
     @cached_property
-    def basic_information(self):
+    def basic_information(self) -> List[Tuple]:
         return [
             ('nazwa', self.name),
             ('telefon', self.phone),
@@ -51,7 +52,7 @@ class StaffMember:
             raise ValueError('Invalid role type')
 
     @cached_property
-    def basic_information(self):
+    def basic_information(self) -> List[Tuple]:
         return (
             ('nazwisko', self.person_name),
             ('stanowisko', self.role_name),
@@ -70,12 +71,12 @@ class Department:
     email: str = ''
 
     @classmethod
-    def from_dict(cls, d):
+    def from_dict(cls, d: dict) -> Department:
         staff = [StaffMember(**s) for s in d.pop('staff', [])]
         return cls(staff=staff, **d)
 
     @cached_property
-    def basic_information(self):
+    def basic_information(self) -> List[Tuple]:
         return (
             ('nazwa', self.name),
             ('zakres działalności', self.domain),
@@ -98,18 +99,18 @@ class Site:
     KRS: str = ''
 
     @classmethod
-    def from_json(cls, s):
+    def from_json(cls, s: str) -> Site:
         return cls.from_dict(json.loads(s))
 
     @classmethod
-    def from_dict(cls, d):
+    def from_dict(cls, d: dict) -> Site:
         address = Address(**d.pop('address'))
         contacts = [Contact(**c) for c in d.pop('contacts')]
         departments = [Department.from_dict(data) for data in d.pop('departments')]
         return cls(address=address, contacts=contacts, departments=departments, **d)
 
     @cached_property
-    def basic_information(self):
+    def basic_information(self) -> List[Tuple]:
         data = [
             ('nazwa', self.name),
             ('NIP', self.NIP),
@@ -120,7 +121,7 @@ class Site:
         return data
 
 
-def test_site():  # pragma: no cover
+def test_site() -> Site:  # pragma: no cover
     name = 'Test Site'
     site = Site(
         name=name, short_name='Test',

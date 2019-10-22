@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from collections import namedtuple
-from typing import Any, List, Optional, Type, TypeVar
+from typing import Any, List, Optional, Type
 
 from flask_sqlalchemy import BaseQuery, Model
 from sqlalchemy_filters import apply_filters, apply_sort
@@ -14,10 +16,8 @@ Sort = namedtuple(
     defaults=('asc', None, None, None),
 )
 
-ModelVar = TypeVar('ModelVar', bound=Model)
 
-
-def create_object(klass: Type[ModelVar], save=True, **kwargs: Any) -> ModelVar:
+def create_object(klass: Type[Model], save=True, **kwargs: Any) -> Model:
     obj = klass(**kwargs)
     if save:
         db.session.add(obj)
@@ -25,7 +25,7 @@ def create_object(klass: Type[ModelVar], save=True, **kwargs: Any) -> ModelVar:
     return obj
 
 
-def get_object(klass: Type[ModelVar], pk: Any, abort_on_none: bool = False) -> ModelVar:
+def get_object(klass: Type[Model], pk: Any, abort_on_none: bool = False) -> Model:
     obj = klass.query.get(pk)
     if abort_on_none:
         return or_404(obj)
@@ -33,7 +33,7 @@ def get_object(klass: Type[ModelVar], pk: Any, abort_on_none: bool = False) -> M
 
 
 def get_query(
-            klass: Type[ModelVar], sort: Optional[List[Sort]] = None,
+            klass: Type[Model], sort: Optional[List[Sort]] = None,
             filters: Optional[List[Filter]] = None,
         ) -> BaseQuery:
     q = klass.query

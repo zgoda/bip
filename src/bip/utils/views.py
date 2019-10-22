@@ -1,9 +1,10 @@
+from typing import Optional
 from urllib.parse import urljoin, urlparse
 
 from flask import request, session, url_for
 
 
-def next_redirect(fallback_endpoint, *args, **kwargs):
+def next_redirect(fallback_endpoint: str, *args, **kwargs) -> str:
     """Find redirect url. The order of search is request params, session and
     finally url for fallback endpoint is returned if none found. Args and
     kwargs are passed intact to endpoint.
@@ -23,7 +24,7 @@ def next_redirect(fallback_endpoint, *args, **kwargs):
     return candidates[0]
 
 
-def is_redirect_safe(target):
+def is_redirect_safe(target: Optional[str]) -> bool:
     """Check if redirect is safe, that is using HTTP protocol and is pointing
     to the same site.
 
