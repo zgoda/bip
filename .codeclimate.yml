@@ -7,6 +7,13 @@ exclude_patterns:
   - "src/bip/static/vendor/"
   - 'src/bip/wsgi.py'
   - 'src/bip/app.py'
+plugins:
+  duplication:
+    enabled: true
+    config:
+      languages:
+        python:
+          python_version: 3
 checks:
   argument-count:
     config:
