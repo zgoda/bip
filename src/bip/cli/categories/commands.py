@@ -123,7 +123,7 @@ def category_change(cat_pk, title, active, order, user_name):
     user_obj = login_user(user_name)
     cat_obj = category.get(cat_pk)
     if cat_obj is None:
-        raise click.ClickException(f'Nie znaleziono kategorii o ID {category}')
+        raise click.ClickException(f'Nie znaleziono kategorii o ID {cat_pk}')
     orig_title = cat_obj.title
     changes = []
     if title is not None:
