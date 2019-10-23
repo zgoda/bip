@@ -10,7 +10,7 @@ from .ext import db
 from .models import Category, ChangeRecord, ChangeType, Directory, Page, User
 from .utils.http import or_404
 
-Filter = namedtuple('Filter', 'field,op,value,model', defaults=(None,))
+Filter = namedtuple('Filter', 'field,op,value,model', defaults=(None, None))
 
 Sort = namedtuple(
     'Sort', 'field,direction,model,nullsfirst,nullslast',
@@ -70,9 +70,6 @@ class UserAccessObject(AccessObject):
 
     def by_name(self, name: str, **params) -> Optional[User]:
         return self.klass_.query.filter_by(name=name, **params).first()
-
-    def get_or_404(self, pk: int) -> User:
-        return self.get(pk, abort_on_none=True)
 
 
 class ChangeAccessObject(AccessObject):

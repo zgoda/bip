@@ -20,7 +20,7 @@
   <tbody>
     {% for category in pagination.items %}
     <tr>
-      <td><a href="">{{ category.title }}</a></td>
+      <td><a href="{{ url_for('admin.category_detail', category_pk=category.pk) }}">{{ category.title }}</a></td>
       <td>{{ category.menu_order }}</td>
       <td>{{ category.active|yesno }}</td>
       <td>{{ category.directory|yesno }}</td>

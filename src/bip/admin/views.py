@@ -4,7 +4,7 @@ from flask_login import current_user, login_required
 from ..data import Sort, category, user
 from ..utils.pagination import paginate
 from . import admin_bp
-from .forms import UserForm
+from .forms import CategoryForm, UserForm
 
 
 @admin_bp.before_request
@@ -30,7 +30,7 @@ def user_list():
 
 @admin_bp.route('/users/<int:user_pk>', methods=['POST', 'GET'])
 def user_detail(user_pk):
-    user_obj = user.get_or_404(user_pk)
+    user_obj = user.get(user_pk, abort_on_none=True)
     form = None
     if request.method == 'POST':
         form = UserForm()
@@ -55,3 +55,23 @@ def category_list():
         'pagination': paginate(query)
     }
     return render_template('admin/category_list.html', **context)
+
+
+@admin_bp.route('/category/<int:category_pk>', methods=['POST', 'GET'])
+def category_detail(category_pk):
+    category_obj = category.get(category_pk, abort_on_none=True)
+    form = None
+    if request.method == 'POST':
+        form = CategoryForm()
+        if form.validate_on_submit():
+            category_obj = form.save(category_obj)
+            flash(
+                f'dane kategorii {category_obj.title} zostały zmienione',
+                category='success',
+            )
+            return redirect(url_for('admin.category_list'))
+    context = {
+        'category': category_obj,
+        'form': form or CategoryForm(obj=category_obj)
+    }
+    return render_template('admin/category_detail.html', **context)

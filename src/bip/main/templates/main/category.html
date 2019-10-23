@@ -7,6 +7,6 @@
 {% if category.page %}
 {{ category.page.text_html|safe }}
 {% else %}
-{{ category.description }}
+{{ category.description or '' }}
 {% endif %}
 {% endblock %}
