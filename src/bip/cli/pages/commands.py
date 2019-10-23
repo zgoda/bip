@@ -43,8 +43,8 @@ def page_list(active):
     ]
     table = create_table(current_app.testing, columns)
     for page_obj in q:
-        categories = ', '.join(page.category_names(page_obj))
-        directories = ', '.join(page.directory_names(page_obj))
+        categories = ', '.join([c.title for c in page_obj.categories])
+        directories = ', '.join([d.title for d in page_obj.directories])
         table.add_row([
             page_obj.pk, truncate_string(page_obj.title, 80), yesno(page_obj.active),
             categories, directories,

@@ -7,7 +7,7 @@ from flask_sqlalchemy import BaseQuery, Model
 from sqlalchemy_filters import apply_filters, apply_sort
 
 from .ext import db
-from .models import Category, Directory, Page, User, ChangeRecord, ChangeType
+from .models import Category, ChangeRecord, ChangeType, Directory, Page, User
 from .utils.http import or_404
 
 Filter = namedtuple('Filter', 'field,op,value,model', defaults=(None,))
@@ -53,19 +53,6 @@ class AccessObject:
         return q
 
 
-class PageAccessObject(AccessObject):
-
-    @classmethod
-    def make(cls) -> PageAccessObject:
-        return cls.for_class(Page)
-
-    def category_names(self, page: Page) -> List[str]:
-        return [c.title for c in page.categories]
-
-    def directory_names(self, page: Page) -> List[str]:
-        return [d.title for d in page.directories]
-
-
 class UserAccessObject(AccessObject):
 
     @classmethod
@@ -105,6 +92,6 @@ class ChangeAccessObject(AccessObject):
 
 directory = AccessObject.for_class(Directory)
 category = AccessObject.for_class(Category)
-page = PageAccessObject.make()
+page = AccessObject.for_class(Page)
 user = UserAccessObject.make()
 change = ChangeAccessObject.make()
