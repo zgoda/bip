@@ -7,4 +7,11 @@
 {% block content %}
 <h2>Dane kategorii {{ category.title }}</h2>
 {{ render_form(form, action=request.path) }}
+{% if category.page or category.direcotory %}
+<h3>Obiekty powiązane</h3>
+<ul>
+  {% if category.page %}<li><strong>strona:</strong> <a href="{{ url_for('main.category', category_pk=category.pk) }}">{{ category.page.title }}</a> &mdash; edytuj&nbsp;|&nbsp;usuń</li>{% endif %}
+  {% if category.directory %}<li><strong>katalog:</strong> {{ category.directory.title }} &mdash; edytuj&nbsp;|&nbsp;usuń</li>{% endif %}
+</ul>
+{% endif %}
 {% endblock %}

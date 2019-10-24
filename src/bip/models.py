@@ -94,7 +94,7 @@ class Page(db.Model, Timestamp):
 
 @db.event.listens_for(Page, 'before_insert')
 @db.event.listens_for(Page, 'before_update')
-def page_before_save(mapper, connection, target):
+def page_before_save(mapper, connection, target: Page):
     target.slug = slugify(target.title)
     target.text_html = markdown(target.text, safe_mode='replace')
     if not target.short_title:
@@ -116,6 +116,14 @@ class Category(db.Model, Timestamp):
     description = db.Column(db.Text)
     active = db.Column(db.Boolean, default=True, index=True)
     menu_order = db.Column(db.Integer, nullable=False, default=0, index=True)
+
+
+@db.event.listens_for(Category.active, 'set')
+def category_active_change(target: Category, value, oldvalue, initiator):
+    if target.directory is not None:
+        target.directory.active = value
+    if target.page is not None:
+        target.page.active = value
 
 
 class ChangeRecord(db.Model):
