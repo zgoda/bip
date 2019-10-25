@@ -1,0 +1,32 @@
+{% extends "admin/base.html" %}
+
+{% from "macros/pagination.html" import render_pagination %}
+
+{% block headpagetitle %}Strony{% endblock %}
+
+{% block content %}
+<h2>Strony</h2>
+{% if pagination.items %}
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">tytuł</th>
+      <th scope="col">utworzona</th>
+      <th scope="col">zmodyfikowana</th>
+      <th scope="col">aktywna</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for page in pagination.items %}
+    <tr>
+      <td><a href="">{{ page.title }}</a></td>
+      <td>{{ page.created|datetimeformat(format='long') }}</td>
+      <td>{{ page.updated|datetimeformat(format='long') }}</td>
+      <td>{{ page.active|yesno }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{{ render_pagination(pagination) }}
+{% endif %}
+{% endblock %}

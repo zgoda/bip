@@ -1,7 +1,7 @@
 from flask import abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
-from ..data import Sort, category, user
+from ..data import Sort, category, user, page
 from ..utils.pagination import paginate
 from . import admin_bp
 from .forms import CategoryForm, UserForm
@@ -75,3 +75,12 @@ def category_detail(category_pk):
         'form': form or CategoryForm(obj=category_obj)
     }
     return render_template('admin/category_detail.html', **context)
+
+
+@admin_bp.route('/page/list')
+def page_list():
+    query = page.query(sort=[Sort(field='title')])
+    context = {
+        'pagination': paginate(query)
+    }
+    return render_template('admin/page_list.html', **context)
