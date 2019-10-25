@@ -1,10 +1,10 @@
 from flask import abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
-from ..data import Sort, category, user, page
+from ..data import Sort, category, page, user
 from ..utils.pagination import paginate
 from . import admin_bp
-from .forms import CategoryForm, UserForm
+from .forms import CategoryForm, PageForm, UserForm
 
 
 @admin_bp.before_request
@@ -84,3 +84,20 @@ def page_list():
         'pagination': paginate(query)
     }
     return render_template('admin/page_list.html', **context)
+
+
+@admin_bp.route('/page/<int:page_pk>', methods=['POST', 'GET'])
+def page_detail(page_pk):
+    page_obj = page.get(page_pk, abort_on_none=True)
+    form = None
+    if request.method == 'POST':
+        form = PageForm()
+        if form.validate_on_submit():
+            page_obj = form.save(page_obj)
+            flash(f'dane strony {page_obj.title} zostały zmienione', category='success')
+            return redirect(url_for('admin.page_list'))
+    context = {
+        'page': page_obj,
+        'form': form or PageForm(obj=page_obj)
+    }
+    return render_template('admin/page_detail.html', **context)

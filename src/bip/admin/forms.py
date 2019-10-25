@@ -1,5 +1,6 @@
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.fields import BooleanField, StringField, TextAreaField
+from wtforms.validators import InputRequired
 from wtforms_components.fields import EmailField
 from wtforms_components.fields.html5 import IntegerField
 from wtforms_components.validators import Email
@@ -48,3 +49,14 @@ class CategoryForm(ObjectForm):
         'strona', query_factory=page_query, get_label=page_display,
         allow_blank=True,
     )
+
+
+class PageForm(ObjectForm):
+    title = StringField('tytuł', validators=[InputRequired()])
+    short_title = StringField('krótki tytuł')
+    text = TextAreaField(
+        'tekst', validators=[InputRequired()],
+        description='treść strony zapisana przy użyciu Markdown',
+    )
+    description = TextAreaField('opis')
+    active = BooleanField('aktywna')
