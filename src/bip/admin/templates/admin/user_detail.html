@@ -2,9 +2,9 @@
 
 {% from "macros/forms.html" import render_form %}
 
-{% block headpagetitle %}Dane użytkownika {{ user.name }}{% endblock %}
+{% block headpagetitle %}Dane użytkownika {{ object.name }}{% endblock %}
 
 {% block content %}
-<h2>Dane użytkownika {{ user.name }}</h2>
+<h2>Dane użytkownika {{ object.name }}</h2>
 {{ render_form(form, action=request.path) }}
 {% endblock %}

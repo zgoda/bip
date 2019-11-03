@@ -2,16 +2,16 @@
 
 {% from "macros/forms.html" import render_form %}
 
-{% block headpagetitle %}Dane kategorii {{ category.title }}{% endblock %}
+{% block headpagetitle %}Dane kategorii {{ object.title }}{% endblock %}
 
 {% block content %}
-<h2>Dane kategorii {{ category.title }}</h2>
+<h2>Dane kategorii {{ object.title }}</h2>
 {{ render_form(form, action=request.path) }}
-{% if category.page or category.directory %}
+{% if object.page or object.directory %}
 <h3>Obiekty powiązane</h3>
 <ul>
-  {% if category.page %}<li><strong>strona:</strong> <a href="{{ url_for('main.category', category_pk=category.pk) }}" title="wyświetl stronę">{{ category.page.title }}</a>&nbsp;&mdash;&nbsp;<a href="{{ url_for('admin.page_detail', page_pk=category.page.pk) }}" class="btn btn-sm btn-primary">edytuj</a></li>{% endif %}
-  {% if category.directory %}<li><strong>katalog:</strong> {{ category.directory.title }}&nbsp;&mdash;&nbsp;edytuj</li>{% endif %}
+  {% if object.page %}<li><strong>strona:</strong> <a href="{{ url_for('main.category', category_pk=object.pk) }}" title="wyświetl stronę">{{ object.page.title }}</a>&nbsp;&mdash;&nbsp;<a href="{{ url_for('admin.page_detail', page_pk=object.page.pk) }}" class="btn btn-sm btn-primary">edytuj</a></li>{% endif %}
+  {% if object.directory %}<li><strong>katalog:</strong> {{ object.directory.title }}&nbsp;&mdash;&nbsp;edytuj</li>{% endif %}
 </ul>
 {% endif %}
 {% endblock %}
