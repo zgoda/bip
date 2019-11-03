@@ -12,7 +12,8 @@ ItemMeta = namedtuple(
 )
 
 ItemCollectionMeta = namedtuple(
-    'ItemCollectionMeta', 'dataobject,template,orders,filters', defaults=(None, None)
+    'ItemCollectionMeta', 'dataobject,template,orders,filters',
+    defaults=(None, None, None),
 )
 
 
@@ -47,4 +48,7 @@ def default_admin_list_view(item_meta: ItemCollectionMeta) -> Response:
     context = {
         'pagination': paginate(query)
     }
-    return render_template(item_meta.template, **context)
+    template = item_meta.template
+    if template is None:
+        template = f'admin/{item_meta.dataobject.object_name}_list.html'
+    return render_template(template, **context)

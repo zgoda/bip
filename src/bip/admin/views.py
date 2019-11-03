@@ -23,8 +23,7 @@ category_item_meta = ItemMeta(
 )
 
 category_list_meta = ItemCollectionMeta(
-    dataobject=category, template='admin/category_list.html',
-    orders=[Sort(field='menu_order'), Sort(field='title')],
+    dataobject=category,  orders=[Sort(field='menu_order'), Sort(field='title')],
 )
 
 user_item_meta = ItemMeta(
@@ -33,18 +32,14 @@ user_item_meta = ItemMeta(
     success_url='admin.user_list'
 )
 
-user_list_meta = ItemCollectionMeta(
-    dataobject=user, template='admin/user_list.html', orders=[Sort(field='name')]
-)
+user_list_meta = ItemCollectionMeta(dataobject=user, orders=[Sort(field='name')])
 
 page_item_meta = ItemMeta(
     dataobject=page, form=PageForm, message='dane strony {obj_name} zostały zmienione',
     title_field='title', success_url='admin.page_list'
 )
 
-page_list_meta = ItemCollectionMeta(
-    dataobject=page, template='admin/page_list.html', orders=[Sort(field='title')]
-)
+page_list_meta = ItemCollectionMeta(dataobject=page, orders=[Sort(field='title')])
 
 
 @admin_bp.route('/home')
