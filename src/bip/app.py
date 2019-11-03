@@ -20,10 +20,11 @@ def make_app(env=None):
     flask_environment = os.environ.get('FLASK_ENV', '')
     if flask_environment == 'production':
         configure_logging()
-        # production is headless
-        keyring.set_keyring(CryptFileKeyring())
     app = Application(__name__.split('.')[0])
     configure_app(app, env)
+    # setup keyring for headless environments
+    if flask_environment == 'production' or app.testing:
+        keyring.set_keyring(CryptFileKeyring())
     configure_extensions(app)
     configure_templating(app)
     with app.app_context():
