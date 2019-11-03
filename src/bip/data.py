@@ -22,9 +22,16 @@ class AccessObject:
 
     klass_ = None
 
+    def __init__(self, object_name):
+        self.object_name = object_name
+
     @classmethod
-    def for_class(cls, klass_: Type[Model]) -> AccessObject:
-        obj = cls()
+    def for_class(
+                cls, klass_: Type[Model], object_name: Optional[str] = None
+            ) -> AccessObject:
+        if object_name is None:
+            object_name = klass_.__tablename__.lower()
+        obj = cls(object_name)
         obj.klass_ = klass_
         return obj
 
@@ -56,8 +63,8 @@ class AccessObject:
 class UserAccessObject(AccessObject):
 
     @classmethod
-    def make(cls) -> UserAccessObject:
-        return cls.for_class(User)
+    def make(cls, object_name) -> UserAccessObject:
+        return cls.for_class(User, object_name=object_name)
 
     def create(self, save: bool = True, **kwargs) -> User:
         password = kwargs.pop('password')
@@ -90,5 +97,5 @@ class ChangeAccessObject(AccessObject):
 directory = AccessObject.for_class(Directory)
 category = AccessObject.for_class(Category)
 page = AccessObject.for_class(Page)
-user = UserAccessObject.make()
+user = UserAccessObject.make(object_name='user')
 change = ChangeAccessObject.make()

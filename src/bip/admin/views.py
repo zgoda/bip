@@ -19,7 +19,7 @@ def before_request():
 category_item_meta = ItemMeta(
     dataobject=category, form=CategoryForm,
     message='dane kategorii {obj_name} zostały zmienione', title_field='title',
-    success_url='admin.category_list', template='admin/category_detail.html',
+    success_url='admin.category_list'
 )
 
 category_list_meta = ItemCollectionMeta(
@@ -30,7 +30,7 @@ category_list_meta = ItemCollectionMeta(
 user_item_meta = ItemMeta(
     dataobject=user, form=UserForm,
     message='dane użytkownika {obj_name} zostały zmienione', title_field='name',
-    success_url='admin.user_list', template='admin/user_detail.html',
+    success_url='admin.user_list'
 )
 
 user_list_meta = ItemCollectionMeta(
@@ -39,8 +39,7 @@ user_list_meta = ItemCollectionMeta(
 
 page_item_meta = ItemMeta(
     dataobject=page, form=PageForm, message='dane strony {obj_name} zostały zmienione',
-    title_field='title', success_url='admin.page_list',
-    template='admin/page_detail.html',
+    title_field='title', success_url='admin.page_list'
 )
 
 page_list_meta = ItemCollectionMeta(

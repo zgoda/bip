@@ -8,7 +8,7 @@ from ..utils.pagination import paginate
 ItemMeta = namedtuple(
     'ItemMeta',
     'dataobject,form,message,title_field,success_url,template,success_url_kwargs',
-    defaults=(None,)
+    defaults=(None, None)
 )
 
 ItemCollectionMeta = namedtuple(
@@ -36,7 +36,10 @@ def default_admin_item_view(item_meta: ItemMeta, item_pk: Any) -> Response:
         'object': obj,
         'form': form or item_meta.form(obj=obj)
     }
-    return render_template(item_meta.template, **context)
+    template = item_meta.template
+    if template is None:
+        template = f'admin/{item_meta.dataobject.object_name}_detail.html'
+    return render_template(template, **context)
 
 
 def default_admin_list_view(item_meta: ItemCollectionMeta) -> Response:
