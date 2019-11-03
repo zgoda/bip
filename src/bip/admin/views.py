@@ -2,10 +2,11 @@ from flask import abort, render_template
 from flask_login import current_user, login_required
 
 from ..data import Sort, category, page, user
-from ..utils.pagination import paginate
 from . import admin_bp
 from .forms import CategoryForm, PageForm, UserForm
-from .utils import ItemMeta, default_admin_item_view
+from .utils import (
+    ItemCollectionMeta, ItemMeta, default_admin_item_view, default_admin_list_view,
+)
 
 
 @admin_bp.before_request
@@ -18,21 +19,32 @@ def before_request():
 category_item_meta = ItemMeta(
     dataobject=category, form=CategoryForm,
     message='dane kategorii {obj_name} zostały zmienione', title_field='title',
-    success_url='admin.category_list', success_url_kwargs={},
-    template='admin/category_detail.html',
+    success_url='admin.category_list', template='admin/category_detail.html',
+)
+
+category_list_meta = ItemCollectionMeta(
+    dataobject=category, template='admin/category_list.html',
+    orders=[Sort(field='menu_order'), Sort(field='title')],
 )
 
 user_item_meta = ItemMeta(
     dataobject=user, form=UserForm,
     message='dane użytkownika {obj_name} zostały zmienione', title_field='name',
-    success_url='admin.user_list', success_url_kwargs={},
-    template='admin/user_detail.html',
+    success_url='admin.user_list', template='admin/user_detail.html',
+)
+
+user_list_meta = ItemCollectionMeta(
+    dataobject=user, template='admin/user_list.html', orders=[Sort(field='name')]
 )
 
 page_item_meta = ItemMeta(
     dataobject=page, form=PageForm, message='dane strony {obj_name} zostały zmienione',
-    title_field='title', success_url='admin.page_list', success_url_kwargs={},
+    title_field='title', success_url='admin.page_list',
     template='admin/page_detail.html',
+)
+
+page_list_meta = ItemCollectionMeta(
+    dataobject=page, template='admin/page_list.html', orders=[Sort(field='title')]
 )
 
 
@@ -43,11 +55,7 @@ def home():
 
 @admin_bp.route('/users/list')
 def user_list():
-    query = user.query(sort=[Sort(field='name')])
-    context = {
-        'pagination': paginate(query)
-    }
-    return render_template('admin/user_list.html', **context)
+    return default_admin_list_view(user_list_meta)
 
 
 @admin_bp.route('/users/<int:user_pk>', methods=['POST', 'GET'])
@@ -57,11 +65,7 @@ def user_detail(user_pk):
 
 @admin_bp.route('/category/list')
 def category_list():
-    query = category.query(sort=[Sort(field='menu_order'), Sort(field='title')])
-    context = {
-        'pagination': paginate(query)
-    }
-    return render_template('admin/category_list.html', **context)
+    return default_admin_list_view(category_list_meta)
 
 
 @admin_bp.route('/category/<int:category_pk>', methods=['POST', 'GET'])
@@ -71,11 +75,7 @@ def category_detail(category_pk):
 
 @admin_bp.route('/page/list')
 def page_list():
-    query = page.query(sort=[Sort(field='title')])
-    context = {
-        'pagination': paginate(query)
-    }
-    return render_template('admin/page_list.html', **context)
+    return default_admin_list_view(page_list_meta)
 
 
 @admin_bp.route('/page/<int:page_pk>', methods=['POST', 'GET'])
