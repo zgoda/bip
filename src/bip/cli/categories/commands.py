@@ -60,18 +60,31 @@ def category_list(active):
     help='Kolejność kategorii w menu (domyślnie: bez ustalania kolejności)',
 )
 @click.option(
+    '--parent', '-p', 'parent_id', type=int,
+    help='ID kategorii nadrzędnej (domyślnie: brak, kategoria na najwyższym poziomie)'
+)
+@click.option(
     '--user', '-u', 'user_name', required=True,
     help='Wykonaj operację jako wskazany użytkownik',
 )
 @with_appcontext
-def category_create(title, active, order, user_name):
+def category_create(title, active, order, parent_id, user_name):
     user_obj = login_user(user_name)
     c_page = page.create(
         title=title, created_by=user_obj, active=active, text=title, save=False,
     )
     db.session.add(c_page)
+    menu_level = 0
+    if parent_id is not None:
+        parent_obj = category.get(parent_id)
+        if parent_obj is None:
+            raise click.ClickException(
+                f'Nie znaleziono kategorii nadrzędnej o ID {parent_id}'
+            )
+        menu_level = parent_obj.menu_level + 1
     c_menuitem = category.create(
-        page=c_page, title=title, active=active, menu_order=order, save=False,
+        page=c_page, title=title, active=active, menu_order=order, parent_pk=parent_id,
+        menu_level=menu_level, save=False,
     )
     db.session.add(c_menuitem)
     db.session.flush()
@@ -91,6 +104,10 @@ def category_create(title, active, order, user_name):
 @click.option('--category', '-c', 'cat_pk', type=int, help='ID kategorii do zmiany')
 @click.option('--title', '-t', default=None, help='Zmień tytuł kategorii')
 @click.option(
+    '--parent', '-p', 'parent_id', type=int, default=None,
+    help='Zmień położenie w hierarchii menu',
+)
+@click.option(
     '--active/--inactive', default=None, help='Zmień stan aktywności kategorii',
 )
 @click.option(
@@ -101,11 +118,23 @@ def category_create(title, active, order, user_name):
     help='Wykonaj operację jako wskazany użytkownik',
 )
 @with_appcontext
-def category_change(cat_pk, title, active, order, user_name):
+def category_change(cat_pk, title, parent_id, active, order, user_name):
     user_obj = login_user(user_name)
     cat_obj = category.get(cat_pk)
     if cat_obj is None:
         raise click.ClickException(f'Nie znaleziono kategorii o ID {cat_pk}')
+    menu_level = None
+    if parent_id is not None:
+        parent_obj = category.get(parent_id)
+        if parent_obj is None:
+            raise click.ClickException(
+                f'Nie znaleziono kategorii nadrzędnej o ID {parent_id}'
+            )
+        if parent_obj == cat_obj:
+            raise click.ClickException(
+                f'Kategoria nie może być nadrzędna wobec samej siebie'
+            )
+        menu_level = parent_obj.menu_level + 1
     orig_title = cat_obj.title
     changes = []
     if title is not None:
@@ -113,6 +142,10 @@ def category_change(cat_pk, title, active, order, user_name):
         if title:
             changes.append(f'tytuł: {cat_obj.title} -> {title}')
             cat_obj.title = title
+    if parent_id is not None:
+        changes.append(f'nadrzędna: {cat_obj.parent.pk} -> {parent_id}')
+        cat_obj.parent_pk = parent_id
+        cat_obj.menu_level = menu_level
     if active is not None:
         changes.append(f'aktywna: {yesno(cat_obj.active)} -> {yesno(active)}')
         cat_obj.active = active

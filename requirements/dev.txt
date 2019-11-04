@@ -22,6 +22,7 @@ isort
 
 towncrier
 Sphinx
+sphinx-autodoc-typehints
 
 flask-shell-ipython
 termcolor

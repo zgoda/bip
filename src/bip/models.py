@@ -80,6 +80,7 @@ class Category(db.Model, Timestamp):
     children = db.relationship(
         'Category', backref=db.backref('parent', remote_side=[pk])
     )
+    menu_level = db.Column(db.Integer, nullable=False, default=0)
     page_pk = db.Column(db.Integer, db.ForeignKey('page.pk'))
     page = db.relationship(
         'Page', backref=db.backref('categories', lazy='dynamic')
