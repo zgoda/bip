@@ -12,7 +12,7 @@ ItemMeta = namedtuple(
 )
 
 ItemCollectionMeta = namedtuple(
-    'ItemCollectionMeta', 'dataobject,template,orders,filters',
+    'ItemCollectionMeta', 'dataobject,template,order,filters',
     defaults=(None, None, None),
 )
 
@@ -44,7 +44,7 @@ def default_admin_item_view(item_meta: ItemMeta, item_pk: Any) -> Response:
 
 
 def default_admin_list_view(item_meta: ItemCollectionMeta) -> Response:
-    query = item_meta.dataobject.query(sort=item_meta.orders, filters=item_meta.filters)
+    query = item_meta.dataobject.query(sort=item_meta.order, filters=item_meta.filters)
     context = {
         'pagination': paginate(query)
     }
