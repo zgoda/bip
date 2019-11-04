@@ -11,7 +11,6 @@ from .utils.text import slugify, truncate_string
 
 
 class ObjectType(enum.Enum):
-    directory = 1
     page = 2
     category = 3
 
@@ -41,33 +40,6 @@ class User(db.Model, UserMixin):
 
     def check_password(self, password):
         return pwd_context.verify(password, self.password)
-
-
-class Directory(db.Model, Timestamp):
-    __tablename__ = 'directory'
-    pk = db.Column(db.Integer, primary_key=True)
-    parent_pk = db.Column(db.Integer, db.ForeignKey('directory.pk'))
-    title = db.Column(db.String(200), nullable=False)
-    short_title = db.Column(db.String(100))
-    children = db.relationship(
-        'Directory', backref=db.backref('parent', remote_side=[pk])
-    )
-    created_by_pk = db.Column(db.Integer, db.ForeignKey('users.pk'), nullable=False)
-    created_by = db.relationship(
-        'User', foreign_keys=[created_by_pk],
-        backref=db.backref('directories_created', lazy='dynamic'),
-    )
-    updated_by_pk = db.Column(db.Integer, db.ForeignKey('users.pk'))
-    updated_by = db.relationship(
-        'User', foreign_keys=[updated_by_pk],
-        backref=db.backref('directories_updated', lazy='dynamic'),
-    )
-    page_pk = db.Column(db.Integer, db.ForeignKey('page.pk'), nullable=False)
-    page = db.relationship(
-        'Page', backref=db.backref('directories', lazy='dynamic')
-    )
-    description = db.Column(db.Text)
-    active = db.Column(db.Boolean, default=True, index=True)
 
 
 class Page(db.Model, Timestamp):
@@ -104,9 +76,9 @@ def page_before_save(mapper, connection, target: Page):
 class Category(db.Model, Timestamp):
     __tablename__ = 'category'
     pk = db.Column(db.Integer, primary_key=True)
-    directory_pk = db.Column(db.Integer, db.ForeignKey('directory.pk'))
-    directory = db.relationship(
-        'Directory', backref=db.backref('categories', lazy='dynamic')
+    parent_pk = db.Column(db.Integer, db.ForeignKey('category.pk'))
+    children = db.relationship(
+        'Category', backref=db.backref('parent', remote_side=[pk])
     )
     page_pk = db.Column(db.Integer, db.ForeignKey('page.pk'))
     page = db.relationship(
@@ -120,8 +92,6 @@ class Category(db.Model, Timestamp):
 
 @db.event.listens_for(Category.active, 'set')
 def category_active_change(target: Category, value, oldvalue, initiator):
-    if target.directory is not None:
-        target.directory.active = value
     if target.page is not None:
         target.page.active = value
 

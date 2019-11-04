@@ -4,7 +4,7 @@ import click
 from flask import current_app
 from flask.cli import with_appcontext
 
-from ...data import Filter, Sort, category, change, directory, page
+from ...data import Filter, Sort, category, change, page
 from ...ext import db
 from ...utils.cli import (
     ACTIVITY_NAME_MAP, ColAlign as ColA, ColDataType as ColDT, ColSpec, create_table,
@@ -38,26 +38,19 @@ def category_list(active):
     columns = [
         ColSpec(ColA.right, ColDT.int, 'ID'),
         ColSpec(ColA.left, ColDT.text, 'Tytuł'),
-        ColSpec(ColA.center, ColDT.text, 'Katalog'),
         ColSpec(ColA.right, ColDT.int, 'Kolejność'),
         ColSpec(ColA.center, ColDT.text, 'Aktywna'),
     ]
     table = create_table(current_app.testing, columns)
     for cat_obj in q:
         table.add_row([
-            cat_obj.pk, cat_obj.title,
-            yesno(cat_obj.directory is not None), cat_obj.menu_order,
-            yesno(cat_obj.active),
+            cat_obj.pk, cat_obj.title, cat_obj.menu_order, yesno(cat_obj.active),
         ])
     print_table(table)
 
 
 @category_ops.command(name='create', help='Utwórz nową kategorię w menu')
 @click.option('--title', '-t', required=True, help='Tytuł kategorii')
-@click.option(
-    '--directory/--no-directory', 'is_directory', default=False,
-    help='Czy kategoria jest katalogiem (domyślnie: NIE)',
-)
 @click.option(
     '--active/--inactive', default=False,
     help='Czy kategoria ma być od razu aktywna (domyślnie: NIE)',
@@ -71,21 +64,14 @@ def category_list(active):
     help='Wykonaj operację jako wskazany użytkownik',
 )
 @with_appcontext
-def category_create(title, is_directory, active, order, user_name):
+def category_create(title, active, order, user_name):
     user_obj = login_user(user_name)
     c_page = page.create(
         title=title, created_by=user_obj, active=active, text=title, save=False,
     )
-    c_dir = None
-    if is_directory:
-        c_dir = directory.create(
-            title=title, created_by=user_obj, active=active, page=c_page, save=False
-        )
-        db.session.add(c_dir)
     db.session.add(c_page)
     c_menuitem = category.create(
-        directory=c_dir, page=c_page, title=title, active=active, menu_order=order,
-        save=False,
+        page=c_page, title=title, active=active, menu_order=order, save=False,
     )
     db.session.add(c_menuitem)
     db.session.flush()
@@ -93,10 +79,6 @@ def category_create(title, is_directory, active, order, user_name):
     msg = 'utworzono'
     ctype = 'created'
     changes.append(change.record(c_page, ctype, user_obj, msg))
-    if c_dir is not None:
-        changes.append(
-            change.record(c_dir, ctype, user_obj, msg)
-        )
     changes.append(
         change.record(c_menuitem, ctype, user_obj, msg)
     )

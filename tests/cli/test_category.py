@@ -39,24 +39,7 @@ class TestCategoryOps(BIPCLITests):
         assert c2.title in rv.output
 
     @pytest.mark.parametrize('active', [True, False], ids=['active', 'inactive'])
-    def test_create_directory(self, active, user_factory, mocker):
-        user = user_factory(name=self.username, password=self.password, admin=True)
-        mocker.patch(
-            'bip.cli.categories.commands.login_user', mocker.Mock(return_value=user)
-        )
-        cat_title = 'test 01'
-        args = ['-t', cat_title, '--directory', '-u', user.name]
-        if active:
-            args.append('--active')
-        rv = self.runner.invoke(category_create, args)
-        assert rv.exit_code == 0
-        assert 'została utworzona' in rv.output
-        cat_obj = Category.query.filter_by(title=cat_title).one()
-        assert cat_obj.directory is not None
-        assert cat_obj.active is active
-
-    @pytest.mark.parametrize('active', [True, False], ids=['active', 'inactive'])
-    def test_create_no_directory(self, active, user_factory, mocker):
+    def test_create(self, active, user_factory, mocker):
         user = user_factory(name=self.username, password=self.password, admin=True)
         mocker.patch(
             'bip.cli.categories.commands.login_user', mocker.Mock(return_value=user)
@@ -69,7 +52,6 @@ class TestCategoryOps(BIPCLITests):
         assert rv.exit_code == 0
         assert 'została utworzona' in rv.output
         cat_obj = Category.query.filter_by(title=cat_title).one()
-        assert cat_obj.directory is None
         assert cat_obj.active is active
 
     def test_change_title(self, category_factory, user_factory, mocker):

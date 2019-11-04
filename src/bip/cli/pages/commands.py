@@ -39,14 +39,12 @@ def page_list(active):
         ColSpec(ColA.left, ColDT.text, 'Tytuł'),
         ColSpec(ColA.center, ColDT.text, 'Aktywna'),
         ColSpec(ColA.left, ColDT.text, 'Kategorie'),
-        ColSpec(ColA.left, ColDT.text, 'Katalogi'),
     ]
     table = create_table(current_app.testing, columns)
     for page_obj in q:
         categories = ', '.join([c.title for c in page_obj.categories])
-        directories = ', '.join([d.title for d in page_obj.directories])
         table.add_row([
             page_obj.pk, truncate_string(page_obj.title, 80), yesno(page_obj.active),
-            categories, directories,
+            categories,
         ])
     print_table(table)
