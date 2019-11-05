@@ -16,3 +16,4 @@ texttable
 python-dotenv
 text-unidecode
 markdown2
+anytree

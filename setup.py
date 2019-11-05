@@ -67,7 +67,12 @@ setup(
         'Werkzeug',
         'Click',
         'keyring',
+        'keyrings.cryptfile',
         'texttable',
+        'markdown2',
+        'python-dotenv',
+        'text-unidecode',
+        'anytree',
     ),
     tests_require=(
         'pytest',
