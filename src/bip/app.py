@@ -10,6 +10,7 @@ from .admin import admin_bp
 from .auth import auth_bp
 from .ext import babel, bootstrap, csrf, db, login_manager
 from .main import main_bp
+from .menu import MenuTree
 from .user import user_bp
 from .utils.app import Application
 from .utils.site import Site, test_site
@@ -61,7 +62,7 @@ def configure_app(app, env):
 def configure_hooks(app):
 
     @app.before_first_request
-    def load_site_object():  # pylint: disable=unused-variable
+    def load_site_objects():  # pylint: disable=unused-variable
         if app.testing and not os.environ.get('SITE_JSON'):
             site = test_site()
         else:
@@ -69,6 +70,7 @@ def configure_hooks(app):
             with open(site_object_path) as fp:
                 site = Site.from_json(fp.read())
         app.site = app.jinja_env.globals['site'] = site
+        app.menu_tree = app.jinja_env.globals['menu_tree'] = MenuTree()
 
 
 def configure_blueprints(app):

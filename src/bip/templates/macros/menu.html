@@ -1,0 +1,26 @@
+{% macro render_menu_dropdown(item) %}
+<a class="dropdown-item" href="{{ url_for('main.category', category_pk=item.pk) }}">{{ item.title }}</a>
+{% endmacro %}
+
+{% macro render_menu_item(item) %}
+<li class="nav-item {% if item.children %}dropdown{% endif %}">
+  {% if item.children %}
+  <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="{{ url_for('main.category', category_pk=item.pk) }}" role="button" aria-haspopup="true" aria-expanded="false">{{ item.title }}</a>
+  <div class="dropdown-menu">
+    {% for child_item in item.children %}
+    {{ render_menu_dropdown(child_item) }}
+    {% endfor %}
+  </div>
+  {% else %}
+  <a class="nav-link" href="{{ url_for('main.category', category_pk=item.pk) }}">{{ item.title }}</a>
+  {% endif %}
+</li>
+{% endmacro %}
+
+{% macro render_menu(tree) %}
+<ul class="nav flex-column">
+  {% for toplevel in tree.root.children %}
+  {{ render_menu_item(toplevel) }}
+  {% endfor %}
+</ul>
+{% endmacro %}
