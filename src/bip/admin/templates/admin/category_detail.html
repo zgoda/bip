@@ -9,9 +9,6 @@
 {{ render_form(form, action=request.path) }}
 {% if object.page or object.directory %}
 <h3>Obiekty powiązane</h3>
-<ul>
-  {% if object.page %}<li><strong>strona:</strong> <a href="{{ url_for('main.category', category_pk=object.pk) }}" title="wyświetl stronę">{{ object.page.title }}</a>&nbsp;&mdash;&nbsp;<a href="{{ url_for('admin.page_detail', page_pk=object.page.pk) }}" class="btn btn-sm btn-primary">edytuj</a></li>{% endif %}
-  {% if object.directory %}<li><strong>katalog:</strong> {{ object.directory.title }}&nbsp;&mdash;&nbsp;edytuj</li>{% endif %}
-</ul>
+{% if object.page %}<p><strong>strona:</strong> <a href="{{ url_for('main.category', category_pk=object.pk) }}" title="wyświetl stronę">{{ object.page.title }}</a>&nbsp;&mdash;&nbsp;<a href="{{ url_for('admin.page_detail', page_pk=object.page.pk) }}" class="btn btn-sm btn-primary">edytuj</a></p>{% endif %}
 {% endif %}
 {% endblock %}

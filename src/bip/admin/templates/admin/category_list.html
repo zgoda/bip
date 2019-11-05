@@ -13,7 +13,6 @@
       <th scope="col">tytuł</th>
       <th scope="col">porządek</th>
       <th scope="col">aktywna</th>
-      <th scope="col">jest katalogiem</th>
       <th scope="col">ma stronę</th>
     </tr>
   </thead>
@@ -23,7 +22,6 @@
       <td><a href="{{ url_for('admin.category_detail', category_pk=category.pk) }}">{{ category.title }}</a></td>
       <td>{{ category.menu_order }}</td>
       <td>{{ category.active|yesno }}</td>
-      <td>{{ category.directory|yesno }}</td>
       <td>{{ category.page|yesno }}</td>
     </tr>
     {% endfor %}
