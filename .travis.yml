@@ -9,7 +9,7 @@ before_script:
   - ./cc-test-reporter before-build
 install:
   - pip install -q -U -r requirements/test.txt
-  - pip install -q -U Sphinx wheel
+  - pip install -q -U Sphinx sphinx-autodoc-typehints wheel
   - pip install -q -e .
 script:
   - pytest --cov-branch --cov-report xml --cov=bip tests
