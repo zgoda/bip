@@ -6,11 +6,10 @@ from flask.cli import with_appcontext
 
 from ...data import Filter, Sort, category, change, page
 from ...ext import db
-from ...utils.cli import (
-    ACTIVITY_NAME_MAP, ColAlign as ColA, ColDataType as ColDT, ColSpec, create_table,
-    login_user, print_table,
-)
+from ...models import Category
+from ...utils.cli import ACTIVITY_NAME_MAP, create_table, login_user, print_table
 from ...utils.text import text_changes, yesno
+from ..utils import COLUMN_SPECS
 
 category_ops = click.Group(name='category', help='Zarządzanie kategoriami w menu')
 
@@ -35,12 +34,7 @@ def category_list(active):
         click.echo('Nie ma żadnych kategorii')
         sys.exit(0)
     click.echo(f'Znaleziono: {cat_count}, wyświetlanie: {cat_prop}')
-    columns = [
-        ColSpec(ColA.right, ColDT.int, 'ID'),
-        ColSpec(ColA.left, ColDT.text, 'Tytuł'),
-        ColSpec(ColA.right, ColDT.int, 'Kolejność'),
-        ColSpec(ColA.center, ColDT.text, 'Aktywna'),
-    ]
+    columns = COLUMN_SPECS[Category]
     table = create_table(current_app.testing, columns)
     for cat_obj in q:
         table.add_row([

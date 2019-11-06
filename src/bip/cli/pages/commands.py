@@ -5,11 +5,10 @@ from flask import current_app
 from flask.cli import with_appcontext
 
 from ...data import Filter, Sort, page
-from ...utils.cli import (
-    ACTIVITY_NAME_MAP, ColAlign as ColA, ColDataType as ColDT, ColSpec, create_table,
-    print_table,
-)
+from ...models import User
+from ...utils.cli import ACTIVITY_NAME_MAP, create_table, print_table
 from ...utils.text import truncate_string, yesno
+from ..utils import COLUMN_SPECS
 
 page_ops = click.Group(name='page', help='Zarządzanie stronami kategorii i katalogów')
 
@@ -34,12 +33,7 @@ def page_list(active):
         click.echo('Nie ma żadnych stron')
         sys.exit(0)
     click.echo(f'Znaleziono: {page_count}, wyświetlanie: {page_prop}')
-    columns = [
-        ColSpec(ColA.right, ColDT.int, 'ID'),
-        ColSpec(ColA.left, ColDT.text, 'Tytuł'),
-        ColSpec(ColA.center, ColDT.text, 'Aktywna'),
-        ColSpec(ColA.left, ColDT.text, 'Kategorie'),
-    ]
+    columns = COLUMN_SPECS[User]
     table = create_table(current_app.testing, columns)
     for page_obj in q:
         categories = ', '.join([c.title for c in page_obj.categories])

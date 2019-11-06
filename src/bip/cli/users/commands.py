@@ -7,11 +7,12 @@ from flask.cli import with_appcontext
 
 from ...data import Filter, Sort, user
 from ...ext import db
+from ...models import User
 from ...utils.cli import (
-    ACTIVITY_NAME_MAP, SYS_NAME, ColAlign, ColDataType as ColDT, ColSpec, create_table,
-    login_user, print_table,
+    ACTIVITY_NAME_MAP, SYS_NAME, create_table, login_user, print_table,
 )
 from ...utils.text import yesno
+from ..utils import COLUMN_SPECS
 
 user_ops = click.Group(name='user', help='Zarządzanie kontami użytkowników')
 
@@ -49,13 +50,7 @@ def user_list(active):
         click.echo('Nie ma żadnych kont użytkowników')
     else:
         click.echo(f'Znaleziono {acct_count}, wyświetlanie: {acct_prop}')
-        columns = [
-            ColSpec(ColAlign.right, ColDT.int, 'ID'),
-            ColSpec(ColAlign.left, ColDT.text, 'Nazwa'),
-            ColSpec(ColAlign.left, ColDT.text, 'Email'),
-            ColSpec(ColAlign.center, ColDT.text, 'Aktywne'),
-            ColSpec(ColAlign.center, ColDT.text, 'Administrator'),
-        ]
+        columns = COLUMN_SPECS[User]
         table = create_table(current_app.testing, columns)
         for user_obj in q:
             table.add_row([
