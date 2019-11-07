@@ -10,6 +10,7 @@ from ...models import Category
 from ...utils.cli import ACTIVITY_NAME_MAP, create_table, login_user, print_table
 from ...utils.text import text_changes, yesno
 from ..utils import COLUMN_SPECS
+from .utils import check_category, check_parent
 
 category_ops = click.Group(name='category', help='Zarządzanie kategoriami w menu')
 
@@ -114,28 +115,18 @@ def category_create(title, active, order, parent_id, user_name):
 @with_appcontext
 def category_change(cat_pk, title, parent_id, active, order, user_name):
     user_obj = login_user(user_name)
-    cat_obj = category.get(cat_pk)
-    if cat_obj is None:
-        raise click.ClickException(f'Nie znaleziono kategorii o ID {cat_pk}')
+    cat_obj = check_category(cat_pk)
     menu_level = None
     if parent_id is not None:
-        parent_obj = category.get(parent_id)
-        if parent_obj is None:
-            raise click.ClickException(
-                f'Nie znaleziono kategorii nadrzędnej o ID {parent_id}'
-            )
-        if parent_obj == cat_obj:
-            raise click.ClickException(
-                f'Kategoria nie może być nadrzędna wobec samej siebie'
-            )
+        parent_obj = check_parent(cat_obj, parent_id)
         menu_level = parent_obj.menu_level + 1
     orig_title = cat_obj.title
     changes = []
-    if title is not None:
-        title = title.strip()
-        if title:
-            changes.append(f'tytuł: {cat_obj.title} -> {title}')
-            cat_obj.title = title
+    title = title or ''
+    title = title.strip()
+    if title:
+        changes.append(f'tytuł: {cat_obj.title} -> {title}')
+        cat_obj.title = title
     if parent_id is not None:
         changes.append(f'nadrzędna: {cat_obj.parent.pk} -> {parent_id}')
         cat_obj.parent_pk = parent_id
