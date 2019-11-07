@@ -5,10 +5,10 @@ from flask import current_app
 from flask.cli import with_appcontext
 
 from ...data import Filter, Sort, page
-from ...models import User
-from ...utils.cli import ACTIVITY_NAME_MAP, create_table, print_table
+from ...display import ColumnOverride, DisplayMeta
+from ...models import Page
+from ...utils.cli import ACTIVITY_NAME_MAP, ColDataType, create_table, print_table
 from ...utils.text import truncate_string, yesno
-from ..utils import COLUMN_SPECS
 
 page_ops = click.Group(name='page', help='Zarządzanie stronami kategorii i katalogów')
 
@@ -33,7 +33,16 @@ def page_list(active):
         click.echo('Nie ma żadnych stron')
         sys.exit(0)
     click.echo(f'Znaleziono: {page_count}, wyświetlanie: {page_prop}')
-    columns = COLUMN_SPECS[User]
+    col_overrides = {
+        'pk': ColumnOverride(title='ID'),
+        'title': ColumnOverride(title='Tytuł'),
+        'active': ColumnOverride(title='Aktywna'),
+        'categories': ColumnOverride(title='Kategorie', datatype=ColDataType.text)
+    }
+    col_names = ['pk', 'title', 'active', 'categories']
+    columns = DisplayMeta(
+        Page, columns=col_names
+    ).cli_list_columns(overrides=col_overrides)
     table = create_table(current_app.testing, columns)
     for page_obj in q:
         categories = ', '.join([c.title for c in page_obj.categories])
