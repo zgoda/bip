@@ -4,6 +4,8 @@ from factory.alchemy import SQLAlchemyModelFactory
 from bip.ext import db
 from bip.models import Page
 
+from .user import UserFactory
+
 
 class PageFactory(SQLAlchemyModelFactory):
 
@@ -11,6 +13,7 @@ class PageFactory(SQLAlchemyModelFactory):
     active = True
     text = factory.Faker('paragraph', locale='pl_PL')
     description = factory.Faker('paragraph', locale='pl_PL')
+    created_by = factory.SubFactory(UserFactory, password='pass')
 
     class Meta:
         model = Page

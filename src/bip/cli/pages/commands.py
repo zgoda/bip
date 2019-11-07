@@ -21,9 +21,7 @@ page_ops = click.Group(name='page', help='Zarządzanie stronami kategorii i kata
 @with_appcontext
 def page_list(active):
     page_prop = ACTIVITY_NAME_MAP[active]
-    sort = [
-        Sort('title')
-    ]
+    sort = [Sort('title')]
     filters = None
     if active is not None:
         filters = [Filter(field='active', op='eq', value=active)]
