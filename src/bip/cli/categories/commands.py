@@ -23,7 +23,7 @@ category_ops = click.Group(name='category', help='Zarządzanie kategoriami w men
     help='Wyświetl tylko aktywne lub nieaktywne (domyślnie: wszystkie)',
 )
 @with_appcontext
-def category_list(active):
+def category_list(active: bool):
     cat_prop = ACTIVITY_NAME_MAP[active]
     sort = [
         Sort('menu_order'), Sort('title')
@@ -80,7 +80,9 @@ def category_list(active):
     help='Wykonaj operację jako wskazany użytkownik',
 )
 @with_appcontext
-def category_create(title, active, order, parent_id, user_name):
+def category_create(
+            title: str, active: bool, order: int, parent_id: int, user_name: str
+        ):
     user_obj = login_user(user_name)
     c_page = page.create(
         title=title, created_by=user_obj, active=active, text=title, save=False,
@@ -128,7 +130,10 @@ def category_create(title, active, order, parent_id, user_name):
     help='Wykonaj operację jako wskazany użytkownik',
 )
 @with_appcontext
-def category_change(cat_pk, title, parent_id, active, order, user_name):
+def category_change(
+            cat_pk: int, title: str, parent_id: int, active: bool, order: int,
+            user_name: str,
+        ):
     user_obj = login_user(user_name)
     cat_obj = check_category(cat_pk)
     menu_level = None
@@ -172,7 +177,7 @@ def category_change(cat_pk, title, parent_id, active, order, user_name):
     help='Wykonaj operację jako wskazany użytkownik',
 )
 @with_appcontext
-def category_change_description(cat_pk, user_name):
+def category_change_description(cat_pk: int, user_name: str):
     user_obj = login_user(user_name)
     cat_obj = category.get(cat_pk)
     if cat_obj is None:

@@ -1,9 +1,10 @@
 import click
 
 from ...data import category
+from ...models import Category
 
 
-def check_category(pk, fail=True, message=None):
+def check_category(pk: int, fail: bool = True, message: str = None) -> Category:
     obj = category.get(pk)
     if obj is None and fail:
         if message is None:
@@ -12,7 +13,7 @@ def check_category(pk, fail=True, message=None):
     return obj
 
 
-def check_parent(obj, parent_pk, fail=True):
+def check_parent(obj: Category, parent_pk: int, fail: bool = True) -> Category:
     parent = check_category(
         parent_pk, message='Nie znaleziono kategorii nadrzędnej o ID {pk}'
     )

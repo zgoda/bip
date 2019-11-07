@@ -24,7 +24,7 @@ user_ops = click.Group(name='user', help='Zarządzanie kontami użytkowników')
     help='Wyczyść dane logowania (domyślnie: NIE)',
 )
 @with_appcontext
-def user_login(user_name, clear):
+def user_login(user_name: str, clear: bool):
     login_user(user_name, admin=False)
     if clear:
         keyring.delete_password(SYS_NAME, user_name)
@@ -39,7 +39,7 @@ def user_login(user_name, clear):
     help='Wyświetl tylko aktywne lub nieaktywne (domyślnie: wszystkie)',
 )
 @with_appcontext
-def user_list(active):
+def user_list(active: bool):
     acct_prop = ACTIVITY_NAME_MAP[active]
     filters = None
     if active is not None:
@@ -83,7 +83,7 @@ def user_list(active):
     help='Czy konto ma mieć uprawnienia administracyjne (domyślnie: NIE)',
 )
 @with_appcontext
-def user_create(name, password, email, active, admin):
+def user_create(name: str, password: str, email: str, active: bool, admin: bool):
     user.create(
         name=name, password=password, email=email, active=active, admin=admin
     )
@@ -108,7 +108,7 @@ def user_create(name, password, email, active, admin):
     help='Wykonaj operację jako wskazany użytkownik',
 )
 @with_appcontext
-def user_change(name, email, active, user_name):
+def user_change(name: str, email: str, active: bool, user_name: str):
     if email is not None:
         email = email.strip()
     if email is None and active is None:
@@ -139,7 +139,7 @@ def user_change(name, email, active, user_name):
 @click.option(
     '--user', '-u', 'user_name', required=True, help='Nazwa konta użytkownika'
 )
-def user_info(user_name):
+def user_info(user_name: str):
     password = keyring.get_password(SYS_NAME, user_name)
     if password:
         click.echo(f'użytkownik {user_name}: zalogowany')
