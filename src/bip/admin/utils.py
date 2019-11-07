@@ -1,15 +1,26 @@
 from collections import namedtuple
-from typing import Any
+from dataclasses import dataclass, field
+from typing import Any, Mapping, Optional, Type
 
 from flask import Response, flash, redirect, render_template, request, url_for
+from flask_sqlalchemy import BaseQuery
+from flask_wtf import FlaskForm
 
+from ..data import AccessObject
 from ..utils.pagination import paginate
 
-ItemMeta = namedtuple(
-    'ItemMeta',
-    'dataobject,form,message,title_field,success_url,template,success_url_kwargs',
-    defaults=(None, None)
-)
+
+@dataclass
+class ItemMeta:
+    dataobject: AccessObject
+    form: Type[FlaskForm]
+    message: str
+    title_field: str
+    success_url: str
+    form_queries: Optional[Mapping[str, BaseQuery]] = field(default_factory=dict)
+    template: Optional[str] = None
+    success_url_kwargs: dict = field(default_factory=dict)
+
 
 ItemCollectionMeta = namedtuple(
     'ItemCollectionMeta', 'dataobject,template,order,filters',
@@ -29,13 +40,15 @@ def default_admin_item_view(item_meta: ItemMeta, item_pk: Any) -> Response:
                     obj_name=getattr(obj, item_meta.title_field)
                 ), category='success',
             )
-            url_kwargs = item_meta.success_url_kwargs
-            if url_kwargs is None:
-                url_kwargs = {}
-            return redirect(url_for(item_meta.success_url, **url_kwargs))
+            return redirect(
+                url_for(item_meta.success_url, **item_meta.success_url_kwargs)
+            )
+    form = form or item_meta.form(obj=obj)
+    for field_name, query in item_meta.form_queries.items():
+        form[field_name].query = query
     context = {
         'object': obj,
-        'form': form or item_meta.form(obj=obj)
+        'form': form,
     }
     template = item_meta.template
     if template is None:

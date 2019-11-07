@@ -3,7 +3,7 @@ from typing import Optional
 from flask import Response, abort, render_template
 from flask_login import current_user, login_required
 
-from ..data import Sort, category, page, user
+from ..data import Filter, Sort, category, page, user
 from . import admin_bp
 from .forms import CategoryForm, PageForm, UserForm
 from .utils import (
@@ -17,12 +17,6 @@ def before_request() -> Optional[Response]:
     if not current_user.admin:
         abort(403)
 
-
-category_item_meta = ItemMeta(
-    dataobject=category, form=CategoryForm,
-    message='dane kategorii {obj_name} zostały zmienione', title_field='title',
-    success_url='admin.category_list'
-)
 
 category_list_meta = ItemCollectionMeta(
     dataobject=category,  order=[Sort(field='menu_order'), Sort(field='title')],
@@ -66,6 +60,17 @@ def category_list() -> Response:
 
 @admin_bp.route('/category/<int:category_pk>', methods=['POST', 'GET'])
 def category_detail(category_pk) -> Response:
+    form_queries = {
+        'parent': category.query(
+            sort=[Sort(field='title')],
+            filters=[Filter(field='pk', op='ne', value=category_pk)],
+        )
+    }
+    category_item_meta = ItemMeta(
+        dataobject=category, form=CategoryForm,
+        message='dane kategorii {obj_name} zostały zmienione', title_field='title',
+        success_url='admin.category_list', form_queries=form_queries,
+    )
     return default_admin_item_view(category_item_meta, category_pk)
 
 
