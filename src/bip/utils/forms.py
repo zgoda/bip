@@ -1,4 +1,6 @@
-import attr
+from dataclasses import dataclass
+from typing import ClassVar
+
 from flask import Markup, render_template_string
 from flask_wtf import FlaskForm
 from wtforms.fields import BooleanField
@@ -12,27 +14,27 @@ class Renderable:
         return Markup(render_template_string(self.template, obj=self))
 
 
-@attr.s
+@dataclass
 class Link(Renderable):
-    href = attr.ib()
-    text = attr.ib(default='klik')
+    href: str
+    text: str = 'klik'
 
-    template = ''.join([
+    template: ClassVar[str] = ''.join([
         '<a href="{{ obj.href }}">',
         '{{ obj.text }}',
         '</a>',
     ])
 
 
-@attr.s
+@dataclass
 class Button(Renderable):
-    type_ = attr.ib(default='submit')
-    class_ = attr.ib(default='primary')
-    icon = attr.ib(default='check')
-    icon_type = attr.ib(default='fas')
-    text = attr.ib('ok')
+    type_: str = 'submit'
+    class_: str = 'primary'
+    icon: str = 'check'
+    icon_type: str = 'fas'
+    text: str = 'ok'
 
-    template = ''.join([
+    template: ClassVar[str] = ''.join([
         '<button type="{{ obj.type_ }}" class="btn btn-{{ obj.class_ }}">',
         '<i class="{{ obj.icon_type }} fa-{{ obj.icon }}"></i>',
         '&nbsp;',
