@@ -62,6 +62,33 @@ class TestCategoryOps(BIPCLITests):
         cat_obj = Category.query.filter_by(title=cat_title).one()
         assert cat_obj.active is active
 
+    def test_create_parent(self, category_factory, user_factory, mocker):
+        user = user_factory(name=self.username, password=self.password, admin=True)
+        mocker.patch(
+            'bip.cli.categories.commands.login_user', mocker.Mock(return_value=user)
+        )
+        parent = category_factory()
+        parent_pk = parent.pk
+        cat_title = 'test 01'
+        args = ['-t', cat_title, '-u', user.name, '--active', '-p', parent_pk]
+        rv = self.runner.invoke(category_create, args)
+        assert rv.exit_code == 0
+        assert 'została utworzona' in rv.output
+        cat_obj = Category.query.filter_by(title=cat_title).one()
+        assert cat_obj.parent_pk == parent_pk
+
+    def test_create_parent_notfound(self, user_factory, mocker):
+        user = user_factory(name=self.username, password=self.password, admin=True)
+        mocker.patch(
+            'bip.cli.categories.commands.login_user', mocker.Mock(return_value=user)
+        )
+        parent_pk = 666
+        cat_title = 'test 01'
+        args = ['-t', cat_title, '-u', user.name, '--active', '-p', parent_pk]
+        rv = self.runner.invoke(category_create, args)
+        assert rv.exit_code != 0
+        assert f'znaleziono kategorii nadrzędnej o ID {parent_pk}' in rv.output
+
     def test_change_title(self, category_factory, user_factory, mocker):
         user = user_factory(name=self.username, password=self.password, admin=True)
         mocker.patch(
