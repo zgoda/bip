@@ -1,4 +1,4 @@
-from flask import flash, redirect, render_template, request, url_for
+from flask import Response, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from . import user_bp
@@ -7,7 +7,7 @@ from .forms import ChangePasswordForm, ProfileForm
 
 @user_bp.route('/profile', methods=['POST', 'GET'])
 @login_required
-def profile():
+def profile() -> Response:
     form = None
     if request.method == 'POST':
         form = ProfileForm()
@@ -26,7 +26,7 @@ def profile():
 
 @user_bp.route('/password', methods=['POST', 'GET'])
 @login_required
-def password_change():
+def password_change() -> Response:
     form = None
     if request.method == 'POST':
         form = ChangePasswordForm()

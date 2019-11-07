@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import ClassVar
+from typing import Any, ClassVar
 
 from flask import Markup, render_template_string
 from flask_wtf import FlaskForm
@@ -10,7 +10,7 @@ from ..ext import db
 
 class Renderable:
 
-    def render(self):
+    def render(self) -> Markup:
         return Markup(render_template_string(self.template, obj=self))
 
 
@@ -48,7 +48,7 @@ class ConfirmationForm(FlaskForm):
 
     buttons = [Button(text='potwierdź')]
 
-    def confirm(self):
+    def confirm(self) -> bool:
         if self.is_confirmed.data:
             return True
         return False
@@ -64,7 +64,7 @@ class BaseForm(FlaskForm):
 
 class ObjectForm(BaseForm):
 
-    def save(self, obj):
+    def save(self, obj: Any) -> Any:
         self.populate_obj(obj)
         db.session.add(obj)
         db.session.commit()

@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 
 import sqlalchemy as sa
 from flask_sqlalchemy.model import Model as BaseModel
@@ -18,5 +19,5 @@ class Timestamp:
 
 class Model(BaseModel, MappedModelMixin):
 
-    def get_id(self):
+    def get_id(self) -> Any:
         return self.pk

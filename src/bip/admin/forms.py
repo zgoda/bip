@@ -1,3 +1,4 @@
+from flask_sqlalchemy import BaseQuery
 from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.fields import BooleanField, StringField, TextAreaField
 from wtforms.validators import InputRequired
@@ -16,7 +17,7 @@ class UserForm(ObjectForm):
     admin = BooleanField('administrator')
 
 
-def page_query():
+def page_query() -> BaseQuery:
     return page.query(sort=[Sort('title')])
 
 

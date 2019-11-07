@@ -1,4 +1,6 @@
-from flask import abort, render_template
+from typing import Optional
+
+from flask import Response, abort, render_template
 from flask_login import current_user, login_required
 
 from ..data import Sort, category, page, user
@@ -11,7 +13,7 @@ from .utils import (
 
 @admin_bp.before_request
 @login_required
-def before_request():
+def before_request() -> Optional[Response]:
     if not current_user.admin:
         abort(403)
 
@@ -43,35 +45,35 @@ page_list_meta = ItemCollectionMeta(dataobject=page, order=[Sort(field='title')]
 
 
 @admin_bp.route('/home')
-def home():
+def home() -> Response:
     return render_template('admin/index.html')
 
 
 @admin_bp.route('/users/list')
-def user_list():
+def user_list() -> Response:
     return default_admin_list_view(user_list_meta)
 
 
 @admin_bp.route('/users/<int:user_pk>', methods=['POST', 'GET'])
-def user_detail(user_pk):
+def user_detail(user_pk) -> Response:
     return default_admin_item_view(user_item_meta, user_pk)
 
 
 @admin_bp.route('/category/list')
-def category_list():
+def category_list() -> Response:
     return default_admin_list_view(category_list_meta)
 
 
 @admin_bp.route('/category/<int:category_pk>', methods=['POST', 'GET'])
-def category_detail(category_pk):
+def category_detail(category_pk) -> Response:
     return default_admin_item_view(category_item_meta, category_pk)
 
 
 @admin_bp.route('/page/list')
-def page_list():
+def page_list() -> Response:
     return default_admin_list_view(page_list_meta)
 
 
 @admin_bp.route('/page/<int:page_pk>', methods=['POST', 'GET'])
-def page_detail(page_pk):
+def page_detail(page_pk) -> Response:
     return default_admin_item_view(page_item_meta, page_pk)

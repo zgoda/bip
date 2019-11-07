@@ -1,10 +1,13 @@
-from flask import url_for
+from typing import List
 
-from ..data import category, Filter, Sort
+from flask import url_for
+from flask_sqlalchemy import BaseQuery
+
+from ..data import Filter, Sort, category
 from ..utils.menu import MenuItem, VisibilityOptions
 
 
-def menu_items():
+def menu_items() -> BaseQuery:
     filters = [Filter(field='active', op='eq', value=True)]
     sort = [
         Sort(field='menu_order'),
@@ -13,7 +16,7 @@ def menu_items():
     return category.query(sort, filters=filters)
 
 
-def menu_tools():
+def menu_tools() -> List[MenuItem]:
     return [
         MenuItem(
             'zaloguj', url_for('auth.login'), VisibilityOptions(True, False),
@@ -30,7 +33,7 @@ def menu_tools():
     ]
 
 
-def admin_tools():
+def admin_tools() -> List[MenuItem]:
     return [
         MenuItem(
             'administracja', url_for('admin.home'), VisibilityOptions(False, True),
