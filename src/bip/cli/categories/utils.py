@@ -14,7 +14,7 @@ def check_category(pk, fail=True, message=None):
 
 def check_parent(obj, parent_pk, fail=True):
     parent = check_category(
-        parent_pk, message='Nie znaleziono kategorii nadrzędnej id ID {pk}'
+        parent_pk, message='Nie znaleziono kategorii nadrzędnej o ID {pk}'
     )
     if parent == obj and fail:
         raise click.ClickException(

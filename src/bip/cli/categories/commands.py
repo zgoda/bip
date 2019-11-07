@@ -38,8 +38,13 @@ def category_list(active):
     columns = COLUMN_SPECS[Category]
     table = create_table(current_app.testing, columns)
     for cat_obj in q:
+        if cat_obj.parent_pk:
+            parent = cat_obj.parent.title
+        else:
+            parent = ''
         table.add_row([
-            cat_obj.pk, cat_obj.title, cat_obj.menu_order, yesno(cat_obj.active),
+            cat_obj.pk, cat_obj.title, cat_obj.menu_order, parent,
+            yesno(cat_obj.active),
         ])
     print_table(table)
 
@@ -71,11 +76,9 @@ def category_create(title, active, order, parent_id, user_name):
     db.session.add(c_page)
     menu_level = 0
     if parent_id is not None:
-        parent_obj = category.get(parent_id)
-        if parent_obj is None:
-            raise click.ClickException(
-                f'Nie znaleziono kategorii nadrzędnej o ID {parent_id}'
-            )
+        parent_obj = check_category(
+            parent_id, message='Nie znaleziono kategorii nadrzędnej o ID {pk}'
+        )
         menu_level = parent_obj.menu_level + 1
     c_menuitem = category.create(
         page=c_page, title=title, active=active, menu_order=order, parent_pk=parent_id,
@@ -128,7 +131,7 @@ def category_change(cat_pk, title, parent_id, active, order, user_name):
         changes.append(f'tytuł: {cat_obj.title} -> {title}')
         cat_obj.title = title
     if parent_id is not None:
-        changes.append(f'nadrzędna: {cat_obj.parent.pk} -> {parent_id}')
+        changes.append(f'nadrzędna: {cat_obj.parent_pk} -> {parent_id}')
         cat_obj.parent_pk = parent_id
         cat_obj.menu_level = menu_level
     if active is not None:

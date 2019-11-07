@@ -7,6 +7,7 @@ COLUMN_SPECS = {
         ColSpec(ColAlign.right, ColDataType.int, 'ID'),
         ColSpec(ColAlign.left, ColDataType.text, 'Tytuł'),
         ColSpec(ColAlign.right, ColDataType.int, 'Kolejność'),
+        ColSpec(ColAlign.center, ColDataType.text, 'Nadrzędna'),
         ColSpec(ColAlign.center, ColDataType.text, 'Aktywna'),
     ],
     Page: [
