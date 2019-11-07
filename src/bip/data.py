@@ -3,11 +3,12 @@ from __future__ import annotations
 from collections import namedtuple
 from typing import Any, List, Optional, Type, Union
 
-from flask_sqlalchemy import BaseQuery, Model
+from flask_sqlalchemy import BaseQuery
 from sqlalchemy_filters import apply_filters, apply_sort
 
 from .ext import db
 from .models import Category, ChangeRecord, ChangeType, Page, User
+from .utils.db import Model
 from .utils.http import or_404
 
 Filter = namedtuple('Filter', 'field,op,value,model', defaults=(None, None))

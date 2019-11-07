@@ -6,13 +6,13 @@ from flask import current_app
 from flask.cli import with_appcontext
 
 from ...data import Filter, Sort, user
+from ...display import ColumnOverride, DisplayMeta
 from ...ext import db
 from ...models import User
 from ...utils.cli import (
     ACTIVITY_NAME_MAP, SYS_NAME, create_table, login_user, print_table,
 )
 from ...utils.text import yesno
-from ..utils import COLUMN_SPECS
 
 user_ops = click.Group(name='user', help='Zarządzanie kontami użytkowników')
 
@@ -48,16 +48,26 @@ def user_list(active):
     acct_count = q.count()
     if acct_count == 0:
         click.echo('Nie ma żadnych kont użytkowników')
-    else:
-        click.echo(f'Znaleziono {acct_count}, wyświetlanie: {acct_prop}')
-        columns = COLUMN_SPECS[User]
-        table = create_table(current_app.testing, columns)
-        for user_obj in q:
-            table.add_row([
-                user_obj.pk, user_obj.name, user_obj.email,
-                yesno(user_obj.active), yesno(user_obj.admin),
-            ])
-        print_table(table)
+        sys.exit(0)
+    click.echo(f'Znaleziono {acct_count}, wyświetlanie: {acct_prop}')
+    col_overrides = {
+        'pk': ColumnOverride(title='ID'),
+        'name': ColumnOverride(title='Nazwa'),
+        'email': ColumnOverride(title='Email'),
+        'active': ColumnOverride(title='Aktywne'),
+        'admin': ColumnOverride(title='Administrator'),
+    }
+    col_names = ['pk', 'name', 'email', 'active', 'admin']
+    columns = DisplayMeta(
+        User, columns=col_names
+    ).cli_list_columns(overrides=col_overrides)
+    table = create_table(current_app.testing, columns)
+    for user_obj in q:
+        table.add_row([
+            user_obj.pk, user_obj.name, user_obj.email,
+            yesno(user_obj.active), yesno(user_obj.admin),
+        ])
+    print_table(table)
 
 
 @user_ops.command(name='create', help='Zakładanie nowego konta użytkownika')

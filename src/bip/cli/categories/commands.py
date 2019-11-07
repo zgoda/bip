@@ -5,11 +5,13 @@ from flask import current_app
 from flask.cli import with_appcontext
 
 from ...data import Filter, Sort, category, change, page
+from ...display import ColumnOverride, DisplayMeta
 from ...ext import db
 from ...models import Category
-from ...utils.cli import ACTIVITY_NAME_MAP, create_table, login_user, print_table
+from ...utils.cli import (
+    ACTIVITY_NAME_MAP, ColDataType, create_table, login_user, print_table,
+)
 from ...utils.text import text_changes, yesno
-from ..utils import COLUMN_SPECS
 from .utils import check_category, check_parent
 
 category_ops = click.Group(name='category', help='Zarządzanie kategoriami w menu')
@@ -35,7 +37,17 @@ def category_list(active):
         click.echo('Nie ma żadnych kategorii')
         sys.exit(0)
     click.echo(f'Znaleziono: {cat_count}, wyświetlanie: {cat_prop}')
-    columns = COLUMN_SPECS[Category]
+    col_overrides = {
+        'pk': ColumnOverride(title='ID'),
+        'title': ColumnOverride(title='Tytuł'),
+        'menu_order': ColumnOverride(title='Kolejność'),
+        'parent_pk': ColumnOverride(title='Nadrzędna', datatype=ColDataType.text),
+        'active': ColumnOverride(title='Aktywna')
+    }
+    col_names = ['pk', 'title', 'menu_order', 'parent_pk', 'active']
+    columns = DisplayMeta(
+        Category, columns=col_names
+    ).cli_list_columns(overrides=col_overrides)
     table = create_table(current_app.testing, columns)
     for cat_obj in q:
         if cat_obj.parent_pk:
