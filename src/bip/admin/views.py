@@ -18,26 +18,6 @@ def before_request() -> Optional[Response]:
         abort(403)
 
 
-category_list_meta = ItemCollectionMeta(
-    dataobject=category,  order=[Sort(field='menu_order'), Sort(field='title')],
-)
-
-user_item_meta = ItemMeta(
-    dataobject=user, form=UserForm,
-    message='dane użytkownika {obj_name} zostały zmienione', title_field='name',
-    success_url='admin.user_list'
-)
-
-user_list_meta = ItemCollectionMeta(dataobject=user, order=[Sort(field='name')])
-
-page_item_meta = ItemMeta(
-    dataobject=page, form=PageForm, message='dane strony {obj_name} zostały zmienione',
-    title_field='title', success_url='admin.page_list'
-)
-
-page_list_meta = ItemCollectionMeta(dataobject=page, order=[Sort(field='title')])
-
-
 @admin_bp.route('/home')
 def home() -> Response:
     return render_template('admin/index.html')
@@ -45,16 +25,25 @@ def home() -> Response:
 
 @admin_bp.route('/users/list')
 def user_list() -> Response:
+    user_list_meta = ItemCollectionMeta(dataobject=user, order=[Sort(field='name')])
     return default_admin_list_view(user_list_meta)
 
 
 @admin_bp.route('/users/<int:user_pk>', methods=['POST', 'GET'])
 def user_detail(user_pk) -> Response:
+    user_item_meta = ItemMeta(
+        dataobject=user, form=UserForm,
+        message='dane użytkownika {obj_name} zostały zmienione', title_field='name',
+        success_url='admin.user_list'
+    )
     return default_admin_item_view(user_item_meta, user_pk)
 
 
 @admin_bp.route('/category/list')
 def category_list() -> Response:
+    category_list_meta = ItemCollectionMeta(
+        dataobject=category,  order=[Sort(field='menu_order'), Sort(field='title')],
+    )
     return default_admin_list_view(category_list_meta)
 
 
@@ -76,9 +65,15 @@ def category_detail(category_pk) -> Response:
 
 @admin_bp.route('/page/list')
 def page_list() -> Response:
+    page_list_meta = ItemCollectionMeta(dataobject=page, order=[Sort(field='title')])
     return default_admin_list_view(page_list_meta)
 
 
 @admin_bp.route('/page/<int:page_pk>', methods=['POST', 'GET'])
 def page_detail(page_pk) -> Response:
+    page_item_meta = ItemMeta(
+        dataobject=page, form=PageForm,
+        message='dane strony {obj_name} zostały zmienione', title_field='title',
+        success_url='admin.page_list',
+    )
     return default_admin_item_view(page_item_meta, page_pk)

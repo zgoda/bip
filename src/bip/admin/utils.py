@@ -17,9 +17,9 @@ class ItemMeta:
     message: str
     title_field: str
     success_url: str
-    form_queries: Optional[Mapping[str, BaseQuery]] = field(default_factory=dict)
+    form_queries: Mapping[str, BaseQuery] = field(default_factory=dict)
     template: Optional[str] = None
-    success_url_kwargs: dict = field(default_factory=dict)
+    success_url_kwargs: Mapping[str, Any] = field(default_factory=dict)
 
 
 ItemCollectionMeta = namedtuple(
