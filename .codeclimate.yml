@@ -14,6 +14,7 @@ plugins:
       languages:
         python:
           python_version: 3
+          mass_threshold: 45
 checks:
   argument-count:
     config:
