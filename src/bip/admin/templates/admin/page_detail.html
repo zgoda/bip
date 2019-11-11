@@ -7,4 +7,6 @@
 {% block content %}
 <h2>Dane strony {{ object.title }}</h2>
 {{ render_form(form, action=request.path) }}
+<h3>Podgląd treści</h3>
+{{ object.text_html|safe }}
 {% endblock %}

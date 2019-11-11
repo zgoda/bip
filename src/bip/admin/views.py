@@ -16,11 +16,13 @@ category_item_meta = ItemMeta(
     message='dane kategorii {obj_name} zostały zmienione',
     success_url='admin.category_list', title_field='title',
 )
+
 page_item_meta = ItemMeta(
     dataobject=DAO_MODEL_MAP[Page], form=PageForm,
     message='dane strony {obj_name} zostały zmienione', success_url='admin.page_list',
     title_field='title',
 )
+
 user_item_meta = ItemMeta(
     dataobject=DAO_MODEL_MAP[User], form=UserForm,
     message='dane użytkownika {obj_name} zostały zmienione',

@@ -10,7 +10,7 @@ from ...models import Page
 from ...utils.cli import ACTIVITY_NAME_MAP, ColDataType, create_table, print_table
 from ...utils.text import truncate_string, yesno
 
-page_ops = click.Group(name='page', help='Zarządzanie stronami kategorii i katalogów')
+page_ops = click.Group(name='page', help='Zarządzanie stronami biuletynu')
 
 
 @page_ops.command(name='list', help='Wyświetl listę stron')

@@ -19,7 +19,7 @@
   <tbody>
     {% for page in pagination.items %}
     <tr>
-      <td><a href="">{{ page.title }}</a></td>
+      <td><a href="{{ url_for('admin.page_detail', page_pk=page.pk) }}">{{ page.title }}</a></td>
       <td>{{ page.created|datetimeformat(format='long') }}</td>
       <td>{{ page.updated|datetimeformat(format='long') }}</td>
       <td>{{ page.active|yesno }}</td>
