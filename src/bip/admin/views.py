@@ -11,41 +11,34 @@ from .utils import (
     ItemCollectionMeta, ItemMeta, default_admin_item_view, default_admin_list_view,
 )
 
-_SUCCESS_MESSAGES = {
-    Category: 'dane kategorii {obj_name} zostały zmienione',
-    Page: 'dane strony {obj_name} zostały zmienione',
-    User: 'dane użytkownika {obj_name} zostały zmienione',
-}
-
-
 _OBJECTS_META = {
     Category: {
-        'item': {
+        'item': ItemMeta(**{
             'dataobject': DAO_MODEL_MAP[Category],
             'form': CategoryForm,
             'message': 'dane kategorii {obj_name} zostały zmienione',
             'success_url': 'admin.category_list',
             'title_field': 'title'
-        },
+        }),
     },
     Page: {
-        'item': {
+        'item': ItemMeta(**{
             'dataobject': DAO_MODEL_MAP[Page],
             'form': PageForm,
             'message': 'dane strony {obj_name} zostały zmienione',
             'success_url': 'admin.page_list',
             'title_field': 'title'
-        },
+        }),
     },
     User: {
-        'item': {
+        'item': ItemMeta(**{
             'dataobject': DAO_MODEL_MAP[User],
             'form': UserForm,
             'message': 'dane użytkownika {obj_name} zostały zmienione',
             'success_url': 'admin.user_list',
             'title_field': 'name'
-        }
-    }
+        }),
+    },
 }
 
 
@@ -70,7 +63,7 @@ def user_list() -> Response:
 
 @admin_bp.route('/users/<int:user_pk>', methods=['POST', 'GET'])
 def user_detail(user_pk: int) -> Response:
-    return default_admin_item_view(ItemMeta(**_OBJECTS_META[User]['item']), user_pk)
+    return default_admin_item_view(_OBJECTS_META[User]['item'], user_pk)
 
 
 @admin_bp.route('/category/list')
@@ -90,9 +83,9 @@ def category_detail(category_pk: int) -> Response:
             filters=[Filter(field='pk', op='ne', value=category_pk)],
         )
     }
-    kw = {'form_queries': form_queries}
-    kw.update(_OBJECTS_META[Category]['item'])
-    return default_admin_item_view(ItemMeta(**kw), category_pk)
+    meta = _OBJECTS_META[Category]['item']
+    meta.form_queries = form_queries
+    return default_admin_item_view(meta, category_pk)
 
 
 @admin_bp.route('/page/list')
@@ -104,4 +97,4 @@ def page_list() -> Response:
 
 @admin_bp.route('/page/<int:page_pk>', methods=['POST', 'GET'])
 def page_detail(page_pk: int) -> Response:
-    return default_admin_item_view(ItemMeta(**_OBJECTS_META[Page]['item']), page_pk)
+    return default_admin_item_view(_OBJECTS_META[Page]['item'], page_pk)
