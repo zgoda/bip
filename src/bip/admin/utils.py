@@ -15,8 +15,8 @@ class ItemMeta:
     dataobject: AccessObject
     form: Type[FlaskForm]
     message: str
-    title_field: str
     success_url: str
+    title_field: Optional[str] = None
     form_queries: Mapping[str, BaseQuery] = field(default_factory=dict)
     template: Optional[str] = None
     success_url_kwargs: Mapping[str, Any] = field(default_factory=dict)
@@ -35,11 +35,13 @@ def default_admin_item_view(item_meta: ItemMeta, item_pk: Any) -> Response:
         form = item_meta.form()
         if form.validate_on_submit():
             obj = form.save(obj)
-            flash(
-                item_meta.message.format(
+            if '{obj_name}' in item_meta.message:
+                message = item_meta.message.format(
                     obj_name=getattr(obj, item_meta.title_field)
-                ), category='success',
-            )
+                )
+            else:
+                message = item_meta.message
+            flash(message, category='success')
             return redirect(
                 url_for(item_meta.success_url, **item_meta.success_url_kwargs)
             )

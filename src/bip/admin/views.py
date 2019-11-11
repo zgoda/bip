@@ -3,12 +3,19 @@ from typing import Optional
 from flask import Response, abort, render_template
 from flask_login import current_user, login_required
 
-from ..data import Filter, Sort, category, page, user
+from ..data import DAO_MODEL_MAP, Filter, Sort, category, page, user
+from ..models import Category, Page, User
 from . import admin_bp
 from .forms import CategoryForm, PageForm, UserForm
 from .utils import (
     ItemCollectionMeta, ItemMeta, default_admin_item_view, default_admin_list_view,
 )
+
+_SUCCESS_MESSAGES = {
+    Category: 'dane kategorii {obj_name} zostały zmienione',
+    Page: 'dane strony {obj_name} zostały zmienione',
+    User: 'dane użytkownika {obj_name} zostały zmienione',
+}
 
 
 @admin_bp.before_request
@@ -34,8 +41,8 @@ def user_list() -> Response:
 def user_detail(user_pk: int) -> Response:
     return default_admin_item_view(
         ItemMeta(
-            dataobject=user, form=UserForm,
-            message='dane użytkownika {obj_name} zostały zmienione',
+            dataobject=DAO_MODEL_MAP[User], form=UserForm,
+            message=_SUCCESS_MESSAGES[User],
             title_field='name', success_url='admin.user_list',
         ),
         user_pk,
@@ -61,8 +68,8 @@ def category_detail(category_pk: int) -> Response:
     }
     return default_admin_item_view(
         ItemMeta(
-            dataobject=category, form=CategoryForm,
-            message='dane kategorii {obj_name} zostały zmienione', title_field='title',
+            dataobject=DAO_MODEL_MAP[Category], form=CategoryForm,
+            message=_SUCCESS_MESSAGES[Category], title_field='title',
             success_url='admin.category_list', form_queries=form_queries,
         ),
         category_pk,
@@ -80,8 +87,8 @@ def page_list() -> Response:
 def page_detail(page_pk: int) -> Response:
     return default_admin_item_view(
         ItemMeta(
-            dataobject=page, form=PageForm,
-            message='dane strony {obj_name} zostały zmienione',
+            dataobject=DAO_MODEL_MAP[Page], form=PageForm,
+            message=_SUCCESS_MESSAGES[Page],
             title_field='title', success_url='admin.page_list',
         ),
         page_pk,

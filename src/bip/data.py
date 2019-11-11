@@ -19,6 +19,9 @@ Sort = namedtuple(
 )
 
 
+DAO_MODEL_MAP = {}
+
+
 class AccessObject:
 
     klass_ = None
@@ -34,6 +37,7 @@ class AccessObject:
             object_name = klass_.__tablename__.lower()
         obj = cls(object_name)
         obj.klass_ = klass_
+        DAO_MODEL_MAP[klass_] = obj
         return obj
 
     def create(self, save: bool = True, **kwargs) -> Model:
