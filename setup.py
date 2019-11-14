@@ -73,6 +73,7 @@ setup(
         'python-dotenv',
         'text-unidecode',
         'anytree',
+        'blinker',
     ),
     tests_require=(
         'pytest',

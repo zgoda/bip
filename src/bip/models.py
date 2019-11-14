@@ -1,11 +1,13 @@
 import datetime
 import enum
 
+from flask import current_app
 from flask_login import UserMixin
 from markdown2 import markdown
 
 from .ext import db
 from .security import pwd_context
+from .signals import reload_menu_tree
 from .utils.db import Timestamp
 from .utils.text import slugify, truncate_string
 
@@ -95,6 +97,13 @@ class Category(db.Model, Timestamp):
 def category_active_change(target: Category, value, oldvalue, initiator):
     if target.page is not None:
         target.page.active = value
+
+
+@db.event.listens_for(Category, 'after_insert')
+@db.event.listens_for(Category, 'after_update')
+@db.event.listens_for(Category, 'after_delete')
+def category_after_change(mapper, connection, target):
+    reload_menu_tree.send(current_app._get_current_object())
 
 
 class ChangeRecord(db.Model):

@@ -7,6 +7,7 @@ from flask_sqlalchemy import BaseQuery
 
 from .data import Filter, Sort, category
 from .models import Category
+from .signals import reload_menu_tree
 
 _ITEM_CACHE = {}
 
@@ -53,3 +54,8 @@ class MenuTree:
         _ITEM_CACHE[None] = self.root
         for item in query:
             MenuItem.for_object(item)
+
+
+@reload_menu_tree.connect
+def reload_menu(app, **kwargs):
+    app.menu_tree = app.jinja_env.globals['menu_tree'] = MenuTree()

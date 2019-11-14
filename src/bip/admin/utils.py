@@ -33,6 +33,8 @@ def default_admin_item_view(item_meta: ItemMeta, item_pk: Any) -> Response:
     form = None
     if request.method == 'POST':
         form = item_meta.form()
+        for field_name, query in item_meta.form_queries.items():
+            form[field_name].query = query
         if form.validate_on_submit():
             obj = form.save(obj)
             if '{obj_name}' in item_meta.message:
