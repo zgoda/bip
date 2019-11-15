@@ -1,8 +1,9 @@
 from dataclasses import dataclass
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Mapping
 
 from flask import Markup, render_template_string
 from flask_wtf import FlaskForm
+from flask_sqlalchemy import BaseQuery
 from wtforms.fields import BooleanField
 
 from ..ext import db
@@ -69,3 +70,8 @@ class ObjectForm(BaseForm):
         db.session.add(obj)
         db.session.commit()
         return obj
+
+
+def update_form_queries(form: FlaskForm, queries: Mapping[str, BaseQuery]):
+    for field_name, query in queries.items():
+        form[field_name].query = query

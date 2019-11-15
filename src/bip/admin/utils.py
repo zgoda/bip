@@ -7,6 +7,7 @@ from flask_sqlalchemy import BaseQuery
 from flask_wtf import FlaskForm
 
 from ..data import AccessObject
+from ..utils.forms import update_form_queries
 from ..utils.pagination import paginate
 
 
@@ -33,8 +34,7 @@ def default_admin_item_view(item_meta: ItemMeta, item_pk: Any) -> Response:
     form = None
     if request.method == 'POST':
         form = item_meta.form()
-        for field_name, query in item_meta.form_queries.items():
-            form[field_name].query = query
+        update_form_queries(form, item_meta.form_queries)
         if form.validate_on_submit():
             obj = form.save(obj)
             if '{obj_name}' in item_meta.message:
@@ -48,8 +48,7 @@ def default_admin_item_view(item_meta: ItemMeta, item_pk: Any) -> Response:
                 url_for(item_meta.success_url, **item_meta.success_url_kwargs)
             )
     form = form or item_meta.form(obj=obj)
-    for field_name, query in item_meta.form_queries.items():
-        form[field_name].query = query
+    update_form_queries(form, item_meta.form_queries)
     context = {
         'object': obj,
         'form': form,
