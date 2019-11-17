@@ -92,6 +92,12 @@ class Category(db.Model, Timestamp):
     active = db.Column(db.Boolean, default=True, index=True)
     menu_order = db.Column(db.Integer, nullable=False, default=0, index=True)
 
+    @property
+    def title_display(self):
+        if self.page:
+            return self.page.title
+        return self.title
+
 
 @db.event.listens_for(Category.active, 'set')
 def category_active_change(target: Category, value, oldvalue, initiator):
