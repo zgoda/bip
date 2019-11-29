@@ -60,6 +60,7 @@ setup(
         'Flask-SQLAlchemy',
         'Flask-Babel',
         'Flask-Migrate',
+        'Flask-SimpleMDE',
         'Bootstrap-Flask',
         'SQLAlchemy-Filters',
         'WTForms-Components',

@@ -8,7 +8,7 @@ from werkzeug.utils import ImportStringError
 
 from .admin import admin_bp
 from .auth import auth_bp
-from .ext import babel, bootstrap, csrf, db, login_manager
+from .ext import babel, bootstrap, csrf, db, login_manager, smde
 from .main import main_bp
 from .menu import MenuTree
 from .user import user_bp
@@ -95,6 +95,8 @@ def configure_extensions(app):
     def get_user(userid):  # pylint: disable=unused-variable
         from .models import User
         return User.query.get(userid)
+
+    smde.init_app(app)
 
 
 def configure_templating(app):
