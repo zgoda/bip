@@ -1,6 +1,7 @@
 -r test.txt
 
-ipython
+# 7.10 and newer are broken on 3.8
+ipython<7.10
 ipdb
 
 pip
