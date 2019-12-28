@@ -8,9 +8,8 @@ before_script:
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
 install:
-  - pip install -q -U -r requirements/test.txt
+  - pip install -q -U -e .[test] --upgrade-strategy eager
   - pip install -q -U Sphinx sphinx-autodoc-typehints wheel
-  - pip install -q -e .
 script:
   - pytest --cov-branch --cov-report xml --cov=bip tests
   - python setup.py --quiet build_sphinx

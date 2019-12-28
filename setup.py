@@ -27,6 +27,63 @@ def find_version(*file_paths):
 
 long_description = read('README.rst')
 
+base_reqs = [
+    'Flask',
+    'Flask-Login',
+    'Flask-WTF',
+    'Flask-SQLAlchemy',
+    'Flask-Babel',
+    'Flask-Migrate',
+    'Flask-SimpleMDE',
+    'Bootstrap-Flask',
+    'SQLAlchemy-Filters',
+    'WTForms-Components',
+    'passlib[argon2]',
+    'Werkzeug',
+    'Click',
+    'keyring',
+    'keyrings.cryptfile',
+    'texttable',
+    'markdown2',
+    'python-dotenv',
+    'text-unidecode',
+    'anytree',
+    'blinker',
+]
+
+test_reqs = [
+    'pytest',
+    'pytest-mock',
+    'pytest-cov',
+    'pytest-factoryboy',
+    'pytest-flask',
+]
+
+dev_reqs = [
+    'ipython',
+    'ipdb',
+    'pip',
+    'setuptools',
+    'wheel',
+    'flake8',
+    'flake8-builtins',
+    'flake8-bugbear',
+    'flake8-mutable',
+    'flake8-comprehensions',
+    'pep8-naming',
+    'dlint',
+    'doc8',
+    'pyroma',
+    'rope',
+    'isort',
+    'towncrier',
+    'Sphinx',
+    'sphinx-autodoc-typehints',
+    'flask-shell-ipython',
+    'termcolor',
+    'watchdog',
+] + test_reqs
+
 setup(
     name='biuletyn-bip',
     version=find_version('src', 'bip', '_version.py'),
@@ -53,40 +110,13 @@ setup(
         'Programming Language :: Python :: 3.8',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content :: Content Management System',
     ],
-    install_requires=(
-        'Flask',
-        'Flask-Login',
-        'Flask-WTF',
-        'Flask-SQLAlchemy',
-        'Flask-Babel',
-        'Flask-Migrate',
-        'Flask-SimpleMDE',
-        'Bootstrap-Flask',
-        'SQLAlchemy-Filters',
-        'WTForms-Components',
-        'passlib[argon2]',
-        'Werkzeug',
-        'Click',
-        'keyring',
-        'keyrings.cryptfile',
-        'texttable',
-        'markdown2',
-        'python-dotenv',
-        'text-unidecode',
-        'anytree',
-        'blinker',
-    ),
-    tests_require=(
-        'pytest',
-        'pytest-mock',
-        'pytest-cov',
-        'pytest-factoryboy',
-        'pytest-flask',
-    ),
+    install_requires=base_reqs,
     extras_require={
         'prod': [
             'uwsgi',
-        ]
+        ],
+        'dev': dev_reqs,
+        'test': test_reqs,
     },
     entry_points={
         'console_scripts': [
