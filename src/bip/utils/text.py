@@ -2,8 +2,6 @@ import difflib
 import re
 from typing import List
 
-from flask import Markup, url_for
-from flask_simplemde import CSS_LINK_TEMPLATE, JS_LINK_TEMPLATE, SimpleMDE
 from jinja2.filters import do_truncate
 from text_unidecode import unidecode
 
@@ -84,20 +82,3 @@ def truncate_string(s: str, length: int) -> str:
     :rtype: str
     """
     return do_truncate(None, s, length, leeway=5)
-
-
-class VendoredMDE(SimpleMDE):
-
-    @property
-    def css(self):
-        link = CSS_LINK_TEMPLATE % url_for(
-            'static', 'vendor/simplemde/simplemde.min.css'
-        )
-        return Markup(link)
-
-    @property
-    def js(self):
-        link = JS_LINK_TEMPLATE % url_for(
-            'static', 'vendor/simplemde/simplemde.min.js'
-        )
-        return Markup(link)

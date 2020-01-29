@@ -18,7 +18,7 @@ class TestUserOps(BIPCLITests):
             get_password=mocker.Mock(return_value=self.password),
         )
         mocker.patch('bip.utils.cli.keyring', fake_keyring)
-        rv = self.runner.invoke(user_login, ['-u', self.username])
+        rv = self.runner.invoke(user_login, ['-n', self.username])
         assert rv.exit_code == 0
         fake_setpassword.assert_called_once()
 
@@ -29,7 +29,7 @@ class TestUserOps(BIPCLITests):
         fake_keyring = mocker.Mock(delete_password=fake_delpassword)
         mocker.patch('bip.cli.users.commands.keyring', fake_keyring)
         rv = self.runner.invoke(
-            user_login, ['-u', self.username, '-c']
+            user_login, ['-n', self.username, '-c']
         )
         assert rv.exit_code == 0
         assert 'zostały usunięte' in rv.output

@@ -35,17 +35,17 @@ def page_list(active):
         'pk': ColumnOverride(title='ID'),
         'title': ColumnOverride(title='Tytuł'),
         'active': ColumnOverride(title='Aktywna'),
-        'categories': ColumnOverride(title='Kategorie', datatype=ColDataType.text)
+        'labels': ColumnOverride(title='Etykiety', datatype=ColDataType.text)
     }
-    col_names = ['pk', 'title', 'active', 'categories']
+    col_names = ['pk', 'title', 'active', 'labels']
     columns = DisplayMeta(
         Page, columns=col_names
     ).cli_list_columns(overrides=col_overrides)
     table = create_table(current_app.testing, columns)
     for page_obj in q:
-        categories = ', '.join([c.title for c in page_obj.categories])
+        labels = ', '.join([c.title for c in page_obj.labels])
         table.add_row([
             page_obj.pk, truncate_string(page_obj.title, 80), yesno(page_obj.active),
-            categories,
+            labels,
         ])
     print_table(table)

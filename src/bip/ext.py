@@ -5,11 +5,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 
 from .utils.db import Model
-from .utils.text import VendoredMDE
 
 db = SQLAlchemy(model_class=Model)
 babel = Babel(default_locale='pl', default_timezone='Europe/Warsaw')
 login_manager = LoginManager()
 csrf = CSRFProtect()
 bootstrap = Bootstrap()
-smde = VendoredMDE()

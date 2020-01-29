@@ -8,9 +8,8 @@ from werkzeug.utils import ImportStringError
 
 from .admin import admin_bp
 from .auth import auth_bp
-from .ext import babel, bootstrap, csrf, db, login_manager, smde
+from .ext import babel, bootstrap, csrf, db, login_manager
 from .main import main_bp
-from .menu import MenuTree
 from .user import user_bp
 from .utils.app import Application
 from .utils.site import Site, test_site
@@ -49,28 +48,19 @@ def configure_app(app, env):
             app.config.from_object(f'bip.config_{env}')
         except ImportStringError:
             app.logger.info(f'no environment config for {env}')
-    config_local = os.environ.get('CONFIG_LOCAL')
-    if config_local:
-        app.logger.info(f'local configuration loaded from {config_local}')
-        app.config.from_envvar('CONFIG_LOCAL')
-    config_secrets = os.environ.get('CONFIG_SECRETS')
-    if config_secrets:
-        app.logger.info(f'secrets loaded from {config_secrets}')
-        app.config.from_envvar('CONFIG_SECRETS')
 
 
 def configure_hooks(app):
 
     @app.before_first_request
     def load_site_objects():  # pylint: disable=unused-variable
-        if app.testing and not os.environ.get('SITE_JSON'):
+        if app.testing and not os.getenv('SITE_JSON'):
             site = test_site()
         else:
             site_object_path = os.path.abspath(os.environ['SITE_JSON'])
             with open(site_object_path) as fp:
                 site = Site.from_json(fp.read())
         app.site = app.jinja_env.globals['site'] = site
-        app.menu_tree = app.jinja_env.globals['menu_tree'] = MenuTree()
 
 
 def configure_blueprints(app):
@@ -95,8 +85,6 @@ def configure_extensions(app):
     def get_user(userid):  # pylint: disable=unused-variable
         from .models import User
         return User.query.get(userid)
-
-    smde.init_app(app)
 
 
 def configure_templating(app):

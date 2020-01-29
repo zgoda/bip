@@ -1,0 +1,22 @@
+{% macro css(url_prefix='/static/vendor') %}
+<link rel="stylesheet" href="{{ url_prefix }}/easymde.min.css">
+{% endmacro %}
+
+{% macro js(url_prefix='/static/vendor') %}
+<script src="{{ url_prefix }}/easymde.min.js"></script>
+{% endmacro %}
+
+{% macro load() %}
+<script>
+  var simplemde = new EasyMDE();
+</script>
+{% endmacro %}
+
+{% macro load_for(elem_id) %}
+<script>
+  var simplemde = new EasyMDE({
+    element: document.getElementById("{{ elem_id }}"),
+    autoDownloadFontAwesome: false
+  });
+</script>
+{% endmacro %}

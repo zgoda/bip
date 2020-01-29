@@ -1,20 +1,13 @@
 import datetime
 import enum
 
-from flask import current_app
 from flask_login import UserMixin
-from markdown2 import markdown
+from markdown import markdown
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from .ext import db
-from .security import pwd_context
-from .signals import reload_menu_tree
 from .utils.db import Timestamp
 from .utils.text import slugify, truncate_string
-
-
-class ObjectType(enum.Enum):
-    page = 2
-    category = 3
 
 
 class ChangeType(enum.Enum):
@@ -27,7 +20,6 @@ class User(db.Model, UserMixin):
     __tablename__ = 'users'
     pk = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Text, nullable=False)
-    remote_user_id = db.Column(db.String(200), index=True)
     email = db.Column(db.String(200))
     password = db.Column(db.Text)
     active = db.Column(db.Boolean, default=True, index=True)
@@ -38,10 +30,33 @@ class User(db.Model, UserMixin):
         return self.active
 
     def set_password(self, password):
-        self.password = pwd_context.hash(password)
+        self.password = generate_password_hash(password)
 
     def check_password(self, password):
-        return pwd_context.verify(password, self.password)
+        return check_password_hash(self.password, password)
+
+
+page_labels = db.Table(
+    'page_labels',
+    db.Column('page_pk', db.Integer, db.ForeignKey('page.pk'), primary_key=True),
+    db.Column('label_pk', db.Integer, db.ForeignKey('label.pk'), primary_key=True),
+)
+
+
+class Label(db.Model):
+    __tablename__ = 'label'
+    pk = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False, index=True)
+    slug = db.Column(db.String(200), index=True)
+    description = db.Column(db.Text)
+    description_html = db.Column(db.Text)
+
+
+@db.event.listens_for(Label, 'before_insert')
+@db.event.listens_for(Label, 'before_update')
+def label_before_save(mapper, connection, target: Label):
+    target.slug = slugify(target.name)
+    target.description_html = markdown(target.dexcription, output_format='html5')
 
 
 class Page(db.Model, Timestamp):
@@ -49,7 +64,7 @@ class Page(db.Model, Timestamp):
     pk = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     short_title = db.Column(db.String(100))
-    slug = db.Column(db.Text)
+    slug = db.Column(db.String(200), index=True)
     text = db.Column(db.Text, nullable=False)
     text_html = db.Column(db.Text)
     created_by_pk = db.Column(db.Integer, db.ForeignKey('users.pk'), nullable=False)
@@ -64,59 +79,30 @@ class Page(db.Model, Timestamp):
     )
     description = db.Column(db.Text)
     active = db.Column(db.Boolean, default=True, index=True)
+    main = db.Column(db.Boolean, default=False, index=True)
+    labels = db.relationship(
+        'Label', secondary=page_labels, lazy='subquery',
+        backref=db.backref('pages', lazy=True),
+    )
+
+    def __repr__(self):
+        return self.title
 
 
 @db.event.listens_for(Page, 'before_insert')
 @db.event.listens_for(Page, 'before_update')
 def page_before_save(mapper, connection, target: Page):
     target.slug = slugify(target.title)
-    target.text_html = markdown(target.text, safe_mode='replace')
+    target.text_html = markdown(target.text, output_format='html5')
     if not target.short_title:
         target.short_title = truncate_string(target.title, 100)
-
-
-class Category(db.Model, Timestamp):
-    __tablename__ = 'category'
-    pk = db.Column(db.Integer, primary_key=True)
-    parent_pk = db.Column(db.Integer, db.ForeignKey('category.pk'))
-    children = db.relationship(
-        'Category', backref=db.backref('parent', remote_side=[pk])
-    )
-    menu_level = db.Column(db.Integer, nullable=False, default=0)
-    page_pk = db.Column(db.Integer, db.ForeignKey('page.pk'))
-    page = db.relationship(
-        'Page', backref=db.backref('categories', lazy='dynamic')
-    )
-    title = db.Column(db.String(100), index=True)
-    description = db.Column(db.Text)
-    active = db.Column(db.Boolean, default=True, index=True)
-    menu_order = db.Column(db.Integer, nullable=False, default=0, index=True)
-
-    @property
-    def title_display(self):
-        if self.page:
-            return self.page.title
-        return self.title
-
-
-@db.event.listens_for(Category.active, 'set')
-def category_active_change(target: Category, value, oldvalue, initiator):
-    if target.page is not None:
-        target.page.active = value
-
-
-@db.event.listens_for(Category, 'after_insert')
-@db.event.listens_for(Category, 'after_update')
-@db.event.listens_for(Category, 'after_delete')
-def category_after_change(mapper, connection, target):
-    reload_menu_tree.send(current_app._get_current_object())
 
 
 class ChangeRecord(db.Model):
     __tablename__ = 'changelog'
     pk = db.Column(db.Integer, primary_key=True)
-    object_pk = db.Column(db.Integer, nullable=False)
-    object_type = db.Column(db.Enum(ObjectType), nullable=False)
+    page_pk = db.Column(db.Integer, db.ForeignKey('page.pk'), nullable=False)
+    page = db.relationship('Page', backref=db.backref('changes', lazy='dynamic'))
     change_dt = db.Column(
         db.DateTime, default=datetime.datetime.utcnow, nullable=False, index=True
     )
@@ -125,13 +111,9 @@ class ChangeRecord(db.Model):
     user_pk = db.Column(db.Integer, db.ForeignKey('users.pk'))
     user = db.relationship('User', backref=db.backref('changes', lazy='dynamic'))
 
-    __table_args__ = (
-        db.Index('ix_changelog_object', 'object_pk', 'object_type'),
-    )
-
     @classmethod
-    def log_change(cls, obj, change_type, user, description):
+    def log_change(cls, page, change_type, user, description):
         return cls(
-            object_pk=obj.pk, object_type=obj.__tablename__, user=user,
-            description=description, change_type=change_type,
+            page_pk=page.pk, user=user, description=description,
+            change_type=change_type,
         )

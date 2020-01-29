@@ -1,10 +1,12 @@
 from dataclasses import dataclass
 from typing import Any, ClassVar, Mapping
 
+import validators
 from flask import Markup, render_template_string
-from flask_wtf import FlaskForm
 from flask_sqlalchemy import BaseQuery
-from wtforms.fields import BooleanField
+from flask_wtf import FlaskForm
+from wtforms.fields import BooleanField, Field
+from wtforms.validators import ValidationError
 
 from ..ext import db
 
@@ -75,3 +77,15 @@ class ObjectForm(BaseForm):
 def update_form_queries(form: FlaskForm, queries: Mapping[str, BaseQuery]):
     for field_name, query in queries.items():
         form[field_name].query = query
+
+
+class EmailValidator:
+
+    def __init__(self, message=None):
+        if message is None:
+            message = 'Nieprawidłowy adres e-mail'
+        self.message = message
+
+    def __call__(self, form: FlaskForm, field: Field):
+        if not validators.email(field.data):
+            raise ValidationError(self.message)

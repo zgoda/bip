@@ -34,21 +34,17 @@ base_reqs = [
     'Flask-SQLAlchemy',
     'Flask-Babel',
     'Flask-Migrate',
-    'Flask-SimpleMDE',
     'Bootstrap-Flask',
     'SQLAlchemy-Filters',
-    'WTForms-Components',
-    'passlib[argon2]',
+    'validators',
     'Werkzeug',
     'Click',
     'keyring',
     'keyrings.cryptfile',
     'texttable',
-    'markdown2',
+    'markdown',
     'python-dotenv',
     'text-unidecode',
-    'anytree',
-    'blinker',
 ]
 
 test_reqs = [

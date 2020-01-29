@@ -18,7 +18,9 @@ user_ops = click.Group(name='user', help='Zarządzanie kontami użytkowników')
 
 
 @user_ops.command(name='login', help='Zaloguj użytkownika i zachowaj dane logowania')
-@click.option('--user-name', '-u', required=True, help='Nazwa konta użytkownika')
+@click.option(
+    '--name', '-n', 'user_name', required=True, help='Nazwa konta użytkownika'
+)
 @click.option(
     '--clear', '-c', is_flag=True, default=False,
     help='Wyczyść dane logowania (domyślnie: NIE)',

@@ -1,20 +1,17 @@
-from typing import Union
-
+from typing import Optional
 from flask_sqlalchemy import BaseQuery
-from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.fields import BooleanField, StringField, TextAreaField
+from wtforms.fields.html5 import EmailField
 from wtforms.validators import InputRequired
-from wtforms_components.fields import EmailField
-from wtforms_components.fields.html5 import IntegerField
-from wtforms_components.validators import Email
+from flask_login import current_user
 
 from ..data import Sort, page
-from ..models import Category, Page
-from ..utils.forms import ObjectForm
+from ..models import Page
+from ..utils.forms import EmailValidator, ObjectForm
 
 
 class UserForm(ObjectForm):
-    email = EmailField('email', validators=[Email()])
+    email = EmailField('email', validators=[EmailValidator()])
     active = BooleanField('aktywny')
     admin = BooleanField('administrator')
 
@@ -23,24 +20,10 @@ def page_query() -> BaseQuery:
     return page.query(sort=[Sort('title')])
 
 
-def object_display(obj: Union[Category, Page]) -> str:
+def object_display(obj: Page) -> str:
     if obj.active:
         return obj.title
     return f'{obj.title} (nieaktywna)'
-
-
-class CategoryForm(ObjectForm):
-    title = StringField('tytuł')
-    description = TextAreaField('opis')
-    active = BooleanField('aktywna')
-    menu_order = IntegerField('porządek w menu')
-    page = QuerySelectField(
-        'strona', query_factory=page_query, get_label=object_display,
-        allow_blank=True,
-    )
-    parent = QuerySelectField(
-        'kategoria nadrzędna', get_label=object_display, allow_blank=True
-    )
 
 
 class PageForm(ObjectForm):
@@ -52,3 +35,8 @@ class PageForm(ObjectForm):
     )
     description = TextAreaField('opis')
     active = BooleanField('aktywna')
+
+    def save(self, obj: Optional[Page] = None) -> Page:
+        if obj is None:
+            obj = Page(created_by=current_user)
+        return super().save(obj)

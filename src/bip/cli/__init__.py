@@ -5,7 +5,6 @@ from flask_migrate.cli import db as migrate_ops
 from .. import make_app
 from .database import commands as db_commands
 from .users import commands as user_commands
-from .categories import commands as category_commands
 from .pages import commands as page_commands
 
 migrate_ops.help = 'Operacje na bazie danych aplikacji'
@@ -19,7 +18,6 @@ cli = FlaskGroup(create_app=create_app, help='Zarządzanie aplikacją BIP')
 
 cli.add_command(db_commands.migrate_ops, name='db')
 cli.add_command(user_commands.user_ops)
-cli.add_command(category_commands.category_ops)
 cli.add_command(page_commands.page_ops)
 
 

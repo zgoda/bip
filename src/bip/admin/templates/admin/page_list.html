@@ -1,6 +1,8 @@
 {% extends "admin/base.html" %}
 
 {% from "macros/pagination.html" import render_pagination %}
+{% from "macros/forms.html" import render_form %}
+{% import "macros/mde.html" as mde %}
 
 {% block headpagetitle %}Strony{% endblock %}
 
@@ -28,5 +30,18 @@
   </tbody>
 </table>
 {{ render_pagination(pagination) }}
+{% else %}
+<p>Nie ma żadnych stron. Dodaj nową używając formularza poniżej.</p>
 {% endif %}
+<h2>Nowa strona</h2>
+{{ render_form(form, action=request.path) }}
+{% endblock %}
+
+{% block extrahead %}
+{{ mde.css() }}
+{{ mde.js() }}
+{% endblock %}
+
+{% block extrajs %}
+{{ mde.load_for('text') }}
 {% endblock %}
