@@ -19,7 +19,7 @@ do uruchamiania w kontenerze lub do pełnej instalacji w systemie Linux.
 
 .. toctree::
     :maxdepth: 2
-    :caption: Project documentation (in English)
+    :caption: Dokumentacja programistyczna
 
     devguide
     coc
