@@ -1,6 +1,7 @@
 {% extends "admin/base.html" %}
 
 {% from "macros/forms.html" import render_form %}
+{% import "macros/mde.html" as mde %}
 
 {% block headpagetitle %}Dane strony {{ object.title }}{% endblock %}
 
@@ -10,10 +11,10 @@
 {% endblock %}
 
 {% block extrahead %}
-{{ simplemde.css }}
-{{ simplemde.js }}
+{{ mde.css() }}
+{{ mde.js() }}
 {% endblock %}
 
 {% block extrajs %}
-{{ simplemde.load_id('text') }}
+{{ mde.load_for('text') }}
 {% endblock %}

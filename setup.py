@@ -34,7 +34,6 @@ base_reqs = [
     'Flask-SQLAlchemy',
     'Flask-Babel',
     'Flask-Migrate',
-    'Flask-SimpleMDE',
     'Bootstrap-Flask',
     'SQLAlchemy-Filters',
     'validators',
