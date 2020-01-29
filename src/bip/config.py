@@ -1,7 +1,9 @@
+import os
+
 DEBUG = False
 TESTING = False
-SECRET_KEY = 'not so secret'
-SQLALCHEMY_DATABASE_URI = 'sqlite://'
+SECRET_KEY = os.getenv('SECRET_KEY') or 'not so secret'
+SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI') or 'sqlite://'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 CSRF_ENABLED = True
 LIST_SIZE = 20

@@ -7,7 +7,7 @@ from flask_sqlalchemy import BaseQuery
 from sqlalchemy_filters import apply_filters, apply_sort
 
 from .ext import db
-from .models import Category, ChangeRecord, ChangeType, Page, User
+from .models import ChangeRecord, ChangeType, Page, User
 from .utils.db import Model
 from .utils.http import or_404
 
@@ -99,7 +99,6 @@ class ChangeAccessObject(AccessObject):
         return self.klass_.log_change(obj, change_type, user, description)
 
 
-category = AccessObject.for_class(Category)
 page = AccessObject.for_class(Page)
 user = UserAccessObject.make(object_name='user')
 change = ChangeAccessObject.make()

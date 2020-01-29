@@ -8,9 +8,8 @@ from werkzeug.utils import cached_property
 from bip import make_app
 from bip.ext import db
 
-from .factories import CategoryFactory, PageFactory, UserFactory
+from .factories import PageFactory, UserFactory
 
-register(CategoryFactory)
 register(PageFactory)
 register(UserFactory)
 

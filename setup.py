@@ -38,17 +38,14 @@ base_reqs = [
     'Bootstrap-Flask',
     'SQLAlchemy-Filters',
     'WTForms-Components',
-    'passlib[argon2]',
     'Werkzeug',
     'Click',
     'keyring',
     'keyrings.cryptfile',
     'texttable',
-    'markdown2',
+    'markdown',
     'python-dotenv',
     'text-unidecode',
-    'anytree',
-    'blinker',
 ]
 
 test_reqs = [
