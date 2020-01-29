@@ -79,7 +79,8 @@ class Page(db.Model, Timestamp):
     )
     description = db.Column(db.Text)
     active = db.Column(db.Boolean, default=True, index=True)
-    main = db.Column(db.Boolean, default=False, index=True)
+    main = db.Column(db.Boolean, default=True, index=True)
+    order = db.Column(db.Integer, index=True)
     labels = db.relationship(
         'Label', secondary=page_labels, lazy='subquery',
         backref=db.backref('pages', lazy=True),

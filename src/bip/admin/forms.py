@@ -1,8 +1,8 @@
 from typing import Optional
 from flask_sqlalchemy import BaseQuery
 from wtforms.fields import BooleanField, StringField, TextAreaField
-from wtforms.fields.html5 import EmailField
-from wtforms.validators import InputRequired
+from wtforms.fields.html5 import EmailField, IntegerField
+from wtforms.validators import InputRequired, Optional as ValueOptional
 from flask_login import current_user
 
 from ..data import Sort, page
@@ -27,6 +27,11 @@ def object_display(obj: Page) -> str:
 
 
 class PageForm(ObjectForm):
+    order = IntegerField(
+        'porządek', validators=[ValueOptional()],
+        description='strony bez ustawionego porządku są sortowane na końcu '
+        'listy według tytułu'
+    )
     title = StringField('tytuł', validators=[InputRequired()])
     short_title = StringField('krótki tytuł')
     text = TextAreaField(
@@ -35,6 +40,9 @@ class PageForm(ObjectForm):
     )
     description = TextAreaField('opis')
     active = BooleanField('aktywna')
+    main = BooleanField(
+        'główna', description='czy strona ma być widoczna na liście stron w menu'
+    )
 
     def save(self, obj: Optional[Page] = None) -> Page:
         if obj is None:

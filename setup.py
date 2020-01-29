@@ -45,6 +45,7 @@ base_reqs = [
     'markdown',
     'python-dotenv',
     'text-unidecode',
+    'psycopg2-binary',
 ]
 
 test_reqs = [
