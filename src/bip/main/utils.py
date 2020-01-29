@@ -4,6 +4,7 @@ from typing import List
 from flask import url_for
 
 from ..data import Filter, Sort, page
+from ..models import Page
 from ..utils.menu import MenuItem
 
 
@@ -30,12 +31,9 @@ def page_links() -> List[MenuItem]:
     nonnull_filters = [Filter('order', 'is_not_null')] + base_filters
     null_filters = [Filter('order', 'is_null')] + base_filters
     order = Sort('title')
-    q_non_nulls = page.query(
-        filters=nonnull_filters, sort=[order]
-    ).values('title', 'pk')
-    q_nulls = page.query(
-        filters=null_filters, sort=[order]
-    ).values('title', 'pk')
+    cols = [Page.title, Page.pk]
+    q_non_nulls = page.query(filters=nonnull_filters, sort=[order]).values(*cols)
+    q_nulls = page.query(filters=null_filters, sort=[order]).values(*cols)
     # order by NULLS LAST supported by PostgreSQL and SQLite >= 3.30 only
     for q in (q_non_nulls, q_nulls):
         for title, pk in q:
