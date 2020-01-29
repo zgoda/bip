@@ -1,12 +1,11 @@
-from collections import namedtuple
 from dataclasses import dataclass, field
-from typing import Any, Mapping, Optional, Type
+from typing import Any, Mapping, Optional, Type, Sequence
 
 from flask import Response, flash, redirect, render_template, request, url_for
 from flask_sqlalchemy import BaseQuery
 from flask_wtf import FlaskForm
 
-from ..data import AccessObject
+from ..data import AccessObject, Sort, Filter
 from ..utils.forms import update_form_queries
 from ..utils.pagination import paginate
 
@@ -23,10 +22,14 @@ class ItemMeta:
     success_url_kwargs: Mapping[str, Any] = field(default_factory=dict)
 
 
-ItemCollectionMeta = namedtuple(
-    'ItemCollectionMeta', 'dataobject,template,order,filters',
-    defaults=(None, None, None),
-)
+@dataclass
+class ItemCollectionMeta:
+    dataobject: AccessObject
+    form: Type[FlaskForm]
+    message: Optional[str] = None
+    template: Optional[str] = None
+    order: Optional[Sort] = None
+    filters: Optional[Sequence[Filter]] = None
 
 
 def default_admin_item_view(item_meta: ItemMeta, item_pk: Any) -> Response:
@@ -60,9 +63,18 @@ def default_admin_item_view(item_meta: ItemMeta, item_pk: Any) -> Response:
 
 
 def default_admin_list_view(item_meta: ItemCollectionMeta) -> Response:
+    form = item_meta.form()
+    if form.validate_on_submit():
+        obj = form.save()
+        message = item_meta.message
+        if message is None:
+            message = f'obiekt {obj} utworzony'
+            flash(message, category='success')
+            return redirect(request.path)
     query = item_meta.dataobject.query(sort=item_meta.order, filters=item_meta.filters)
     context = {
-        'pagination': paginate(query)
+        'pagination': paginate(query),
+        'form': form,
     }
     template = item_meta.template
     if template is None:

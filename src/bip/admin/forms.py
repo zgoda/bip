@@ -1,7 +1,9 @@
+from typing import Optional
 from flask_sqlalchemy import BaseQuery
 from wtforms.fields import BooleanField, StringField, TextAreaField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import InputRequired
+from flask_login import current_user
 
 from ..data import Sort, page
 from ..models import Page
@@ -33,3 +35,8 @@ class PageForm(ObjectForm):
     )
     description = TextAreaField('opis')
     active = BooleanField('aktywna')
+
+    def save(self, obj: Optional[Page] = None) -> Page:
+        if obj is None:
+            obj = Page(created_by=current_user)
+        return super().save(obj)

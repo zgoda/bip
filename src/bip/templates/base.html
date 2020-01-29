@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="/static/vendor/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="/static/css/app.css">
     <link rel="icon" type="image/png" href="/static/img/icon.png">
+    {% block extrahead %}
+    {% endblock %}
   </head>
   <body role="document">
     <div class="container">
@@ -100,5 +102,7 @@
     <script src="/static/vendor/jquery-3.4.1.slim.min.js"></script>
     <script src="/static/vendor/popper.min.js"></script>
     <script src="/static/vendor/bootstrap/js/bootstrap.min.js"></script>
+    {% block extrajs %}
+    {% endblock %}
   </body>
 </html>

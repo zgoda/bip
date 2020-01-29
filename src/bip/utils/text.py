@@ -88,16 +88,34 @@ def truncate_string(s: str, length: int) -> str:
 
 class VendoredMDE(SimpleMDE):
 
+    JS_LOAD = """
+<script>
+var simplemde = new EasyMDE();
+</script>
+"""
+
+    JS_LOAD_WITH_ID = """<script>
+var simplemde = new EasyMDE({ element: document.getElementById("%s") });
+</script>
+"""
+
     @property
     def css(self):
         link = CSS_LINK_TEMPLATE % url_for(
-            'static', 'vendor/simplemde/simplemde.min.css'
+            'static', filename='vendor/easymde.min.css'
         )
         return Markup(link)
 
     @property
     def js(self):
         link = JS_LINK_TEMPLATE % url_for(
-            'static', 'vendor/simplemde/simplemde.min.js'
+            'static', filename='vendor/easymde.min.js'
         )
         return Markup(link)
+
+    @property
+    def load(self):
+        return Markup(self.JS_LOAD)
+
+    def load_id(self, el_id):
+        return Markup(self.JS_LOAD_WITH_ID % el_id)

@@ -85,6 +85,9 @@ class Page(db.Model, Timestamp):
         backref=db.backref('pages', lazy=True),
     )
 
+    def __repr__(self):
+        return self.title
+
 
 @db.event.listens_for(Page, 'before_insert')
 @db.event.listens_for(Page, 'before_update')

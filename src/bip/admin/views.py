@@ -39,7 +39,9 @@ def home() -> Response:
 @admin_bp.route('/users/list')
 def user_list() -> Response:
     return default_admin_list_view(
-        ItemCollectionMeta(dataobject=DAO_MODEL_MAP[User], order=[Sort(field='name')])
+        ItemCollectionMeta(
+            dataobject=DAO_MODEL_MAP[User], order=[Sort(field='name')], form=UserForm
+        )
     )
 
 
@@ -48,10 +50,12 @@ def user_detail(user_pk: int) -> Response:
     return default_admin_item_view(user_item_meta, user_pk)
 
 
-@admin_bp.route('/page/list')
+@admin_bp.route('/page/list', methods=['POST', 'GET'])
 def page_list() -> Response:
     return default_admin_list_view(
-        ItemCollectionMeta(dataobject=DAO_MODEL_MAP[Page], order=[Sort(field='title')])
+        ItemCollectionMeta(
+            dataobject=DAO_MODEL_MAP[Page], order=[Sort(field='title')], form=PageForm
+        )
     )
 
 
