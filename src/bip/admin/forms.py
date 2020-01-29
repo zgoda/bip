@@ -1,16 +1,15 @@
 from flask_sqlalchemy import BaseQuery
 from wtforms.fields import BooleanField, StringField, TextAreaField
+from wtforms.fields.html5 import EmailField
 from wtforms.validators import InputRequired
-from wtforms_components.fields import EmailField
-from wtforms_components.validators import Email
 
 from ..data import Sort, page
 from ..models import Page
-from ..utils.forms import ObjectForm
+from ..utils.forms import EmailValidator, ObjectForm
 
 
 class UserForm(ObjectForm):
-    email = EmailField('email', validators=[Email()])
+    email = EmailField('email', validators=[EmailValidator()])
     active = BooleanField('aktywny')
     admin = BooleanField('administrator')
 

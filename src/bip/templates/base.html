@@ -1,5 +1,3 @@
-{% from 'macros/menu.html' import render_menu %}
-
 <!doctype html>
 <html lang="pl">
   <head>
@@ -53,19 +51,24 @@
       {% endwith %}
 
       <div class="row my-2">
+
+        <!-- sidebar -->
         <div class="col col-md-3">
-          <h6>Kategorie</h6>
-          {{ render_menu(menu_tree) }}
+          <h6>Strony</h6>
           <hr>
           <h6>Konto redaktora</h6>
           <ul class="nav flex-column">
-            {% for item in tools %}
-            {% if (current_user.is_authenticated and not item.hide.authenticated) or (current_user.is_anonymous and not item.hide.anonymous) %}
+            {% if current_user.is_authenticated %}
+            {% for item in editortools %}
             <li class="nav-item">
               <a class="nav-link" href="{{ item.url }}">{{ item.title }}</a>
             </li>
-            {% endif %}
             {% endfor %}
+            {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('auth.login') }}">zaloguj</a>
+            </li>
+            {% endif %}
           </ul>
           {% if current_user.is_authenticated and current_user.admin %}
           <hr>
@@ -79,15 +82,21 @@
           </ul>
           {% endif %}
         </div>
+
+        <!-- content area -->
         <div class="col col-md-9">
           {% block content %}
           {% endblock %}
         </div>
+
       </div>
+
       <footer>
         <hr>
       </footer>
+
     </div>
+
     <script src="/static/vendor/jquery-3.4.1.slim.min.js"></script>
     <script src="/static/vendor/popper.min.js"></script>
     <script src="/static/vendor/bootstrap/js/bootstrap.min.js"></script>

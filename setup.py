@@ -37,7 +37,7 @@ base_reqs = [
     'Flask-SimpleMDE',
     'Bootstrap-Flask',
     'SQLAlchemy-Filters',
-    'WTForms-Components',
+    'validators',
     'Werkzeug',
     'Click',
     'keyring',

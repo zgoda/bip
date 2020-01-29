@@ -1,15 +1,14 @@
 from wtforms.fields import PasswordField
+from wtforms.fields.html5 import EmailField
 from wtforms.validators import EqualTo, InputRequired
-from wtforms_components.fields import EmailField
-from wtforms_components.validators import Email
 
 from ..ext import db
 from ..models import User
-from ..utils.forms import BaseForm, ObjectForm
+from ..utils.forms import BaseForm, EmailValidator, ObjectForm
 
 
 class ProfileForm(ObjectForm):
-    email = EmailField('email', validators=[Email()])
+    email = EmailField('email', validators=[EmailValidator()])
 
 
 class ChangePasswordForm(BaseForm):
