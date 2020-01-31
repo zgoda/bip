@@ -3,7 +3,6 @@ from typing import Optional
 
 from flask_login import current_user
 from markdown import markdown
-from peewee import Query
 from wtforms.fields import BooleanField, StringField, TextAreaField
 from wtforms.fields.html5 import EmailField, IntegerField
 from wtforms.validators import InputRequired, Optional as ValueOptional
@@ -17,16 +16,6 @@ class UserForm(ObjectForm):
     email = EmailField('email', validators=[EmailValidator()])
     active = BooleanField('aktywny')
     admin = BooleanField('administrator')
-
-
-def page_query() -> Query:
-    return Page.select().order_by(Page.title)
-
-
-def object_display(obj: Page) -> str:
-    if obj.active:
-        return obj.title
-    return f'{obj.title} (nieaktywna)'
 
 
 class PageForm(ObjectForm):
