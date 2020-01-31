@@ -45,6 +45,9 @@ class User(Model, UserMixin):
     created = DateTimeField(default=datetime.utcnow)
     admin = BooleanField(default=False)
 
+    def __int__(self):
+        return self.pk
+
     def get_id(self):
         return str(self.pk)
 

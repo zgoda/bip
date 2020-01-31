@@ -65,9 +65,10 @@ class BaseForm(FlaskForm):
 
 class ObjectForm(BaseForm):
 
-    def save(self, obj: Model) -> Model:
+    def save(self, obj: Model, save: bool = True) -> Model:
         self.populate_obj(obj)
-        obj.save()
+        if save:
+            obj.save()
         return obj
 
 

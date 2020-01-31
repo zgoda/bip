@@ -1,6 +1,6 @@
-from markdown import markdown
 import factory
-from factory import base
+from factory.base import Factory, FactoryOptions, OptionDefault
+from markdown import markdown
 
 from bip.models import Page, User, db
 from bip.utils.text import slugify
@@ -8,14 +8,15 @@ from bip.utils.text import slugify
 DEFAULT_PASSWORD = 'password'
 
 
-class PeeweeOptions(base.FactoryOptions):
+class PeeweeOptions(FactoryOptions):
+
     def _build_default_options(self):
-        return super(PeeweeOptions, self)._build_default_options() + [
-            base.OptionDefault('database', None, inherit=True),
+        return super()._build_default_options() + [
+            OptionDefault('database', None, inherit=True),
         ]
 
 
-class PeeweeModelFactory(base.Factory):
+class PeeweeModelFactory(Factory):
 
     _options_class = PeeweeOptions
 
@@ -25,16 +26,7 @@ class PeeweeModelFactory(base.Factory):
     @classmethod
     def _create(cls, target_class, *args, **kwargs):
         """Create an instance of the model, and save it to the database."""
-        obj = target_class(**kwargs)
-        obj.save()
-        return obj
-
-    @classmethod
-    def _after_postgeneration(cls, instance, create, results=None):
-        """Save again the instance if creating and at least one hook ran."""
-        if create and results:
-            # Some post-generation hooks ran, and may have modified us.
-            instance.save()
+        return target_class.create(**kwargs)
 
 
 class UserFactory(PeeweeModelFactory):

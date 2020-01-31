@@ -16,15 +16,17 @@
       <th scope="col">utworzona</th>
       <th scope="col">zmodyfikowana</th>
       <th scope="col">aktywna</th>
+      <th scope="col">w menu</th>
     </tr>
   </thead>
   <tbody>
     {% for page in pagination.items %}
     <tr>
       <td><a href="{{ url_for('admin.page_detail', page_pk=page.pk) }}">{{ page.title }}</a></td>
-      <td>{{ page.created|datetimeformat(format='long') }}</td>
-      <td>{{ page.updated|datetimeformat(format='long') }}</td>
+      <td>{{ page.created|datetimeformat(format='short') }}</td>
+      <td>{{ page.updated|datetimeformat(format='short') }}</td>
       <td>{{ page.active|yesno }}</td>
+      <td>{{ page.main|yesno }}</td>
     </tr>
     {% endfor %}
   </tbody>

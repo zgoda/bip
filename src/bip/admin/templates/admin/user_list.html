@@ -21,7 +21,7 @@
     {% for user in pagination.items %}
     <tr>
       <td><a href="{{ url_for('admin.user_detail', user_pk=user.pk) }}">{{ user.name }}</a></td>
-      <td>{{ user.created|dateformat(format='long') }}</td>
+      <td>{{ user.created|dateformat(format='short') }}</td>
       <td>{{ user.email }}</td>
       <td>{{ user.active|yesno }}</td>
       <td>{{ user.admin|yesno }}</td>

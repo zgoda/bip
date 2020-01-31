@@ -1,6 +1,8 @@
+from datetime import datetime
 from typing import Optional
 
 from flask_login import current_user
+from markdown import markdown
 from peewee import Query
 from wtforms.fields import BooleanField, StringField, TextAreaField
 from wtforms.fields.html5 import EmailField, IntegerField
@@ -8,6 +10,7 @@ from wtforms.validators import InputRequired, Optional as ValueOptional
 
 from ..models import Page
 from ..utils.forms import EmailValidator, ObjectForm
+from ..utils.text import slugify
 
 
 class UserForm(ObjectForm):
@@ -33,7 +36,6 @@ class PageForm(ObjectForm):
         'listy według tytułu'
     )
     title = StringField('tytuł', validators=[InputRequired()])
-    short_title = StringField('krótki tytuł')
     text = TextAreaField(
         'tekst', validators=[InputRequired()],
         description='treść strony zapisana przy użyciu Markdown',
@@ -47,4 +49,10 @@ class PageForm(ObjectForm):
     def save(self, obj: Optional[Page] = None) -> Page:
         if obj is None:
             obj = Page(created_by=current_user)
-        return super().save(obj)
+        page = super().save(obj, False)
+        page.updated_by = current_user
+        page.updated = datetime.utcnow()
+        page.slug = slugify(page.title)
+        page.text_html = markdown(page.text)
+        page.save()
+        return page
