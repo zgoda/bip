@@ -3,9 +3,5 @@ import os
 DEBUG = False
 TESTING = False
 SECRET_KEY = os.getenv('SECRET_KEY') or 'not so secret'
-SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI') or 'sqlite://'
-SQLALCHEMY_TRACK_MODIFICATIONS = False
 CSRF_ENABLED = True
 LIST_SIZE = 20
-SIMPLEMDE_JS_IIFE = True
-SIMPLEMDE_USE_CDN = False

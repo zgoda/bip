@@ -1,39 +1,39 @@
 from dataclasses import dataclass, field
-from typing import Any, Mapping, Optional, Type, Sequence
+from typing import Any, Mapping, Optional, Sequence, Type
 
 from flask import Response, flash, redirect, render_template, request, url_for
-from flask_sqlalchemy import BaseQuery
 from flask_wtf import FlaskForm
+from peewee import Expression, Field, Model, Query
 
-from ..data import AccessObject, Sort, Filter
 from ..utils.forms import update_form_queries
 from ..utils.pagination import paginate
+from ..utils.http import or_404
 
 
 @dataclass
 class ItemMeta:
-    dataobject: AccessObject
+    dataobject: Model
     form: Type[FlaskForm]
     message: str
     success_url: str
     title_field: Optional[str] = None
-    form_queries: Mapping[str, BaseQuery] = field(default_factory=dict)
+    form_queries: Mapping[str, Query] = field(default_factory=dict)
     template: Optional[str] = None
     success_url_kwargs: Mapping[str, Any] = field(default_factory=dict)
 
 
 @dataclass
 class ItemCollectionMeta:
-    dataobject: AccessObject
+    dataobject: Model
     form: Type[FlaskForm]
     message: Optional[str] = None
     template: Optional[str] = None
-    order: Optional[Sort] = None
-    filters: Optional[Sequence[Filter]] = None
+    order: Optional[Field] = None
+    filters: Optional[Sequence[Expression]] = None
 
 
 def default_admin_item_view(item_meta: ItemMeta, item_pk: Any) -> Response:
-    obj = item_meta.dataobject.get(item_pk, abort_on_none=True)
+    obj = or_404(item_meta.dataobject.get(item_pk))
     form = None
     if request.method == 'POST':
         form = item_meta.form()
@@ -58,7 +58,7 @@ def default_admin_item_view(item_meta: ItemMeta, item_pk: Any) -> Response:
     }
     template = item_meta.template
     if template is None:
-        template = f'admin/{item_meta.dataobject.object_name}_detail.html'
+        template = f'admin/{item_meta.dataobject._meta.name}_detail.html'
     return render_template(template, **context)
 
 
@@ -71,12 +71,15 @@ def default_admin_list_view(item_meta: ItemCollectionMeta) -> Response:
             message = f'obiekt {obj} utworzony'
             flash(message, category='success')
             return redirect(request.path)
-    query = item_meta.dataobject.query(sort=item_meta.order, filters=item_meta.filters)
+    query = item_meta.dataobject.select()
+    if item_meta.filters:
+        query = query.where(*item_meta.filters)
+    query = query.order_by(item_meta.order)
     context = {
         'pagination': paginate(query),
         'form': form,
     }
     template = item_meta.template
     if template is None:
-        template = f'admin/{item_meta.dataobject.object_name}_list.html'
+        template = f'admin/{item_meta.dataobject.__name__.lower()}_list.html'
     return render_template(template, **context)

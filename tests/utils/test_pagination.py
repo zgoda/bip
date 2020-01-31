@@ -1,6 +1,6 @@
 import pytest
 
-from bip.data import user
+from bip.models import User
 from bip.utils.pagination import url_for_other_page, get_page, paginate
 
 
@@ -42,7 +42,7 @@ class TestPaginationUtils:
         mocker.patch('bip.utils.pagination.get_page', mocker.Mock(return_value=page))
         config['LIST_SIZE'] = 3
         user_factory.create_batch(10, password='pass')
-        query = user.query()
+        query = User.select()
         rv = paginate(query)
         assert rv.has_next is True
         assert rv.has_prev is True
@@ -52,7 +52,7 @@ class TestPaginationUtils:
         mocker.patch('bip.utils.pagination.get_page', mocker.Mock(return_value=1))
         config['LIST_SIZE'] = 3
         user_factory.create_batch(10, password='pass')
-        query = user.query()
+        query = User.select()
         rv = paginate(query)
         assert rv.has_next is True
         assert rv.has_prev is False
@@ -61,7 +61,7 @@ class TestPaginationUtils:
         mocker.patch('bip.utils.pagination.get_page', mocker.Mock(return_value=4))
         config['LIST_SIZE'] = 3
         user_factory.create_batch(10, password='pass')
-        query = user.query()
+        query = User.select()
         rv = paginate(query)
         assert rv.has_next is False
         assert rv.has_prev is True
@@ -70,7 +70,7 @@ class TestPaginationUtils:
         mocker.patch('bip.utils.pagination.get_page', mocker.Mock(return_value=1))
         config['LIST_SIZE'] = 3
         user_factory.create_batch(10, password='pass')
-        query = user.query()
+        query = User.select()
         rv = paginate(query, page=4)
         assert rv.has_next is False
         assert rv.has_prev is True
@@ -79,7 +79,7 @@ class TestPaginationUtils:
         mocker.patch('bip.utils.pagination.get_page', mocker.Mock(return_value=1))
         config['LIST_SIZE'] = 3
         user_factory.create_batch(10, password='pass')
-        query = user.query()
+        query = User.select()
         rv = paginate(query, size=20)
         assert rv.has_next is False
         assert rv.has_prev is False

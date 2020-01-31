@@ -3,7 +3,6 @@ from typing import Optional
 from flask import Response, abort, render_template
 from flask_login import current_user, login_required
 
-from ..data import DAO_MODEL_MAP, Sort
 from ..models import Page, User
 from . import admin_bp
 from .forms import PageForm, UserForm
@@ -12,13 +11,13 @@ from .utils import (
 )
 
 page_item_meta = ItemMeta(
-    dataobject=DAO_MODEL_MAP[Page], form=PageForm,
+    dataobject=Page, form=PageForm,
     message='dane strony {obj_name} zostały zmienione', success_url='admin.page_list',
     title_field='title',
 )
 
 user_item_meta = ItemMeta(
-    dataobject=DAO_MODEL_MAP[User], form=UserForm,
+    dataobject=User, form=UserForm,
     message='dane użytkownika {obj_name} zostały zmienione',
     success_url='admin.user_list', title_field='name',
 )
@@ -40,7 +39,7 @@ def home() -> Response:
 def user_list() -> Response:
     return default_admin_list_view(
         ItemCollectionMeta(
-            dataobject=DAO_MODEL_MAP[User], order=[Sort(field='name')], form=UserForm
+            dataobject=User, order=[User.name], form=UserForm
         )
     )
 
@@ -54,7 +53,7 @@ def user_detail(user_pk: int) -> Response:
 def page_list() -> Response:
     return default_admin_list_view(
         ItemCollectionMeta(
-            dataobject=DAO_MODEL_MAP[Page], order=[Sort(field='title')], form=PageForm
+            dataobject=Page, order=[Page.title], form=PageForm
         )
     )
 

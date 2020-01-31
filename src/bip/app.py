@@ -1,4 +1,5 @@
 import os
+import tempfile
 from logging.config import dictConfig
 
 import keyring
@@ -8,8 +9,9 @@ from werkzeug.utils import ImportStringError
 
 from .admin import admin_bp
 from .auth import auth_bp
-from .ext import babel, bootstrap, csrf, db, login_manager
+from .ext import babel, bootstrap, csrf, login_manager
 from .main import main_bp
+from .models import User, db
 from .user import user_bp
 from .utils.app import Application
 from .utils.site import Site, test_site
@@ -25,19 +27,13 @@ def make_app(env=None):
     # setup keyring for headless environments
     if flask_environment == 'production' or app.testing:
         keyring.set_keyring(CryptFileKeyring())
+    configure_database(app)
     configure_extensions(app)
     configure_templating(app)
     with app.app_context():
         configure_hooks(app)
         configure_blueprints(app)
         configure_error_handlers(app)
-
-    @app.shell_context_processor
-    def make_shell_context():  # pylint: disable=unused-variable
-        return {
-            'db': db,
-        }
-
     return app
 
 
@@ -48,6 +44,36 @@ def configure_app(app, env):
             app.config.from_object(f'bip.config_{env}')
         except ImportStringError:
             app.logger.info(f'no environment config for {env}')
+
+
+def configure_database(app):
+    driver = os.getenv('DB_DRIVER', 'sqlite')
+    if app.testing:
+        tmp_dir = tempfile.mkdtemp()
+        db_name = os.path.join(tmp_dir, 'bip.db')
+    else:
+        db_name = os.getenv('DB_NAME')
+    if driver == 'sqlite':
+        kw = {
+            'pragmas': {
+                'journal_mode': 'wal',
+                'cache_size': -1 * 64000,
+                'foreign_keys': 1,
+                'ignore_check_constraints': 0,
+            }
+        }
+        if db_name is None:
+            db_name = ':memory:'
+            kw = {}
+    else:
+        kw = {
+            'host': os.getenv('DB_HOST'),
+            'port': os.getenv('DB_PORT'),
+            'user': os.getenv('DB_USER'),
+            'password': os.getenv('DB_PASSWORD')
+        }
+    db.init(db_name, **kw)
+    db.connect()
 
 
 def configure_hooks(app):
@@ -71,7 +97,6 @@ def configure_blueprints(app):
 
 
 def configure_extensions(app):
-    db.init_app(app)
     babel.init_app(app)
     csrf.init_app(app)
     bootstrap.init_app(app)
@@ -83,8 +108,7 @@ def configure_extensions(app):
 
     @login_manager.user_loader
     def get_user(userid):  # pylint: disable=unused-variable
-        from .models import User
-        return User.query.get(userid)
+        return User.get(userid)
 
 
 def configure_templating(app):

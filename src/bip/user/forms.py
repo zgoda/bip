@@ -2,7 +2,6 @@ from wtforms.fields import PasswordField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import EqualTo, InputRequired
 
-from ..ext import db
 from ..models import User
 from ..utils.forms import BaseForm, EmailValidator, ObjectForm
 
@@ -23,5 +22,4 @@ class ChangePasswordForm(BaseForm):
 
     def save(self, user: User):
         user.set_password(self.new_password.data)
-        db.session.add(user)
-        db.session.commit()
+        user.save()

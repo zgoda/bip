@@ -29,13 +29,11 @@ long_description = read('README.rst')
 
 base_reqs = [
     'Flask',
+    'PeeWee',
     'Flask-Login',
     'Flask-WTF',
-    'Flask-SQLAlchemy',
     'Flask-Babel',
-    'Flask-Migrate',
     'Bootstrap-Flask',
-    'SQLAlchemy-Filters',
     'validators',
     'Werkzeug',
     'Click',
@@ -74,7 +72,6 @@ dev_reqs = [
     'isort',
     'towncrier',
     'Sphinx',
-    'sphinx-autodoc-typehints',
     'flask-shell-ipython',
     'termcolor',
     'watchdog',

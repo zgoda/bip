@@ -5,9 +5,7 @@ import keyring
 from flask import current_app
 from flask.cli import with_appcontext
 
-from ...data import Filter, Sort, user
 from ...display import ColumnOverride, DisplayMeta
-from ...ext import db
 from ...models import User
 from ...utils.cli import (
     ACTIVITY_NAME_MAP, SYS_NAME, create_table, login_user, print_table,
@@ -43,10 +41,10 @@ def user_login(user_name: str, clear: bool):
 @with_appcontext
 def user_list(active: bool):
     acct_prop = ACTIVITY_NAME_MAP[active]
-    filters = None
+    q = User.select()
     if active is not None:
-        filters = [Filter(field='active', op='eq', value=active)]
-    q = user.query(sort=[Sort(field='name')], filters=filters)
+        q = q.where(User.active == active)
+    q = q.order_by(User.name)
     acct_count = q.count()
     if acct_count == 0:
         click.echo('Nie ma żadnych kont użytkowników')
@@ -86,9 +84,11 @@ def user_list(active: bool):
 )
 @with_appcontext
 def user_create(name: str, password: str, email: str, active: bool, admin: bool):
-    user.create(
-        name=name, password=password, email=email, active=active, admin=admin
+    user = User(
+        name=name, email=email, active=active, admin=admin
     )
+    user.set_password(password)
+    user.save()
     click.echo(f'konto użytkownika {name} zostało założone')
 
 
@@ -123,7 +123,7 @@ def user_change(name: str, email: str, active: bool, user_name: str):
             'tylko administrator może aktywować konta użytkowników'
         )
     if actor.name != name:
-        user_obj = user.by_name(name)
+        user_obj = User.get_or_none(User.name == name)
         if user_obj is None:
             raise click.ClickException(f'nie znaleziono konta użytkownika {name}')
     else:
@@ -132,8 +132,7 @@ def user_change(name: str, email: str, active: bool, user_name: str):
         user_obj.email = email
     if active is not None:
         user_obj.active = active
-    db.session.add(user_obj)
-    db.session.commit()
+    user_obj.save()
     click.echo(f'dane konta użytkownika {name} zostały zmienione')
 
 

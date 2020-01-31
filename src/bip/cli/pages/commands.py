@@ -4,9 +4,8 @@ import click
 from flask import current_app
 from flask.cli import with_appcontext
 
-from ...data import Filter, Sort, page
 from ...display import ColumnOverride, DisplayMeta
-from ...models import Page
+from ...models import Page, Label
 from ...utils.cli import ACTIVITY_NAME_MAP, ColDataType, create_table, print_table
 from ...utils.text import truncate_string, yesno
 
@@ -21,11 +20,11 @@ page_ops = click.Group(name='page', help='Zarządzanie stronami biuletynu')
 @with_appcontext
 def page_list(active):
     page_prop = ACTIVITY_NAME_MAP[active]
-    sort = [Sort('title')]
-    filters = None
+    sort = [Page.title]
+    q = Page.select()
     if active is not None:
-        filters = [Filter(field='active', op='eq', value=active)]
-    q = page.query(sort, filters)
+        q = q.where(Page.active == active)
+    q = q.order_by(*sort)
     page_count = q.count()
     if page_count == 0:
         click.echo('Nie ma żadnych stron')
@@ -43,7 +42,7 @@ def page_list(active):
     ).cli_list_columns(overrides=col_overrides)
     table = create_table(current_app.testing, columns)
     for page_obj in q:
-        labels = ', '.join([c.title for c in page_obj.labels])
+        labels = ', '.join([c.name for c in page_obj.labels(order=Label.name)])
         table.add_row([
             page_obj.pk, truncate_string(page_obj.title, 80), yesno(page_obj.active),
             labels,

@@ -4,8 +4,8 @@ from collections import namedtuple
 from dataclasses import dataclass, field
 from typing import List, Mapping, Optional
 
+from .models import Model
 from .utils.cli import ColAlign, ColDataType, ColSpec
-from .utils.db import Model
 
 ColumnOverride = namedtuple(
     'ColumnOverride', ['title', 'datatype', 'align'], defaults=(None, None)
@@ -20,8 +20,8 @@ _COLUMN_DEFAULT_ALIGN = {
 
 _DATATYPE_TO_COLTYPE = {
     float: ColDataType.float,
-    int: ColDataType.int,
-    bool: ColDataType.exp,
+    'AUTO': ColDataType.int,
+    'BOOL': ColDataType.exp,
 }
 
 
@@ -41,10 +41,10 @@ class DisplayMeta:
             col_data_type = ColDataType.auto
             col_align = _COLUMN_DEFAULT_ALIGN[col_data_type]
             col_title = name
-            column = self.klass.__table__.columns.get(name)
+            column = self.klass._meta.fields.get(name)
             if column is not None:
                 col_data_type = _DATATYPE_TO_COLTYPE.get(
-                    column.type.python_type, ColDataType.auto
+                    column.field_type, ColDataType.auto
                 )
                 col_align = _COLUMN_DEFAULT_ALIGN.get(col_data_type, ColAlign.left)
             col_override = overrides.get(name) or self.overrides.get(name)

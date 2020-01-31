@@ -1,11 +1,11 @@
 from typing import Optional
-from flask_sqlalchemy import BaseQuery
+
+from flask_login import current_user
+from peewee import Query
 from wtforms.fields import BooleanField, StringField, TextAreaField
 from wtforms.fields.html5 import EmailField, IntegerField
 from wtforms.validators import InputRequired, Optional as ValueOptional
-from flask_login import current_user
 
-from ..data import Sort, page
 from ..models import Page
 from ..utils.forms import EmailValidator, ObjectForm
 
@@ -16,8 +16,8 @@ class UserForm(ObjectForm):
     admin = BooleanField('administrator')
 
 
-def page_query() -> BaseQuery:
-    return page.query(sort=[Sort('title')])
+def page_query() -> Query:
+    return Page.select().order_by(Page.title)
 
 
 def object_display(obj: Page) -> str:

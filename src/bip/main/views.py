@@ -1,8 +1,8 @@
 from flask import render_template
+from playhouse.flask_utils import get_object_or_404
 
+from ..models import Page
 from . import main_bp
-
-from ..data import page
 
 
 @main_bp.route('/')
@@ -27,5 +27,5 @@ def contact():
 
 @main_bp.route('/<int:page_id>', endpoint='page')
 def page_view(page_id: int):
-    page_obj = page.get(page_id, abort_on_none=True)
+    page_obj = get_object_or_404(Page, Page.pk == page_id)
     return render_template('main/page.html', page=page_obj)

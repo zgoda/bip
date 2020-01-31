@@ -1,7 +1,7 @@
 import pytest
 from flask import url_for
 
-from bip.ext import db
+from bip.models import User
 
 from .. import BIPTests
 
@@ -79,7 +79,7 @@ class TestChangePasswordView(BIPTests):
         }
         rv = self.client.post(self.url, data=data, follow_redirects=True)
         assert 'zostało pomyślnie zmienione' in rv.text
-        db.session.refresh(user)
+        user = User.get(User.name == self.name)
         assert user.check_password(new_password)
 
     def test_change_fail_passwords_differ(self, user_factory):
@@ -91,7 +91,7 @@ class TestChangePasswordView(BIPTests):
         }
         rv = self.client.post(self.url, data=data, follow_redirects=True)
         assert 'Hasła muszą być identyczne' in rv.text
-        db.session.refresh(user)
+        user = User.get(User.name == self.name)
         assert user.check_password(self.password)
 
     def test_change_fail_password_empty(self, user_factory):
@@ -103,5 +103,5 @@ class TestChangePasswordView(BIPTests):
         }
         rv = self.client.post(self.url, data=data, follow_redirects=True)
         assert 'To pole jest wymagane' in rv.text
-        db.session.refresh(user)
+        user = User.get(User.name == self.name)
         assert user.check_password(self.password)

@@ -3,7 +3,6 @@ from typing import List
 
 from flask import url_for
 
-from ..data import Filter, Sort, page
 from ..models import Page
 from ..utils.menu import MenuItem
 
@@ -26,15 +25,15 @@ def admin_tools() -> List[MenuItem]:
 
 def page_links() -> List[MenuItem]:
     base_filters = [
-        Filter('active', 'eq', True), Filter('main', 'eq', True)
+        (Page.active is True), (Page.main is True)
     ]
-    nonnull_filters = [Filter('order', 'is_not_null')] + base_filters
-    null_filters = [Filter('order', 'is_null')] + base_filters
-    order = Sort('title')
+    nonnull_filters = [Page.order.is_null(False)] + base_filters
+    null_filters = [Page.order.is_null(True)] + base_filters
+    order = Page.title
     cols = [Page.title, Page.pk]
-    q_non_nulls = page.query(filters=nonnull_filters, sort=[order]).values(*cols)
-    q_nulls = page.query(filters=null_filters, sort=[order]).values(*cols)
-    # order by NULLS LAST supported by PostgreSQL and SQLite >= 3.30 only
+    q_non_nulls = Page.select(*cols).where(*nonnull_filters).order_by(order).tuples()
+    q_nulls = Page.select(*cols).where(*null_filters).order_by(order).tuples()
+    # order by NULLS LAST is supported by PostgreSQL and SQLite >= 3.30 only
     for q in (q_non_nulls, q_nulls):
         for title, pk in q:
             yield MenuItem(title, url_for('main.page', page_id=pk))

@@ -1,14 +1,12 @@
 from dataclasses import dataclass
-from typing import Any, ClassVar, Mapping
+from typing import ClassVar, Mapping
 
 import validators
 from flask import Markup, render_template_string
-from flask_sqlalchemy import BaseQuery
 from flask_wtf import FlaskForm
+from peewee import Query, Model
 from wtforms.fields import BooleanField, Field
 from wtforms.validators import ValidationError
-
-from ..ext import db
 
 
 class Renderable:
@@ -67,14 +65,13 @@ class BaseForm(FlaskForm):
 
 class ObjectForm(BaseForm):
 
-    def save(self, obj: Any) -> Any:
+    def save(self, obj: Model) -> Model:
         self.populate_obj(obj)
-        db.session.add(obj)
-        db.session.commit()
+        obj.save()
         return obj
 
 
-def update_form_queries(form: FlaskForm, queries: Mapping[str, BaseQuery]):
+def update_form_queries(form: FlaskForm, queries: Mapping[str, Query]):
     for field_name, query in queries.items():
         form[field_name].query = query
 

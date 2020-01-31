@@ -12,16 +12,14 @@ class TestAdminViewHooks(BIPTests):
         self.admin_url = url_for('admin.home')
 
     def test_admin_access(self, user_factory):
-        admin_pw = 'pw_admin_1'
-        admin = user_factory(name='admin', password=admin_pw, admin=True)
-        self.login(admin.name, admin_pw)
+        admin = user_factory(name='admin', admin=True)
+        self.login(admin.name)
         rv = self.client.get(self.admin_url)
         assert rv.status_code == 200
 
     def test_regular_access(self, user_factory):
-        regular_pw = 'pw_regular_1'
-        regular = user_factory(name='regular', password=regular_pw)
-        self.login(regular.name, regular_pw)
+        regular = user_factory(name='regular')
+        self.login(regular.name)
         rv = self.client.get(self.admin_url)
         assert rv.status_code == 403
 

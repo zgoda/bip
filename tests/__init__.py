@@ -1,6 +1,10 @@
 class BIPTests:
 
-    def login(self, name, password, follow_redirects=True):
+    DEFAULT_PASSWORD = 'password'
+
+    def login(self, name, password=None, follow_redirects=True):
+        if password is None:
+            password = self.DEFAULT_PASSWORD
         data = {
             'username': name,
             'password': password,

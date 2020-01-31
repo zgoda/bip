@@ -3,7 +3,7 @@ import pytest
 from bip.cli.users.commands import (
     user_change, user_create, user_info, user_list, user_login,
 )
-from bip.data import user
+from bip.models import User
 
 from . import BIPCLITests
 
@@ -104,7 +104,7 @@ class TestUserOps(BIPCLITests):
         )
         assert rv.exit_code == 0
         assert 'zostały zmienione' in rv.output
-        user_obj = user.by_name(self.username)
+        user_obj = User.get(User.name == self.username)
         assert user_obj.email == new_email
 
     def test_user_change_email_self(self, mocker, user_factory):
@@ -117,7 +117,7 @@ class TestUserOps(BIPCLITests):
         )
         assert rv.exit_code == 0
         assert 'zostały zmienione' in rv.output
-        user_obj = user.by_name(self.username)
+        user_obj = User.get(User.name == self.username)
         assert user_obj.email == new_email
 
     def test_user_change_active(self, mocker, user_factory):
@@ -130,7 +130,7 @@ class TestUserOps(BIPCLITests):
         )
         assert rv.exit_code == 0
         assert 'zostały zmienione' in rv.output
-        user_obj = user.by_name(self.username)
+        user_obj = User.get(User.name == self.username)
         assert not user_obj.active
 
     def test_user_change_active_non_admin(self, mocker, user_factory):

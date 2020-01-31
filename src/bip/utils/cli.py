@@ -6,7 +6,6 @@ import click
 import keyring
 from texttable import Texttable
 
-from ..data import user
 from ..models import User
 
 SYS_NAME = 'bip'
@@ -54,7 +53,9 @@ def login_user(username: str, admin: bool = True) -> User:
     kw = {}
     if admin:
         kw['admin'] = True
-    user_obj = user.by_name(username, **kw)
+    user_obj = User.get_or_none(
+        User.name == username & User.admin == admin
+    )
     if not (user_obj and user_obj.check_password(password)):
         raise click.ClickException(
             'nieprawidłowe dane logowania lub niewystarczające uprawnienia - '
