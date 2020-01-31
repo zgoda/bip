@@ -27,10 +27,10 @@ def make_app(env=None):
     # setup keyring for headless environments
     if flask_environment == 'production' or app.testing:
         keyring.set_keyring(CryptFileKeyring())
-    configure_database(app)
-    configure_extensions(app)
-    configure_templating(app)
     with app.app_context():
+        configure_database(app)
+        configure_extensions(app)
+        configure_templating(app)
         configure_hooks(app)
         configure_blueprints(app)
         configure_error_handlers(app)
@@ -108,7 +108,7 @@ def configure_extensions(app):
 
     @login_manager.user_loader
     def get_user(userid):  # pylint: disable=unused-variable
-        return User.get(userid)
+        return User.get_or_none(User.pk == userid)
 
 
 def configure_templating(app):

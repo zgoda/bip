@@ -1,7 +1,7 @@
 from flask import render_template
-from playhouse.flask_utils import get_object_or_404
 
-from ..models import Page
+from ..models import Page, User
+from ..utils.http import or_404
 from . import main_bp
 
 
@@ -27,5 +27,15 @@ def contact():
 
 @main_bp.route('/<int:page_id>', endpoint='page')
 def page_view(page_id: int):
-    page_obj = get_object_or_404(Page, Page.pk == page_id)
+    Author = User.alias()  # noqa: N806
+    Editor = User.alias()  # noqa: N806
+    page_obj = or_404(
+        Page
+        .select(Page, Author, Editor)
+        .join(Author, on=(Page.created_by == Author.pk))
+        .switch(Page)
+        .join(Editor, on=(Page.updated_by == Editor.pk))
+        .where(Page.pk == page_id)
+        .get()
+    )
     return render_template('main/page.html', page=page_obj)
