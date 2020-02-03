@@ -67,14 +67,14 @@ class Label(Model):
     pk = AutoField(primary_key=True)
     name = CharField(max_length=200, index=True)
     slug = CharField(max_length=200)
-    description = TextField()
+    description = TextField(null=True)
     description_html = TextField()
 
 
 class Page(Model):
     pk = AutoField(primary_key=True)
-    title = CharField(max_length=200, index=True)
-    slug = CharField(max_length=200)
+    title = CharField(max_length=200, unique=True)
+    slug = CharField(max_length=200, index=True)
     text = TextField()
     text_html = TextField()
     created_by = ForeignKeyField(User, backref='pages_created')

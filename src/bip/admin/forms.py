@@ -7,7 +7,7 @@ from wtforms.fields import BooleanField, StringField, TextAreaField
 from wtforms.fields.html5 import EmailField, IntegerField
 from wtforms.validators import InputRequired, Optional as ValueOptional
 
-from ..models import Change, ChangeRecord, Page, db
+from ..models import Change, ChangeRecord, Page, db, Label
 from ..utils.forms import EmailValidator, ObjectForm
 from ..utils.text import slugify
 
@@ -54,3 +54,17 @@ class PageForm(ObjectForm):
             page.save()
             ChangeRecord.log_change(page, op, current_user, desc)
         return page
+
+
+class LabelForm(ObjectForm):
+    name = StringField('nazwa', validators=[InputRequired()])
+    description = TextAreaField('opis')
+
+    def save(self, obj: Optional[Label] = None) -> Label:
+        if obj is None:
+            obj = Label()
+        label = super().save(obj, False)
+        label.slug = slugify(label.name)
+        label.description_html = markdown(label.description)
+        label.save()
+        return label
