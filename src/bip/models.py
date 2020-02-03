@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 from datetime import datetime
 
@@ -108,7 +110,9 @@ class ChangeRecord(Model):
     user = ForeignKeyField(User, backref='changes')
 
     @classmethod
-    def log_change(cls, page, change_type, user, description):
+    def log_change(
+                cls, page: Page, change_type: Change, user: User, description: str
+            ) -> ChangeRecord:
         return cls.create(
             page=page, user=user, description=description, change_type=change_type,
         )

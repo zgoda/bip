@@ -5,7 +5,8 @@
 {% block content %}
 <h2>{{ page.title }}</h2>
 {{ page.text_html|safe }}
-<h4>Metryczka</h4>
+<hr>
+<h3>Metryczka</h3>
 <table class="table">
   <tr>
     <td>Utworzona</td>
@@ -15,5 +16,14 @@
     <td>Zmodyfikowana</td>
     <td>{{ page.updated|datetimeformat(format='short') }}, {{ page.updated_by.name }}</td>
   </tr>
+</table>
+<h4>Historia</h4>
+<table class="table">
+  {% for change in page.changes.order_by(change_order) %}
+  <tr>
+    <td>{{ change.description }}</td>
+    <td>{{ change.change_dt|datetimeformat(format='short') }}, {{ change.user.name }}</td>
+  </tr>
+  {% endfor %}
 </table>
 {% endblock %}
