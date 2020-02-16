@@ -1,6 +1,6 @@
 from flask import render_template
 
-from ..models import Page, User, ChangeRecord
+from ..models import ChangeRecord, Page, User
 from ..utils.http import or_404
 from . import main_bp
 

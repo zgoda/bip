@@ -6,8 +6,8 @@ from flask_wtf import FlaskForm
 from peewee import Expression, Field, Model, Query
 
 from ..utils.forms import update_form_queries
-from ..utils.pagination import paginate
 from ..utils.http import or_404
+from ..utils.pagination import paginate
 
 
 @dataclass

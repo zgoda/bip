@@ -7,7 +7,7 @@ from wtforms.fields import BooleanField, StringField, TextAreaField
 from wtforms.fields.html5 import EmailField, IntegerField
 from wtforms.validators import InputRequired, Optional as ValueOptional
 
-from ..models import Change, ChangeRecord, Page, db, Label
+from ..models import Change, ChangeRecord, Label, Page, db
 from ..utils.forms import EmailValidator, ObjectForm
 from ..utils.text import slugify
 
