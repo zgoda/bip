@@ -73,7 +73,6 @@ dev_reqs = [
     'towncrier',
     'Sphinx',
     'flask-shell-ipython',
-    'termcolor',
     'watchdog',
 ] + test_reqs
 
