@@ -3,7 +3,7 @@ from flask_login import current_user, login_required, login_user, logout_user
 
 from ..utils.views import next_redirect
 from . import auth_bp
-from .forms import LoginForm
+from .forms import LoginForm, ResetPasswordForm
 
 
 @auth_bp.route('/login', methods=['POST', 'GET'])
@@ -33,3 +33,12 @@ def logout() -> Response:
     logout_user()
     flash(f'użytkownik {user_name} wylogowany z systemu', category='success')
     return redirect(next_redirect('main.home'))
+
+
+@auth_bp.route('/forgotpw', methods=['POST', 'GET'])
+def forgot_password():
+    form = None
+    context = {
+        'form': form or ResetPasswordForm()
+    }
+    return render_template('auth/forgot_password.html', **context)

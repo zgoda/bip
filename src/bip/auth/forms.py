@@ -21,3 +21,11 @@ class LoginForm(FlaskForm):
         if user_obj is not None and user_obj.check_password(self.password.data):
             return user_obj
         return None
+
+
+class ResetPasswordForm(FlaskForm):
+    username = StringField('nazwa / email', validators=[InputRequired()])
+
+    buttons = [
+        Button(text='zresetuj', icon='key')
+    ]

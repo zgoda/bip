@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from datetime import datetime
 
-import peewee as p
+import peewee
 from flask_login import UserMixin
 from peewee import (
     AutoField, BooleanField, CharField, DateTimeField, ForeignKeyField, IntegerField,
@@ -12,15 +12,15 @@ from peewee import (
 from werkzeug.security import check_password_hash, generate_password_hash
 
 DB_DRIVER_MAP = {
-    'postgres': p.PostgresqlDatabase,
-    'mysql': p.MySQLDatabase,
+    'postgres': peewee.PostgresqlDatabase,
+    'mysql': peewee.MySQLDatabase,
 }
 
 
 def _get_db_driver_class():
     name = os.getenv('DB_DRIVER')
     if name is None:
-        return p.SqliteDatabase
+        return peewee.SqliteDatabase
     return DB_DRIVER_MAP[name]
 
 
@@ -33,7 +33,7 @@ class Change:
     deleted = 3
 
 
-class Model(p.Model):
+class Model(peewee.Model):
     class Meta:
         database = db
 

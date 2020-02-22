@@ -7,4 +7,5 @@
 {% block content %}
 <h1>Logowanie redaktora BIP</h1>
 {{ render_form(form, url_for('auth.login')) }}
+<p><a href="{{ url_for('auth.forgot_password') }}">Przypomnij hasło</a></p>
 {% endblock %}
