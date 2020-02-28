@@ -29,3 +29,9 @@ class ResetPasswordForm(FlaskForm):
     buttons = [
         Button(text='zresetuj', icon='key')
     ]
+
+    def save(self):
+        user_id = self.username.data
+        user_obj = User.get_or_none(User.name == user_id | User.email == user_id)
+        if user_obj is not None:
+            pass

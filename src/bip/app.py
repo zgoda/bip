@@ -5,7 +5,9 @@ from logging.config import dictConfig
 import keyring
 from flask import render_template
 from keyrings.cryptfile.cryptfile import CryptFileKeyring
-from werkzeug.utils import ImportStringError
+from werkzeug.utils import ImportStringError, import_string
+from redis import Redis
+import rq
 
 from .admin import admin_bp
 from .auth import auth_bp
@@ -29,6 +31,7 @@ def make_app(env=None):
         keyring.set_keyring(CryptFileKeyring())
     with app.app_context():
         configure_database(app)
+        configure_redis(app)
         configure_extensions(app)
         configure_templating(app)
         configure_hooks(app)
@@ -74,6 +77,18 @@ def configure_database(app):
         }
     db.init(db_name, **kw)
     db.connect()
+
+
+def configure_redis(app: Application):
+    redis_conn_cls = Redis
+    run_async = True
+    if app.testing:
+        redis_conn_cls = import_string('fakeredis.FakeStrictRedis')
+        run_async = False
+    app.redis = redis_conn_cls.from_url(app.config['REDIS_URL'])
+    app.queues = {
+        'tasks': rq.Queue('tasks', is_async=run_async, connection=app.redis)
+    }
 
 
 def configure_hooks(app):

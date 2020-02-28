@@ -43,6 +43,8 @@ base_reqs = [
     'markdown',
     'python-dotenv',
     'text-unidecode',
+    'RQ',
+    'hiredis',
 ]
 
 test_reqs = [
