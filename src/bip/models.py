@@ -9,18 +9,21 @@ from peewee import (
     AutoField, BooleanField, CharField, DateTimeField, ForeignKeyField, IntegerField,
     TextField,
 )
+from playhouse.pool import (
+    PooledMySQLDatabase, PooledPostgresqlDatabase, PooledSqliteDatabase,
+)
 from werkzeug.security import check_password_hash, generate_password_hash
 
 DB_DRIVER_MAP = {
-    'postgres': peewee.PostgresqlDatabase,
-    'mysql': peewee.MySQLDatabase,
+    'postgres': PooledPostgresqlDatabase,
+    'mysql': PooledMySQLDatabase,
 }
 
 
 def _get_db_driver_class():
     name = os.getenv('DB_DRIVER')
     if name is None:
-        return peewee.SqliteDatabase
+        return PooledSqliteDatabase
     return DB_DRIVER_MAP[name]
 
 
