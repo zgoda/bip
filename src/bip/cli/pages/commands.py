@@ -132,3 +132,31 @@ def label_create(name):
         label.description_html = markdown(description)
     label.save()
     click.echo(f'etykieta {label.name} została utworzona')
+
+
+@label_ops.command(name='change', help='Zmień istniejącą etykietę')
+@click.option('--name', '-n', required=True, help='Nazwa etykiety')
+@click.option('--new-name', help='Nowa nazwa dla etykiety')
+@with_appcontext
+def label_change(name, new_name):
+    label = Label.get_or_none(Label.name == name)
+    if label is None:
+        raise click.Abort(f'etykieta {name} nie istnieje')
+    if new_name is None:
+        new_name = label.name
+    change_desc = name == new_name
+    new_description = label.description
+    if click.confirm('Czy chcesz zmienić opis etykiety?', default=change_desc):
+        new_description = click.edit(label.description)
+    if new_description is None:
+        new_description = label.description or ''
+    new_description = new_description.strip()
+    label.name = new_name
+    label.slug = slugify(new_name)
+    if new_description:
+        label.description = new_description
+        label.description_html = markdown(new_description)
+    else:
+        label.description = label.description_html = None
+    label.save()
+    click.echo(f'etykieta {name} została zmieniona')
