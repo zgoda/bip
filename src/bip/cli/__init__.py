@@ -16,6 +16,7 @@ cli = FlaskGroup(create_app=create_app, help='Zarządzanie aplikacją BIP')
 cli.add_command(db_commands.db_ops)
 cli.add_command(user_commands.user_ops)
 cli.add_command(page_commands.page_ops)
+cli.add_command(page_commands.label_ops)
 
 
 def main():  # pragma: no cover

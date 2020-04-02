@@ -68,10 +68,10 @@ class User(Model, UserMixin):
 
 class Label(Model):
     pk = AutoField(primary_key=True)
-    name = CharField(max_length=200, index=True)
-    slug = CharField(max_length=200)
+    name = CharField(max_length=200, unique=True)
+    slug = CharField(max_length=200, index=True)
     description = TextField(null=True)
-    description_html = TextField()
+    description_html = TextField(null=True)
 
 
 class Page(Model):
