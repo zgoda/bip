@@ -6,7 +6,7 @@ from flask.cli import with_appcontext
 from markdown import markdown
 
 from ...display import ColumnOverride, DisplayMeta
-from ...models import Label, Page, PageLabel, db
+from ...models import Change, ChangeRecord, Label, Page, PageLabel, db
 from ...utils.cli import (
     ACTIVITY_NAME_MAP, ColDataType, create_table, login_user, print_table,
 )
@@ -38,9 +38,10 @@ def page_list(active):
         'pk': ColumnOverride(title='ID'),
         'title': ColumnOverride(title='Tytuł'),
         'active': ColumnOverride(title='Aktywna'),
+        'order': ColumnOverride(title='Kolejność'),
         'labels': ColumnOverride(title='Etykiety', datatype=ColDataType.text)
     }
-    col_names = ['pk', 'title', 'active', 'labels']
+    col_names = ['pk', 'title', 'active', 'order', 'labels']
     columns = DisplayMeta(
         Page, columns=col_names
     ).cli_list_columns(overrides=col_overrides)
@@ -49,7 +50,7 @@ def page_list(active):
         labels = ', '.join([c.label.name for c in page_obj.labels(order=Label.name)])
         table.add_row([
             page_obj.pk, truncate_string(page_obj.title, 80), yesno(page_obj.active),
-            labels,
+            page_obj.order, labels,
         ])
     print_table(table)
 
@@ -93,6 +94,105 @@ def page_create(title, active, main, labels, order, user_name):
         for label in label_objs:
             PageLabel.create(page=page, label=label)
     click.echo(f'strona {page.title} została utworzona')
+
+
+@page_ops.command(name='change', help='Zmień wskazaną stronę')
+@click.option('-i', '--id', 'page_id', required=True, help='ID strony', type=int)
+@click.option(
+    '-t', '--title', default=None, help='Nowy tytuł strony (domyślnie: bez zmiany)'
+)
+@click.option(
+    '--active/--inactive', default=None,
+    help='Strona będzie aktywna (domyślnie: bez zmiany)',
+)
+@click.option(
+    '--main/--not-main', default=None,
+    help='Strona będzie miała pozycję w menu głównym (domyślnie: bez zmiany)',
+)
+@click.option(
+    '-o', '--order', type=int, default=None,
+    help='Ustalenie porządku strony w menu (domyślnie: bez zmiany)',
+)
+@click.option(
+    '-u', '--user', 'user_name', required=True,
+    help='Nazwa użytkownika który wykonuje operację',
+)
+@with_appcontext
+def page_change(page_id, title, active, main, order, user_name):
+    actor = login_user(user_name, admin=False)
+    with db.atomic():
+        page = Page.get_by_id(page_id)
+        if all([title is None, active is None, main is None, order is None]):
+            click.echo(f'nie wprowadzono żadnych zmian strony {page.title}')
+        else:
+            changed = []
+            if title is not None:
+                page.title = title
+                page.slug = slugify(title)
+                changed.append('tytuł')
+            if active is not None:
+                page.active = active
+                changed.append('aktywna')
+            if main is not None:
+                page.main = main
+                changed.append('główna')
+            if order is not None:
+                page.order = order
+                changed.append('kolejność')
+            page.updated_by = actor
+            page.save()
+            changes = ', '.join(changed)
+            desc = f'zmodyfikowana ({changes})'
+            ChangeRecord.log_change(
+                page=page, change_type=Change.updated, user=actor, description=desc
+            )
+            click.echo(f'strona {page.title} została zmieniona')
+
+
+@page_ops.command(name='labels', help='Zmień etykiety wskazanej strony')
+@click.option('-i', '--id', 'page_id', required=True, help='ID strony', type=int)
+@click.option(
+    '-o', '--operation', 'op', required=True,
+    type=click.Choice(['add', 'replace'], case_sensitive=False),
+    help='Rodzaj operacji, dodanie lub zastąpienie',
+)
+@click.option(
+    '-l', '--label', 'labels', multiple=True,
+    help='Nadanie stronie etykiety, można użyć wielokrotnie',
+)
+@click.option(
+    '-u', '--user', 'user_name', required=True,
+    help='Nazwa użytkownika który wykonuje operację',
+)
+@with_appcontext
+def page_labels(page_id, op, labels, user_name):
+    actor = login_user(user_name, admin=False)
+    op = op.lower()
+    page = Page.get_by_id(page_id)
+    if op == 'add':
+        if not labels:
+            click.echo(f'etykiety strony {page.title} nie zostały zmienione')
+            sys.exit(0)
+    change_args = {
+        'page': page,
+        'change_type': Change.updated,
+        'user': actor,
+        'description': 'zmodyfikowana (etykiety)',
+    }
+    label_objs = Label.select().where(Label.name << labels)
+    if label_objs.count() != len(labels) and not click.confirm(
+        'nie wszystkie etykiety zostały znalezione, kontyuować?'
+    ):
+        click.echo('operacja zmiany etykiet strony przerwana')
+        sys.exit(0)
+    with db.atomic():
+        if op == 'replace':
+            q = PageLabel.delete().where(PageLabel.page == page)
+            q.execute()
+        for label in label_objs:
+            PageLabel.create(page=page, label=label)
+        ChangeRecord.log_change(**change_args)
+        click.echo(f'etykiety strony {page.title} zostały zaktualizowane')
 
 
 @label_ops.command(name='list', help='Wyświetl listę etykiet')
