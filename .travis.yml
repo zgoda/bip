@@ -12,4 +12,4 @@ script:
   - pytest --cov-branch --cov=bip tests
   - python setup.py --quiet build_sphinx sdist bdist_wheel
 after_success:
-  - codecov
+  - codecov -X gcov
