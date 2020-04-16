@@ -154,7 +154,7 @@ def page_change(page_id, title, active, main, order, user_name):
 @click.option(
     '-o', '--operation', 'op', required=True,
     type=click.Choice(['add', 'replace'], case_sensitive=False),
-    help='Rodzaj operacji, dodanie lub zastąpienie',
+    help='Rodzaj operacji, dodanie (add) lub zastąpienie (replace)',
 )
 @click.option(
     '-l', '--label', 'labels', multiple=True,
@@ -187,8 +187,7 @@ def page_labels(page_id, op, labels, user_name):
         sys.exit(0)
     with db.atomic():
         if op == 'replace':
-            q = PageLabel.delete().where(PageLabel.page == page)
-            q.execute()
+            PageLabel.delete().where(PageLabel.page == page).execute()
         for label in label_objs:
             PageLabel.create(page=page, label=label)
         ChangeRecord.log_change(**change_args)
