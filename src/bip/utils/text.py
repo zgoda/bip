@@ -1,6 +1,4 @@
-import difflib
 import re
-from typing import List
 
 from jinja2.filters import do_truncate
 from text_unidecode import unidecode
@@ -29,30 +27,6 @@ def yesno(value: bool, capitalize: bool = True) -> str:
     if capitalize:
         return ret.capitalize()
     return ret
-
-
-def text_changes(from_str: str, to_str: str) -> List[str]:
-    """Generate a diff for the list of strings.
-
-    :param from_str: left (existing)
-    :type from_str: str
-    :param to_str: right (incoming)
-    :type to_str: str
-    :return: list of differencies
-    :rtype: List[str]
-    """
-    changes = []
-    if not from_str.endswith('\n'):
-        from_str = f'{from_str}\n'
-    from_lines = from_str.splitlines(keepends=True)
-    if not to_str.endswith('\n'):
-        to_str = f'{to_str}\n'
-    to_lines = to_str.splitlines(keepends=True)
-    for line in difflib.ndiff(from_lines, to_lines):
-        line = line.strip()
-        if line and line[0] in ('+', '-'):
-            changes.append(line)
-    return changes
 
 
 def slugify(text: str, delim: str = '-') -> str:
