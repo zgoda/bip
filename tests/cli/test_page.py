@@ -38,7 +38,7 @@ class TestPageOps(BIPCLITests):
         assert truncate_string(p1.title, 80) not in rv.output
         assert truncate_string(p2.title, 80) in rv.output
 
-    def test_create_simple(self, mocker, user_factory):
+    def test_create_ok_simple(self, mocker, user_factory):
         title = 'Tytuł strony 1'
         actor = user_factory(name=self.username, password=self.password)
         fake_login = mocker.Mock(return_value=actor)
@@ -47,3 +47,14 @@ class TestPageOps(BIPCLITests):
         mocker.patch('bip.cli.pages.commands.click.edit', fake_edit)
         rv = self.runner.invoke(page_create, ['-t', title, '-u', actor.name])
         assert f'strona {title} została utworzona' in rv.output
+
+    def test_create_fail_no_text(self, mocker, user_factory):
+        title = 'Tytuł strony 1'
+        actor = user_factory(name=self.username, password=self.password)
+        fake_login = mocker.Mock(return_value=actor)
+        mocker.patch('bip.cli.pages.commands.login_user', fake_login)
+        fake_edit = mocker.Mock(return_value='')
+        mocker.patch('bip.cli.pages.commands.click.edit', fake_edit)
+        rv = self.runner.invoke(page_create, ['-t', title, '-u', actor.name])
+        assert rv.exit_code != 0
+        assert 'Tekst strony jest wymagany' in rv.output

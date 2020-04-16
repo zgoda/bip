@@ -80,7 +80,8 @@ def page_create(title, active, main, labels, order, user_name):
     actor = login_user(user_name, admin=False)
     text = click.edit()
     if not text:
-        raise click.Abort('Tekst strony jest wymagany')
+        click.echo('Tekst strony jest wymagany')
+        sys.exit(1)
     description = None
     if click.confirm('Czy chcesz wprowadzić opis strony?', default=False):
         description = click.edit()
