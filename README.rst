@@ -5,9 +5,9 @@ Biuletyn Informacji Publicznej
     :target: https://travis-ci.com/zgoda/bip
     :alt: Travis-CI build status
 
-.. image:: https://www.codefactor.io/repository/github/zgoda/bip/badge
-   :target: https://www.codefactor.io/repository/github/zgoda/bip
-   :alt: CodeFactor maintainability report
+.. image:: https://static.deepsource.io/deepsource-badge-light-mini.svg
+   :target: https://deepsource.io/gh/zgoda/bip/?ref=repository-badge
+   :alt: DeepSource code quality report
 
 .. image:: https://codecov.io/gh/zgoda/bip/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/zgoda/bip
