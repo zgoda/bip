@@ -5,13 +5,13 @@ Biuletyn Informacji Publicznej
     :target: https://travis-ci.com/zgoda/bip
     :alt: Travis-CI build status
 
-.. image:: https://api.codeclimate.com/v1/badges/6f0fbf642b7e4ebc10ae/maintainability
-   :target: https://codeclimate.com/github/zgoda/bip/maintainability
-   :alt: Code Climate maintainability report
+.. image:: https://www.codefactor.io/repository/github/zgoda/bip/badge
+   :target: https://www.codefactor.io/repository/github/zgoda/bip
+   :alt: CodeFactor maintainability report
 
-.. image:: https://api.codeclimate.com/v1/badges/6f0fbf642b7e4ebc10ae/test_coverage
-   :target: https://codeclimate.com/github/zgoda/bip/test_coverage
-   :alt: Code Climate test coverage report
+.. image:: https://codecov.io/gh/zgoda/bip/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/zgoda/bip
+   :alt: Test coverage report
 
 
 Flask application that implements Polish BIP baseline

@@ -1,21 +1,16 @@
-os: linux
 language: python
 cache: pip
 git:
   quiet: true
 python:
   - "3.7"
-  - "3.8"
-before_script:
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  - chmod +x ./cc-test-reporter
-  - ./cc-test-reporter before-build
 install:
+  - pip install -q -U pip wheel
+  - pip install -q -U codecov
   - pip install -q -U -e .[test] --upgrade-strategy eager
-  - pip install -q -U Sphinx sphinx-autodoc-typehints wheel
+  - pip install -q -U Sphinx --upgrade-strategy eager
 script:
-  - pytest --cov-branch --cov-report xml --cov=bip tests
-  - python setup.py --quiet build_sphinx
-  - python setup.py --quiet sdist bdist_wheel
-after_script:
-  - test $TRAVIS_PYTHON_VERSION = "3.7" && ./cc-test-reporter after-build -t coverage.py --exit-code $TRAVIS_TEST_RESULT
+  - pytest --cov-branch --cov=bip tests
+  - python setup.py --quiet build_sphinx sdist bdist_wheel
+after_success:
+  - codecov
