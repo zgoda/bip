@@ -33,7 +33,6 @@ release = '1.0.0dev0'
 extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.autodoc',
-    'sphinx_autodoc_typehints',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
