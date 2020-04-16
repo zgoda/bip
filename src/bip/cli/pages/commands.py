@@ -47,7 +47,7 @@ def page_list(active):
     ).cli_list_columns(overrides=col_overrides)
     table = create_table(current_app.testing, columns)
     for page_obj in q:
-        labels = ', '.join([c.label.name for c in page_obj.labels(order=Label.name)])
+        labels = ', '.join(c.label.name for c in page_obj.labels(order=Label.name))
         table.add_row([
             page_obj.pk, truncate_string(page_obj.title, 80), yesno(page_obj.active),
             page_obj.order, labels,
