@@ -25,6 +25,7 @@ do uruchamiania w kontenerze lub do pełnej instalacji w systemie Linux.
     coc
     contributing
     license
+    thirdparty
 
 
 

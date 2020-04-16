@@ -66,7 +66,7 @@ dev_reqs = [
     'flake8-comprehensions',
     'pep8-naming',
     'dlint',
-    'doc8',
+    'rstcheck',
     'rope',
     'isort',
     'Sphinx',
