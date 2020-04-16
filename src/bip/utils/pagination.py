@@ -83,12 +83,28 @@ class Pagination:
 
 
 def url_for_other_page(page: Union[int, str]) -> str:
+    """Generate (internal) URL to another page of the same document. This
+    works only within the context of particular request.
+
+    :param page: desired page
+    :type page: Union[int, str]
+    :return: URL to another page of current document
+    :rtype: str
+    """
     args = request.view_args.copy()
     args['p'] = page
     return url_for(request.endpoint, **args)
 
 
-def get_page(arg_name='p') -> int:
+def get_page(arg_name: str = 'p') -> int:
+    """Get page number for current request. Page number is searched in request
+    args.
+
+    :param arg_name: name of URL argument, defaults to 'p'
+    :type arg_name: str, optional
+    :return: page number or 1 if not found
+    :rtype: int
+    """
     try:
         return int(request.args.get(arg_name, '1'))
     except ValueError:
