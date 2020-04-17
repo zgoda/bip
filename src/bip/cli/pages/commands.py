@@ -1,4 +1,5 @@
 import sys
+from typing import List, Optional
 
 import click
 from flask import current_app
@@ -22,7 +23,7 @@ label_ops = click.Group(name='label', help='Zarządzanie etykietami stron')
     help='Wyświetl tylko aktywne lub nieaktywne (domyślnie: wszystkie)',
 )
 @with_appcontext
-def page_list(active):
+def page_list(active: bool):
     page_prop = ACTIVITY_NAME_MAP[active]
     sort = [Page.title]
     q = Page.select()
@@ -76,7 +77,10 @@ def page_list(active):
     help='Nazwa użytkownika który wykonuje operację',
 )
 @with_appcontext
-def page_create(title, active, main, labels, order, user_name):
+def page_create(
+            title: str, active: bool, main: bool, labels: List[str], order: int,
+            user_name: str,
+        ):
     actor = login_user(user_name, admin=False)
     text = click.edit()
     if not text:
@@ -119,7 +123,10 @@ def page_create(title, active, main, labels, order, user_name):
     help='Nazwa użytkownika który wykonuje operację',
 )
 @with_appcontext
-def page_change(page_id, title, active, main, order, user_name):
+def page_change(
+            page_id: int, title: Optional[str], active: Optional[bool],
+            main: Optional[bool], order: Optional[int], user_name: str,
+        ):
     actor = login_user(user_name, admin=False)
     with db.atomic():
         page = Page.get_by_id(page_id)
@@ -166,7 +173,7 @@ def page_change(page_id, title, active, main, order, user_name):
     help='Nazwa użytkownika który wykonuje operację',
 )
 @with_appcontext
-def page_labels(page_id, op, labels, user_name):
+def page_labels(page_id: int, op: str, labels: Optional[List[str]], user_name: str):
     actor = login_user(user_name, admin=False)
     op = op.lower()
     page = Page.get_by_id(page_id)
@@ -222,7 +229,7 @@ def label_list():
 @label_ops.command(name='create', help='Utwórz nową etykietę')
 @click.option('--name', '-n', required=True, help='Nazwa etykiety')
 @with_appcontext
-def label_create(name):
+def label_create(name: str):
     description = None
     if click.confirm('Czy chcesz wprowadzić opis etykiety?', default=True):
         description = click.edit()
@@ -238,7 +245,7 @@ def label_create(name):
 @click.option('--name', '-n', required=True, help='Nazwa etykiety')
 @click.option('--new-name', help='Nowa nazwa dla etykiety')
 @with_appcontext
-def label_change(name, new_name):
+def label_change(name: str, new_name: Optional[str]):
     label = Label.get_or_none(Label.name == name)
     if label is None:
         raise click.Abort(f'etykieta {name} nie istnieje')
