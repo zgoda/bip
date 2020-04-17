@@ -1,6 +1,7 @@
 import os
 import tempfile
 from logging.config import dictConfig
+from typing import Optional
 
 import keyring
 from flask import render_template
@@ -18,7 +19,14 @@ from .utils.site import Site, test_site
 from .utils.templates import extra_context, extra_filters
 
 
-def make_app(env=None):
+def make_app(env: Optional[str] = None) -> Application:
+    """Application object factory.
+
+    :param env: environment name, defaults to None
+    :type env: Optional[str], optional
+    :return: application object
+    :rtype: Application
+    """
     flask_environment = os.environ.get('FLASK_ENV', '')
     if flask_environment == 'production':
         configure_logging()
@@ -37,7 +45,14 @@ def make_app(env=None):
     return app
 
 
-def configure_app(app, env):
+def configure_app(app: Application, env: Optional[str]):
+    """Load application configuration.
+
+    :param app: application object
+    :type app: Application
+    :param env: environment name (may be None)
+    :type env: Optional[str]
+    """
     app.config.from_object('bip.config')
     if env is not None:
         try:
@@ -46,7 +61,12 @@ def configure_app(app, env):
             app.logger.info(f'no environment config for {env}')
 
 
-def configure_database(app):
+def configure_database(app: Application):
+    """Configure application database connectivity.
+
+    :param app: application object
+    :type app: Application
+    """
     driver = os.getenv('DB_DRIVER', 'sqlite')
     if app.testing:
         tmp_dir = tempfile.mkdtemp()
@@ -76,7 +96,12 @@ def configure_database(app):
     db.connect()
 
 
-def configure_hooks(app):
+def configure_hooks(app: Application):
+    """Setup application lifetime hooks.
+
+    :param app: application object
+    :type app: Application
+    """
 
     @app.before_first_request
     def load_site_objects():  # pylint: disable=unused-variable
@@ -89,14 +114,24 @@ def configure_hooks(app):
         app.site = app.jinja_env.globals['site'] = site
 
 
-def configure_blueprints(app):
+def configure_blueprints(app: Application):
+    """Register (mount) blueprint objects.
+
+    :param app: application object
+    :type app: Application
+    """
     app.register_blueprint(main_bp)
     app.register_blueprint(admin_bp, url_prefix='/admin')
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(user_bp, url_prefix='/user')
 
 
-def configure_extensions(app):
+def configure_extensions(app: Application):
+    """Register and configure framework extensions.
+
+    :param app: application object
+    :type app: Application
+    """
     babel.init_app(app)
     csrf.init_app(app)
     bootstrap.init_app(app)
@@ -107,11 +142,16 @@ def configure_extensions(app):
     login_manager.login_message = 'Musisz się zalogować by uzyskać dostęp do tej strony'
 
     @login_manager.user_loader
-    def get_user(userid):  # pylint: disable=unused-variable
+    def get_user(userid: str) -> bool:  # pylint: disable=unused-variable
         return User.get_or_none(User.pk == userid)
 
 
-def configure_templating(app):
+def configure_templating(app: Application):
+    """Configure template system extensions.
+
+    :param app: application object
+    :type app: Application
+    """
     app.jinja_env.globals.update(extra_context())
     app.jinja_env.filters.update(extra_filters())
 
@@ -138,7 +178,12 @@ def configure_logging():
     })
 
 
-def configure_error_handlers(app):
+def configure_error_handlers(app: Application):
+    """Configure global error handlers.
+
+    :param app: application object
+    :type app: Application
+    """
 
     @app.errorhandler(403)
     def forbidden_page(error):  # pylint: disable=unused-variable

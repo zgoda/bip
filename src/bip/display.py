@@ -27,6 +27,8 @@ _DATATYPE_TO_COLTYPE = {
 
 @dataclass
 class DisplayMeta:
+    """Tabular object display metadata.
+    """
     klass: Model
     columns: List[str]
     overrides: Mapping[str, ColumnOverride] = field(default_factory=dict)
@@ -34,6 +36,13 @@ class DisplayMeta:
     def cli_list_columns(
                 self, overrides: Optional[Mapping[str, ColumnOverride]] = None
             ) -> List[ColSpec]:
+        """Generate list of column specifications for displaying in CLI.
+
+        :param overrides: column param override information, defaults to None
+        :type overrides: Optional[Mapping[str, ColumnOverride]], optional
+        :return: list of column specifications
+        :rtype: List[ColSpec]
+        """
         if overrides is None:
             overrides = {}
         rv = []
