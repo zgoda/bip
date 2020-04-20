@@ -176,3 +176,17 @@ class TestPageOps(BIPCLITests):
         assert 'została zmieniona' in rv.output
         page_obj = Page[page.pk]
         assert page_obj.main is True
+
+    def test_change_order(self, mocker, user_factory, page_factory):
+        actor = user_factory(name=self.username, password=self.password)
+        mocker.patch(
+            'bip.cli.pages.commands.login_user', mocker.Mock(return_value=actor)
+        )
+        page = page_factory()
+        new_order = 2
+        rv = self.runner.invoke(
+            page_change, ['-i', page.pk, '-u', actor.name, '-o', str(new_order)]
+        )
+        assert 'została zmieniona' in rv.output
+        page_obj = Page[page.pk]
+        assert page_obj.order == new_order
