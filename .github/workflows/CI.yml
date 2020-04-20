@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: [ ubuntu-18.04 ]
+    runs-on: ubuntu-18.04
     strategy:
       matrix:
         python-version: [3.7, 3.8]
@@ -22,7 +22,7 @@ jobs:
       run: |
         python -m pip install -U -q pip
         pip install -U -q -e .[test]
-        pip install -U -q Sphinx coveralls
+        pip install -U -q Sphinx wheel
     - name: Test with pytest
       run: |
         pytest --cov-branch --cov-report xml --cov bip tests
@@ -31,3 +31,6 @@ jobs:
       uses: codecov/codecov-action@v1.0.6
       with:
         fail_ci_if_error: true
+    - name: Test package build
+      run: |
+        python setup.py -q sdist bdist_wheel build_sphinx
