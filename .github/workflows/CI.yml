@@ -25,9 +25,9 @@ jobs:
         pip install -U -q Sphinx coveralls
     - name: Test with pytest
       run: |
-        pytest --cov-branch --cov bip tests
-    - name: Coveralls
+        pytest --cov-branch --cov-report xml --cov bip tests
+    - name: Codecov
       if: matrix.python-version == 3.7
-      uses: coverallsapp/github-action@v1.0.1
+      uses: codecov/codecov-action@v1.0.6
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+        fail_ci_if_error: true
