@@ -53,6 +53,10 @@ test_reqs = [
     'pytest-flask',
 ]
 
+docs_reqs = [
+    'Sphinx',
+]
+
 dev_reqs = [
     'ipython',
     'ipdb',
@@ -69,10 +73,9 @@ dev_reqs = [
     'rstcheck',
     'rope',
     'isort',
-    'Sphinx',
     'flask-shell-ipython',
     'watchdog',
-] + test_reqs
+] + test_reqs + docs_reqs
 
 setup(
     name='biuletyn-bip',
@@ -107,6 +110,7 @@ setup(
         ],
         'dev': dev_reqs,
         'test': test_reqs,
+        'docs': docs_reqs,
     },
     entry_points={
         'console_scripts': [
