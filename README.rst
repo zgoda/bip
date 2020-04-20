@@ -1,9 +1,9 @@
 Biuletyn Informacji Publicznej
 ==============================
 
-.. image:: https://travis-ci.com/zgoda/bip.svg?branch=master
-    :target: https://travis-ci.com/zgoda/bip
-    :alt: Travis-CI build status
+.. image:: https://github.com/zgoda/bip/workflows/CI/badge.svg
+    :target: https://github.com/zgoda/bip/actions?query=workflow%3ACI
+    :alt: CI pipeline status
 
 .. image:: https://static.deepsource.io/deepsource-badge-light-mini.svg
     :target: https://deepsource.io/gh/zgoda/bip/?ref=repository-badge
