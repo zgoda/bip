@@ -29,3 +29,5 @@ jobs:
     - name: Test with pytest
       run: |
         pytest --cov-branch --cov bip tests
+    - name: Codecov
+      uses: codecov/codecov-action@v1.0.6
