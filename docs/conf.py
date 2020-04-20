@@ -22,7 +22,7 @@ copyright = '2019, Jarek Zgoda <jarek.zgoda@gmail.com>'  # noqa: A001
 author = 'Jarek Zgoda'
 
 # The full version, including alpha/beta/rc tags
-release = '1.0.0dev0'
+release = '1.0.0.dev0'
 
 
 # -- General configuration ---------------------------------------------------
