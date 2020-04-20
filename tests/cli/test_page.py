@@ -2,7 +2,7 @@ import pytest
 
 from bip.cli.pages.commands import page_change, page_create, page_list
 from bip.models import Page
-from bip.utils.text import truncate_string
+from bip.utils.text import slugify, truncate_string
 
 from . import BIPCLITests
 
@@ -134,3 +134,45 @@ class TestPageOps(BIPCLITests):
         page = page_factory()
         rv = self.runner.invoke(page_change, ['-i', page.pk, '-u', actor.name])
         assert 'nie wprowadzono żadnych zmian' in rv.output
+
+    def test_change_title(self, mocker, user_factory, page_factory):
+        actor = user_factory(name=self.username, password=self.password)
+        mocker.patch(
+            'bip.cli.pages.commands.login_user', mocker.Mock(return_value=actor)
+        )
+        title = 'Tytuł strony 1'
+        page = page_factory(title=title)
+        new_title = 'Nowy tytuł'
+        rv = self.runner.invoke(
+            page_change, ['-i', page.pk, '-u', actor.name, '-t', new_title]
+        )
+        assert 'została zmieniona' in rv.output
+        page_obj = Page[page.pk]
+        assert page_obj.title == new_title
+        assert page_obj.slug == slugify(new_title)
+
+    def test_change_active(self, mocker, user_factory, page_factory):
+        actor = user_factory(name=self.username, password=self.password)
+        mocker.patch(
+            'bip.cli.pages.commands.login_user', mocker.Mock(return_value=actor)
+        )
+        page = page_factory(active=False)
+        rv = self.runner.invoke(
+            page_change, ['-i', page.pk, '-u', actor.name, '--active']
+        )
+        assert 'została zmieniona' in rv.output
+        page_obj = Page[page.pk]
+        assert page_obj.active is True
+
+    def test_change_main(self, mocker, user_factory, page_factory):
+        actor = user_factory(name=self.username, password=self.password)
+        mocker.patch(
+            'bip.cli.pages.commands.login_user', mocker.Mock(return_value=actor)
+        )
+        page = page_factory(main=False)
+        rv = self.runner.invoke(
+            page_change, ['-i', page.pk, '-u', actor.name, '--main']
+        )
+        assert 'została zmieniona' in rv.output
+        page_obj = Page[page.pk]
+        assert page_obj.main is True
