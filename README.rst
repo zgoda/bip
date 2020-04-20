@@ -5,6 +5,10 @@ Biuletyn Informacji Publicznej
     :target: https://github.com/zgoda/bip/actions?query=workflow%3ACI
     :alt: CI pipeline status
 
+.. image:: https://readthedocs.org/projects/bip/badge/?version=latest
+    :target: https://bip.readthedocs.io/pl/latest/?badge=latest
+    :alt: Documentation Status
+
 .. image:: https://static.deepsource.io/deepsource-badge-light-mini.svg
     :target: https://deepsource.io/gh/zgoda/bip/?ref=repository-badge
     :alt: DeepSource code quality report
