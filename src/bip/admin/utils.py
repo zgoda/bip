@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Any, Mapping, Optional, Sequence, Type
+from typing import Any, Mapping, Optional, Sequence, Type, Union
 
 from flask import Response, flash, redirect, render_template, request, url_for
 from flask_wtf import FlaskForm
@@ -32,7 +32,16 @@ class ItemCollectionMeta:
     filters: Optional[Sequence[Expression]] = None
 
 
-def default_admin_item_view(item_meta: ItemMeta, item_pk: Any) -> Response:
+def default_admin_item_view(item_meta: ItemMeta, item_pk: Any) -> Union[str, Response]:
+    """Default item view for admin interface.
+
+    :param item_meta: item metadata object
+    :type item_meta: ItemMeta
+    :param item_pk: item lookup key
+    :type item_pk: Any
+    :return: Flask response (Response object or str)
+    :rtype: Union[str, Response]
+    """
     obj = or_404(item_meta.dataobject.get(item_pk))
     form = None
     if request.method == 'POST':
@@ -57,7 +66,14 @@ def default_admin_item_view(item_meta: ItemMeta, item_pk: Any) -> Response:
     return render_template(template, **context)
 
 
-def default_admin_list_view(item_meta: ItemCollectionMeta) -> Response:
+def default_admin_list_view(item_meta: ItemCollectionMeta) -> Union[str, Response]:
+    """Default collection (list) view for admin interface.
+
+    :param item_meta: item collection metadata object
+    :type item_meta: ItemCollectionMeta
+    :return: Flask response (Response object or str)
+    :rtype: Union[str, Response]
+    """
     form = item_meta.form()
     if form.validate_on_submit():
         form.save()
