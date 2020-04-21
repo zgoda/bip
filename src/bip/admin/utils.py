@@ -40,12 +40,9 @@ def default_admin_item_view(item_meta: ItemMeta, item_pk: Any) -> Response:
         update_form_queries(form, item_meta.form_queries)
         if form.validate_on_submit():
             obj = form.save(obj)
-            if '{obj_name}' in item_meta.message:
-                message = item_meta.message.format(
-                    obj_name=getattr(obj, item_meta.title_field)
-                )
-            else:
-                message = item_meta.message
+            message = item_meta.message.format(
+                obj_name=getattr(obj, item_meta.title_field)
+            )
             flash(message, category='success')
             return redirect(
                 url_for(item_meta.success_url, **item_meta.success_url_kwargs)
@@ -56,30 +53,21 @@ def default_admin_item_view(item_meta: ItemMeta, item_pk: Any) -> Response:
         'object': obj,
         'form': form,
     }
-    template = item_meta.template
-    if template is None:
-        template = f'admin/{item_meta.dataobject._meta.name}_detail.html'
+    template = f'admin/{item_meta.dataobject._meta.name}_detail.html'
     return render_template(template, **context)
 
 
 def default_admin_list_view(item_meta: ItemCollectionMeta) -> Response:
     form = item_meta.form()
     if form.validate_on_submit():
-        obj = form.save()
-        message = item_meta.message
-        if message is None:
-            message = f'obiekt {obj} utworzony'
-            flash(message, category='success')
-            return redirect(request.path)
+        form.save()
+        flash(item_meta.message, category='success')
+        return redirect(request.path)
     query = item_meta.dataobject.select()
-    if item_meta.filters:
-        query = query.where(*item_meta.filters)
     query = query.order_by(item_meta.order)
     context = {
         'pagination': paginate(query),
         'form': form,
     }
-    template = item_meta.template
-    if template is None:
-        template = f'admin/{item_meta.dataobject.__name__.lower()}_list.html'
+    template = f'admin/{item_meta.dataobject.__name__.lower()}_list.html'
     return render_template(template, **context)
