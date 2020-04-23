@@ -8,6 +8,12 @@
 {% block content %}
 <h2>Dane strony {{ object.title }}</h2>
 {{ render_form(form, action=request.path) }}
+<h3>Etykiety</h3>
+<p>
+  {% for pl in object.labels() %}
+  <span class="badge badge-secondary">{{ pl.label.name }}</span>
+  {% endfor %}
+</p>
 {% endblock %}
 
 {% block extrahead %}
