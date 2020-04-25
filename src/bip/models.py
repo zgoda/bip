@@ -17,7 +17,7 @@ DB_DRIVER_MAP = {
 }
 
 
-def _get_db_driver_class():
+def _get_db_driver_class():  # pragma: nocover
     name = os.getenv('DB_DRIVER')
     if name is None:
         return peewee.SqliteDatabase
@@ -53,7 +53,7 @@ class User(Model, UserMixin):
     def get_id(self):
         return str(self.pk)
 
-    def is_active(self):
+    def is_active(self):  # pragma: nocover
         return self.active
 
     def set_password(self, password):
