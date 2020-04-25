@@ -8,11 +8,12 @@ from werkzeug.utils import cached_property
 from bip import make_app
 from bip.models import ChangeRecord, Label, Page, PageLabel, User, db
 
-from .factories import LabelFactory, PageFactory, UserFactory
+from .factories import LabelFactory, PageFactory, PageLabelFactory, UserFactory
 
 register(PageFactory)
 register(UserFactory)
 register(LabelFactory)
+register(PageLabelFactory)
 
 
 class TestResponse(Response):
