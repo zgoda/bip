@@ -38,7 +38,7 @@ def page_view(page_id: int):
         .switch(Page)
         .join(ChangeRecord)
         .where(Page.pk == page_id)
-        .get()
+        .peek()
     )
     return render_template(
         'main/page.html', page=page_obj, change_order=ChangeRecord.change_dt.desc()

@@ -2,7 +2,7 @@ import factory
 from factory.base import Factory, FactoryOptions, OptionDefault
 from markdown import markdown
 
-from bip.models import Label, Page, PageLabel, User, db
+from bip.models import Change, ChangeRecord, Label, Page, PageLabel, User, db
 from bip.utils.text import slugify
 
 DEFAULT_PASSWORD = 'password'
@@ -65,6 +65,14 @@ class PageFactory(PeeweeModelFactory):
     @factory.lazy_attribute
     def updated_by(self):
         return self.created_by
+
+    @classmethod
+    def _after_postgeneration(cls, obj, create, results=None):
+        if create:
+            ChangeRecord.log_change(
+                page=obj, change_type=Change.created, user=obj.created_by,
+                description='created',
+            )
 
 
 class LabelFactory(PeeweeModelFactory):
