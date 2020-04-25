@@ -12,8 +12,11 @@
 <p>
   {% for pl in object.labels() %}
   <span class="badge badge-secondary">{{ pl.label.name }}</span>
+  {% else %}
+  Nie ma żadnych etykiet.
   {% endfor %}
 </p>
+<p><a href="{{ url_for('admin.page_labels', page_pk=object.pk) }}">Zarządzaj</a></p>
 {% endblock %}
 
 {% block extrahead %}

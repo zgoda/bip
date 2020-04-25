@@ -1,0 +1,29 @@
+{% extends "admin/base.html" %}
+
+{% block headpagetitle %}Etykiety strony {{ page.title }}{% endblock %}
+
+{% block content %}
+<h2>Etykiety strony {{ page.title }}</h2>
+{% for pl in page_labels %}
+<p><span class="badge badge-secondary">{{ pl.label.name }}</span></p>
+{% else %}
+<p>Nie ma żadnych etykiet</p>
+{% endfor %}
+{% if labels %}
+<h3>Dostępne etykiety</h3>
+<form method="POST" action="{{ request.path }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <table class="table table-bordered">
+    {% for label in labels %}
+    <tr>
+      <td>{{ label.name }}</td>
+      <td><input type="checkbox" name="label" value="{{ label.pk }}"/></td>
+    </tr>
+    {% endfor %}
+  </table>
+  <button class="btn btn-primary" type="submit">Dodaj wybrane</button>
+</form>
+{% else %}
+<p>Strona wykorzystuje wszystkie dostępne etykiety.</p>
+{% endif %}
+{% endblock %}
