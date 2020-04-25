@@ -55,9 +55,8 @@ class DisplayMeta:
                 )
                 col_align = _COLUMN_DEFAULT_ALIGN.get(col_data_type, ColAlign.left)
             col_override = overrides.get(name) or self.overrides.get(name)
-            if col_override:
-                col_data_type = col_override.datatype or col_data_type
-                col_align = col_override.align or col_align
-                col_title = col_override.title or name
+            col_data_type = col_override.datatype or col_data_type
+            col_align = col_override.align or col_align
+            col_title = col_override.title or name
             rv.append(ColSpec(align=col_align, dtype=col_data_type, title=col_title))
         return rv
