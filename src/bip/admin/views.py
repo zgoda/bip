@@ -1,9 +1,9 @@
 from typing import Optional, Union
 
-from flask import Response, abort, render_template, request, flash
+from flask import Response, abort, flash, redirect, render_template, request
 from flask_login import current_user, login_required
 
-from ..models import Label, Page, User, db, PageLabel
+from ..models import Label, Page, PageLabel, User, db
 from ..utils.http import or_404
 from . import admin_bp
 from .forms import LabelForm, PageForm, UserForm
@@ -81,6 +81,7 @@ def page_labels(page_pk: int) -> Union[Response, str]:
             for label_pk in new_label_ids:
                 PageLabel.create(page=page, label=label_pk)
         flash(f'etykiety strony {page.title} zostały zmienione')
+        return redirect(request.path)
     cur_page_labels = page.labels(order=Label.name)
     page_label_ids = [pl.label.pk for pl in cur_page_labels]
     ctx = {
