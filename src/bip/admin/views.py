@@ -81,11 +81,11 @@ def page_labels(page_pk: int) -> Union[Response, str]:
             for label_pk in new_label_ids:
                 PageLabel.create(page=page, label=label_pk)
         flash(f'etykiety strony {page.title} zostały zmienione')
-    page_labels = page.labels(order=Label.name)
-    page_label_ids = [pl.label.pk for pl in page_labels]
+    cur_page_labels = page.labels(order=Label.name)
+    page_label_ids = [pl.label.pk for pl in cur_page_labels]
     ctx = {
         'page': page,
-        'page_labels': page_labels,
+        'page_labels': cur_page_labels,
         'labels': Label.select().where(
             Label.pk.not_in(page_label_ids)
         ).order_by(Label.name)
