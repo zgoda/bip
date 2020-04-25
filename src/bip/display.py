@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import namedtuple
 from dataclasses import dataclass, field
-from typing import List, Mapping, Optional
+from typing import List, Mapping
 
 from .models import Model
 from .utils.cli import ColAlign, ColDataType, ColSpec
@@ -34,17 +34,15 @@ class DisplayMeta:
     overrides: Mapping[str, ColumnOverride] = field(default_factory=dict)
 
     def cli_list_columns(
-                self, overrides: Optional[Mapping[str, ColumnOverride]] = None
+                self, overrides: Mapping[str, ColumnOverride]
             ) -> List[ColSpec]:
         """Generate list of column specifications for displaying in CLI.
 
-        :param overrides: column param override information, defaults to None
-        :type overrides: Optional[Mapping[str, ColumnOverride]], optional
+        :param overrides: column param override information
+        :type overrides: Mapping[str, ColumnOverride]
         :return: list of column specifications
         :rtype: List[ColSpec]
         """
-        if overrides is None:
-            overrides = {}
         rv = []
         for name in self.columns:
             col_data_type = ColDataType.auto
