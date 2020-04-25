@@ -70,6 +70,6 @@ class TestUserAdminViews(BIPTests):
         }
         rv = self.client.post(url, data=data, follow_redirects=True)
         assert 'is-invalid' in rv.text
-        assert 'Nieprawidłowy adres e-mail' in rv.text
+        assert 'Nieprawidłowy adres email' in rv.text
         user = User.get(user_pk)
         assert user.email != new_email

@@ -76,7 +76,7 @@ class EmailValidator:
 
     def __init__(self, message=None):
         if message is None:
-            message = 'Nieprawidłowy adres e-mail'
+            message = 'Nieprawidłowy adres email'
         self.message = message
 
     def __call__(self, form: FlaskForm, field: Field):

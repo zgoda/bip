@@ -1,7 +1,7 @@
 import pytest
 from werkzeug.datastructures import MultiDict
 
-from bip.utils.forms import ConfirmationForm
+from bip.utils.forms import ConfirmationForm, EmailValidator
 
 
 @pytest.mark.usefixtures('app')
@@ -21,3 +21,15 @@ class TestConfirmationForm:
             data = MultiDict({'is_confirmed': value})
         f = ConfirmationForm(formdata=data)
         assert f.confirm() is False
+
+
+class TestEmailValidator:
+
+    def test_init_with_message(self):
+        msg = 'Invalid email'
+        v = EmailValidator(message=msg)
+        assert v.message == msg
+
+    def test_init_without_message(self):
+        v = EmailValidator()
+        assert v.message == 'Nieprawidłowy adres email'
