@@ -1,10 +1,10 @@
 from dataclasses import dataclass
-from typing import ClassVar, Mapping
+from typing import ClassVar
 
 import validators
 from flask import Markup, render_template_string
 from flask_wtf import FlaskForm
-from peewee import Query, Model
+from peewee import Model
 from wtforms.fields import BooleanField, Field
 from wtforms.validators import ValidationError
 
@@ -70,11 +70,6 @@ class ObjectForm(BaseForm):
         if save:
             obj.save()
         return obj
-
-
-def update_form_queries(form: FlaskForm, queries: Mapping[str, Query]):
-    for field_name, query in queries.items():
-        form[field_name].query = query
 
 
 class EmailValidator:

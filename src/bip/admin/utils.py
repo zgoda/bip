@@ -3,9 +3,8 @@ from typing import Any, Mapping, Optional, Sequence, Type, Union
 
 from flask import Response, flash, redirect, render_template, request, url_for
 from flask_wtf import FlaskForm
-from peewee import Expression, Field, Model, Query
+from peewee import Expression, Field, Model
 
-from ..utils.forms import update_form_queries
 from ..utils.http import or_404
 from ..utils.pagination import paginate
 
@@ -17,7 +16,6 @@ class ItemMeta:
     message: str
     success_url: str
     title_field: Optional[str] = None
-    form_queries: Mapping[str, Query] = field(default_factory=dict)
     template: Optional[str] = None
     success_url_kwargs: Mapping[str, Any] = field(default_factory=dict)
 
@@ -46,7 +44,6 @@ def default_admin_item_view(item_meta: ItemMeta, item_pk: Any) -> Union[str, Res
     form = None
     if request.method == 'POST':
         form = item_meta.form()
-        update_form_queries(form, item_meta.form_queries)
         if form.validate_on_submit():
             obj = form.save(obj)
             message = item_meta.message.format(
@@ -57,7 +54,6 @@ def default_admin_item_view(item_meta: ItemMeta, item_pk: Any) -> Union[str, Res
                 url_for(item_meta.success_url, **item_meta.success_url_kwargs)
             )
     form = form or item_meta.form(obj=obj)
-    update_form_queries(form, item_meta.form_queries)
     context = {
         'object': obj,
         'form': form,
