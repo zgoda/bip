@@ -4,15 +4,28 @@
 
 {% block content %}
 <h2>Etykiety strony {{ page.title }}</h2>
-{% for pl in page_labels %}
-<p><span class="badge badge-secondary">{{ pl.label.name }}</span></p>
+{% if page_labels %}
+<form method="POST" action="{{ request.path }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" name="op" value="remove">
+  <table class="table table-bordered">
+    {% for pl in page_labels %}
+    <tr>
+      <td>{{ pl.label.name }}</td>
+      <td><input type="checkbox" name="label" value="{{ pl.pk }}"/></td>
+    </tr>
+    {% endfor %}
+  </table>
+  <p><button class="btn btn-primary" type="submit">Usuń wybrane</button></p>
+</form>
 {% else %}
 <p>Nie ma żadnych etykiet</p>
-{% endfor %}
+{% endif %}
 {% if labels %}
 <h3>Dostępne etykiety</h3>
 <form method="POST" action="{{ request.path }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" name="op" value="add">
   <table class="table table-bordered">
     {% for label in labels %}
     <tr>
@@ -21,7 +34,7 @@
     </tr>
     {% endfor %}
   </table>
-  <button class="btn btn-primary" type="submit">Dodaj wybrane</button>
+  <p><button class="btn btn-primary" type="submit">Dodaj wybrane</button></p>
 </form>
 {% else %}
 <p>Strona wykorzystuje wszystkie dostępne etykiety.</p>

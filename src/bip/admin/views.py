@@ -2,6 +2,7 @@ from typing import Optional, Union
 
 from flask import Response, abort, flash, redirect, render_template, request
 from flask_login import current_user, login_required
+from werkzeug.exceptions import BadRequest
 
 from ..models import Label, Page, PageLabel, User, db
 from ..utils.http import or_404
@@ -76,11 +77,18 @@ def page_detail(page_pk: int) -> Union[Response, str]:
 def page_labels(page_pk: int) -> Union[Response, str]:
     page = or_404(Page.get(page_pk))
     if request.method == 'POST':
-        new_label_ids = request.form.getlist('label')
-        with db.atomic():
-            for label_pk in new_label_ids:
-                PageLabel.create(page=page, label=label_pk)
-        flash(f'etykiety strony {page.title} zostały zmienione')
+        label_ids = request.form.getlist('label')
+        op = request.form.get('op')
+        if op == 'add':
+            with db.atomic():
+                for label_pk in label_ids:
+                    PageLabel.create(page=page, label=label_pk)
+        elif op == 'remove':
+            query = PageLabel.delete().where(PageLabel.pk.in_(label_ids))
+            query.execute()
+        else:
+            raise BadRequest(f'unknown operation {op}')
+        flash(f'etykiety strony {page.title} zostały zmienione', category='success')
         return redirect(request.path)
     cur_page_labels = page.labels(order=Label.name)
     page_label_ids = [pl.label.pk for pl in cur_page_labels]
