@@ -48,7 +48,7 @@ def default_admin_item_view(item_meta: ItemMeta, item_pk: Any) -> Union[str, Res
             obj = form.save(obj)
             message = item_meta.message.format(
                 obj_name=getattr(obj, item_meta.title_field)
-            )
+            )  # skipcq: PTC-W0034
             flash(message, category='success')
             return redirect(
                 url_for(item_meta.success_url, **item_meta.success_url_kwargs)
