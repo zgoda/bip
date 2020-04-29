@@ -71,7 +71,7 @@ def pluralize(value: int, plural_forms: Sequence[str]) -> str:
     :rtype: str
     """
     singular, plural_1, plural_2 = plural_forms
-    if str(value)[-1] == '1' and value != 11:
+    if str(value)[-1] == '1' and value != 11:  # skipcq: PYL-R1705
         return f'{value} {singular}'
     elif str(value)[-1:] in ('2', '3', '4') and str(value)[-2:-1] != '1':
         return f'{value} {plural_2}'
