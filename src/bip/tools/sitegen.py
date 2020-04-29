@@ -1,5 +1,7 @@
-import cmd2
 import argparse
+import json
+
+import cmd2
 
 INTRO = '''
 Aplikacja do generowania danych statycznych obsługiwanej instytucji.
@@ -7,6 +9,11 @@ Aplikacja do generowania danych statycznych obsługiwanej instytucji.
 
 
 def load_parser():
+    """Function to create argument parser for load command.
+
+    :return: argument parser
+    :rtype: argparse.ArgumentParser
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '-i', '--input-file', required=True, help='path to site data file'
@@ -25,13 +32,14 @@ class SiteGenerator(cmd2.Cmd):
     load_parser = load_parser()
 
     @cmd2.with_argparser(load_parser)
-    def do_load(self):
+    def do_load(self, args):
         """Load existing site data file.
         """
-        pass
+        with open(args.input_file) as fp:
+            self.data = json.load(fp)
 
 
-def main():
+def main():  # skipcq: FLK-D103
     import sys
     app = SiteGenerator()
     sys.exit(app.cmdloop())
