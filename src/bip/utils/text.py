@@ -1,4 +1,5 @@
 import re
+from typing import Sequence
 
 from jinja2.filters import do_truncate
 from text_unidecode import unidecode
@@ -56,3 +57,23 @@ def truncate_string(s: str, length: int) -> str:
     :rtype: str
     """
     return do_truncate(None, s, length, leeway=5)
+
+
+def pluralize(value: int, plural_forms: Sequence[str]) -> str:
+    """Polish pluralization.
+
+    :param value: item count
+    :type value: int
+    :param plural_forms: sequence of 3 pluralization forms (singular and 2
+                         plurals)
+    :type plural_forms: Sequence[str]
+    :return: pluralized item literal
+    :rtype: str
+    """
+    singular, plural_1, plural_2 = plural_forms
+    if str(value)[-1] == '1' and value != 11:
+        return f'{value} {singular}'
+    elif str(value)[-1:] in ('2', '3', '4') and str(value)[-2:-1] != '1':
+        return f'{value} {plural_2}'
+    else:
+        return f'{value} {plural_1}'

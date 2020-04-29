@@ -2,7 +2,7 @@ from wtforms.fields import HiddenField
 
 from .._version import get_version
 from ..utils.pagination import url_for_other_page
-from ..utils.text import yesno
+from ..utils.text import pluralize, yesno
 
 
 def extra_context(**kwargs) -> dict:
@@ -18,6 +18,7 @@ def extra_context(**kwargs) -> dict:
 def extra_filters(**kwargs) -> dict:
     extra = {
         'yesno': yesno,
+        'pluralize': pluralize,
     }
     extra.update(kwargs)
     return extra

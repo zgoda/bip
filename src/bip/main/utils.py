@@ -2,8 +2,9 @@ from functools import lru_cache
 from typing import List
 
 from flask import url_for
+from peewee import ModelSelect, fn
 
-from ..models import Page
+from ..models import Label, Page, PageLabel
 from ..utils.menu import MenuItem
 
 
@@ -35,3 +36,15 @@ def page_links() -> List[MenuItem]:
     for q in (q_non_nulls, q_nulls):
         for title, pk in q.tuples():
             yield MenuItem(title, url_for('main.page', page_id=pk))
+
+
+def labels() -> ModelSelect:
+    """Function returns query over labels annotated with count of pages. Only
+    labels that have any page are returned.
+
+    :return: Label query object
+    :rtype: peewee.ModelSelect
+    """
+    return Label.select(
+        Label, fn.Count(PageLabel.pk).alias('page_count')
+    ).join(PageLabel).group_by(Label).order_by(Label.name)

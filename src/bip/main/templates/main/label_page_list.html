@@ -1,0 +1,7 @@
+{% extends "main/base.html" %}
+
+{% block headpagetitle %}Etykieta: {{ label.name }}{% endblock %}
+
+{% block content %}
+<h2>Etykieta: {{ label.name }} ({{ num_pages|pluralize(['strona', 'strony', 'stron']) }})</h2>
+{% endblock %}

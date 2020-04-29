@@ -63,6 +63,13 @@
             {% endfor %}
           </ul>
           <hr>
+          <h6>Etykiety</h6>
+          <ul class="nav flex-column">
+            {% for label in labels %}
+            <li class="nav-item"><a href="{{ url_for('main.label_page_list', slug=label.slug) }}" class="badge badge-secondary nav-link">{{ label.name }} ({{ label.page_count }})</a></li>
+            {% endfor %}
+          </ul>
+          <hr>
           <h6>Konto redaktora</h6>
           <ul class="nav flex-column">
             {% if current_user.is_authenticated %}
