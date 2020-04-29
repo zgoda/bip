@@ -114,7 +114,7 @@ setup(
         ],
         'cli': cli_reqs,
         'dev': dev_reqs,
-        'test': test_reqs,
+        'test': test_reqs + cli_reqs,
         'docs': docs_reqs,
     },
     entry_points={
