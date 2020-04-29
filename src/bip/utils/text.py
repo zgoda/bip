@@ -75,5 +75,4 @@ def pluralize(value: int, plural_forms: Sequence[str]) -> str:
         return f'{value} {singular}'
     elif str(value)[-1:] in ('2', '3', '4') and str(value)[-2:-1] != '1':
         return f'{value} {plural_2}'
-    else:
-        return f'{value} {plural_1}'
+    return f'{value} {plural_1}'

@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import List
+from typing import Generator, List
 
 from flask import url_for
 from peewee import ModelSelect, fn
@@ -10,6 +10,11 @@ from ..utils.menu import MenuItem
 
 @lru_cache(maxsize=2)
 def editor_tools() -> List[MenuItem]:
+    """Content editor menu items.
+
+    :return: list of menu items
+    :rtype: List[MenuItem]
+    """
     return [
         MenuItem('profil', url_for('user.profile')),
         MenuItem('hasło', url_for('user.password_change')),
@@ -19,12 +24,22 @@ def editor_tools() -> List[MenuItem]:
 
 @lru_cache(maxsize=2)
 def admin_tools() -> List[MenuItem]:
+    """Admin tools menu items.
+
+    :return: list of menu items
+    :rtype: List[MenuItem]
+    """
     return [
         MenuItem('administracja', url_for('admin.home')),
     ]
 
 
-def page_links() -> List[MenuItem]:
+def page_links() -> Generator[MenuItem, None, None]:
+    """Links to pages to be displayed as menu items.
+
+    :yield: menu item
+    :rtype: Generator[MenuItem, None, None]
+    """
     base_filters = (Page.active == True) & (Page.main == True)  # noqa: E712
     nonnull_filters = Page.order.is_null(False) & base_filters
     null_filters = Page.order.is_null(True) & base_filters

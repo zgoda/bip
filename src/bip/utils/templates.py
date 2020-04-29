@@ -6,6 +6,11 @@ from ..utils.text import pluralize, yesno
 
 
 def extra_context(**kwargs) -> dict:
+    """Things to be added to Jinja context.
+
+    :return: extra context
+    :rtype: dict
+    """
     extra = {
         'version': get_version(),
         'is_hidden_field': lambda x: isinstance(x, HiddenField),
@@ -16,6 +21,11 @@ def extra_context(**kwargs) -> dict:
 
 
 def extra_filters(**kwargs) -> dict:
+    """Additional filters to be registered in Jinja environment.
+
+    :return: extra filters
+    :rtype: dict
+    """
     extra = {
         'yesno': yesno,
         'pluralize': pluralize,
