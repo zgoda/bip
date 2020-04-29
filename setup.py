@@ -36,13 +36,17 @@ base_reqs = [
     'Bootstrap-Flask',
     'validators',
     'Werkzeug',
+    'markdown',
+    'python-dotenv',
+    'text-unidecode',
+]
+
+cli_reqs = [
     'Click',
     'keyring',
     'keyrings.cryptfile',
     'texttable',
-    'markdown',
-    'python-dotenv',
-    'text-unidecode',
+    'cmd2',
 ]
 
 test_reqs = [
@@ -75,7 +79,7 @@ dev_reqs = [
     'isort',
     'flask-shell-ipython',
     'watchdog',
-] + test_reqs + docs_reqs
+] + test_reqs + cli_reqs + docs_reqs
 
 setup(
     name='biuletyn-bip',
@@ -108,6 +112,7 @@ setup(
         'prod': [
             'uwsgi',
         ],
+        'cli': cli_reqs,
         'dev': dev_reqs,
         'test': test_reqs,
         'docs': docs_reqs,
@@ -115,6 +120,7 @@ setup(
     entry_points={
         'console_scripts': [
             'bip=bip.cli:main',
+            'bip-sitegen=bip.tools.sitegen:main',
         ]
     },
     python_requires='~=3.7',
