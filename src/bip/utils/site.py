@@ -77,9 +77,9 @@ class StaffMember:
 
 @dataclass
 class Department:
-    phone: str
-    email: str
     staff: List[StaffMember]
+    phone: str = ''
+    email: str = ''
     name: str = ''
     domain: str = ''
     location: str = ''
@@ -180,7 +180,6 @@ def test_site() -> Site:  # pragma: no cover
         ],
         departments=[
             Department(
-                name=name, phone='666-777-888', email='dyrektor@bip.instytucja.info',
                 staff=[
                     StaffMember(
                         role_name='dyrektor', role_type='manager',

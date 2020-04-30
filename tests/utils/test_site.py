@@ -73,16 +73,8 @@ class TestStaffMember:
 class TestDepartment:
 
     @staticmethod
-    @pytest.mark.parametrize('data', [
-        {'name': 'A'},
-        {'staff': [
-            site.StaffMember(
-                role_name=fake.job(), person_name=fake.name(),
-                role_type='staff',
-            )
-        ] * 4}
-    ], ids=['no-staff', 'no-name'])
-    def test_name_and_members_required(data):
+    def test_members_required():
+        data = {'name': 'A'}
         with pytest.raises(TypeError):
             site.Department(**data)
 
