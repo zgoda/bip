@@ -46,7 +46,6 @@ cli_reqs = [
     'keyring',
     'keyrings.cryptfile',
     'texttable',
-    'cmd2',
 ]
 
 test_reqs = [
@@ -120,7 +119,6 @@ setup(
     entry_points={
         'console_scripts': [
             'bip=bip.cli:main',
-            'bip-sitegen=bip.tools.sitegen:main',
         ]
     },
     python_requires='~=3.7',
