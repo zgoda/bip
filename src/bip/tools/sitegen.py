@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 
 import cmd2
 
@@ -16,7 +17,17 @@ def load_parser():
     """
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '-i', '--input-file', required=True, help='path to site data file'
+        '-i', '--input-file', required=True,
+        help='pełna ścieżka do pliku z danymi serwisu',
+    )
+    return parser
+
+
+def save_parser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-o', '--output-file',
+        help='[opcjonalna] pełna ścieżka do pliku do zapisania danych serwisu',
     )
     return parser
 
@@ -28,15 +39,74 @@ class SiteGenerator(cmd2.Cmd):
         self.prompt = 'bip> '
         self.intro = INTRO
         self.data = None
+        self.dirty = None
+        self.output_file = os.path.expanduser('~/site.json')
+        self.add_settable(
+            cmd2.Settable(
+                'output_file', str, 'plik do którego zostanie zapisana konfiguracja'
+            )
+        )
+
+    def do_new(self, arg):
+        """Utwórz nowy zestaw danych serwisu.
+        """
+        if self.dirty:
+            self.pwarning('Istniejące dane serwisu nie zostały zapisane')
+            resp = input('Czy porzucić bieżące dane? [t/N]: ')
+            if resp.lower() == 'n':
+                return
+        self.data = {}
+        self.dirty = False
+        self.poutput('Utworzony nowy zestaw danych serwisu')
+
+    def do_show(self, arg):
+        """Wyświetlenie bieżących danych serwisu w formacie JSON.
+        """
+        if self.data is None:
+            self.pwarning(
+                'Nie ma żadnych danych serwisu, '
+                'użyj "load" by załadować lub "new" by zainicjować nowy zestaw'
+            )
+            return
+        self.ppaged(json.dumps(self.data, indent='  '))
 
     load_parser = load_parser()
 
     @cmd2.with_argparser(load_parser)
     def do_load(self, args):
-        """Load existing site data file.
+        """Załaduj istniejące dane serwisu z pliku.
         """
-        with open(args.input_file) as fp:
-            self.data = json.load(fp)
+        try:
+            with open(args.input_file) as fp:
+                self.data = json.load(fp)
+            self.poutput(f'Dane serwisu załadowane z pliku {args.input_file}')
+        except IOError:
+            self.pwarning(f'Nie udało się otworzyć pliku {args.input_file} do odczytu')
+            self.data = {}
+        self.dirty = False
+
+    save_parser = save_parser()
+
+    @cmd2.with_argparser(save_parser)
+    def do_save(self, args):
+        """Zapisz dane serwisu do pliku.
+        """
+        if self.data is None:
+            self.pwarning(
+                'Nie ma żadnych danych serwisu, '
+                'użyj "load" by załadować lub "new" by zainicjować nowy zestaw'
+            )
+            return
+        file_path = args.output_file or self.output_file
+        try:
+            with open(file_path, 'w') as fp:
+                json.dump(self.data, fp)
+            self.dirty = False
+            self.poutput(f'Dane serwisu zostały zapisane do pliku {file_path}')
+        except IOError:
+            self.perror(f'Nie udało się otworzyć pliku {file_path} do zapisu')
+        except ValueError:
+            self.perror('Dane serwisu nie dają się zapisać, sprawdź podane wartości')
 
 
 def main():  # skipcq: FLK-D103
