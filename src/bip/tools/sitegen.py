@@ -13,7 +13,7 @@ Aplikacja do generowania danych statycznych obsługiwanej instytucji.
 '''
 
 
-def load_parser():
+def load_parser() -> argparse.ArgumentParser:
     """Function to create argument parser for load command.
 
     :return: argument parser
@@ -27,7 +27,12 @@ def load_parser():
     return parser
 
 
-def save_parser():
+def save_parser() -> argparse.ArgumentParser:
+    """Function to create argument parser for save command.
+
+    :return: argument parser
+    :rtype: argparse.ArgumentParser
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '-o', '--output-file',
@@ -51,7 +56,7 @@ class SiteGenerator(cmd2.Cmd):
             )
         )
 
-    def do_new(self, arg):
+    def do_new(self, _unused):
         """Utwórz nowy zestaw danych serwisu.
         """
         if self.dirty:
@@ -63,7 +68,7 @@ class SiteGenerator(cmd2.Cmd):
         self.dirty = False
         self.poutput('Utworzony nowy zestaw danych serwisu')
 
-    def do_show(self, arg):
+    def do_show(self, _unused):
         """Wyświetlenie bieżących danych serwisu w formacie JSON.
         """
         if self.data is None:

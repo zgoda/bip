@@ -24,7 +24,7 @@ class Address:
 
     def to_dict(self):
         fields = ['street', 'zip_code', 'town']
-        return {fn: getattr(self, fn) for fn in fields}
+        return {fn: getattr(self, fn) for fn in fields}  # skipcq: PTC-W0034
 
 
 @dataclass
