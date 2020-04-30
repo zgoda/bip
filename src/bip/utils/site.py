@@ -23,7 +23,8 @@ class Address:
         return f'{self.street}, {self.zip_code} {self.town}'
 
     def to_dict(self):
-        return {fn: getattr(self, fn) for fn in ['street', 'zip_code', 'town']}
+        fields = ['street', 'zip_code', 'town']
+        return {fn: getattr(self, fn) for fn in fields}
 
 
 @dataclass
@@ -41,7 +42,8 @@ class Contact:
         ]
 
     def to_dict(self):
-        return {fn: getattr(self, fn) for fn in ['phone', 'email', 'name']}
+        fields = ['phone', 'email', 'name']
+        return {fn: getattr(self, fn) for fn in fields}  # skipcq: PTC-W0034
 
 
 @dataclass
@@ -70,7 +72,7 @@ class StaffMember:
         fields = [
             'role_name', 'role_type', 'person_name', 'photo_url', 'phone', 'email'
         ]
-        return {fn: getattr(self, fn) for fn in fields}
+        return {fn: getattr(self, fn) for fn in fields}  # skipcq: PTC-W0034
 
 
 @dataclass
@@ -99,7 +101,7 @@ class Department:
 
     def to_dict(self):
         fields = ['phone', 'email', 'name', 'domain', 'location']
-        rv = {fn: getattr(self, fn) for fn in fields}
+        rv = {fn: getattr(self, fn) for fn in fields}  # skipcq: PTC-W0034
         rv['staff'] = [p.to_dict() for p in self.staff]
         return rv
 
@@ -155,7 +157,7 @@ class Site:
 
     def to_dict(self):
         fields = ['name', 'bip_url', 'nip', 'regon', 'short_name', 'krs']
-        rv = {fn: getattr(self, fn) for fn in fields}
+        rv = {fn: getattr(self, fn) for fn in fields}  # skipcq: PTC-W0034
         rv['address'] = self.address.to_dict()
         rv['contacts'] = [c.to_dict() for c in self.contacts]
         rv['departments'] = [d.to_dict() for d in self.departments]
@@ -163,6 +165,11 @@ class Site:
 
 
 def test_site() -> Site:  # pragma: no cover
+    """Generate site data object for tests.
+
+    :return: site data object
+    :rtype: Site
+    """
     name = 'Test Site'
     site = Site(
         name=name, short_name='Test', nip='1111-22-333-333', regon='1234567',
