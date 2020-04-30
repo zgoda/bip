@@ -1,8 +1,12 @@
+from __future__ import annotations
+
 import argparse
 import json
 import os
 
 import cmd2
+
+from ..utils.site import Site
 
 INTRO = '''
 Aplikacja do generowania danych statycznych obsługiwanej instytucji.
@@ -55,7 +59,7 @@ class SiteGenerator(cmd2.Cmd):
             resp = input('Czy porzucić bieżące dane? [t/N]: ')
             if resp.lower() == 'n':
                 return
-        self.data = {}
+        self.data = Site.new()
         self.dirty = False
         self.poutput('Utworzony nowy zestaw danych serwisu')
 
@@ -68,7 +72,10 @@ class SiteGenerator(cmd2.Cmd):
                 'użyj "load" by załadować lub "new" by zainicjować nowy zestaw'
             )
             return
-        self.ppaged(json.dumps(self.data, indent='  '))
+        if not self.data:
+            self.pwarning('Dane serwisu są niepełne')
+            return
+        self.ppaged(json.dumps(self.data.to_dict(), indent='  '))
 
     load_parser = load_parser()
 
@@ -78,11 +85,11 @@ class SiteGenerator(cmd2.Cmd):
         """
         try:
             with open(args.input_file) as fp:
-                self.data = json.load(fp)
+                self.data = Site.from_dict(json.load(fp))
             self.poutput(f'Dane serwisu załadowane z pliku {args.input_file}')
         except IOError:
             self.pwarning(f'Nie udało się otworzyć pliku {args.input_file} do odczytu')
-            self.data = {}
+            self.data = Site.new()
         self.dirty = False
 
     save_parser = save_parser()
@@ -100,7 +107,7 @@ class SiteGenerator(cmd2.Cmd):
         file_path = args.output_file or self.output_file
         try:
             with open(file_path, 'w') as fp:
-                json.dump(self.data, fp)
+                json.dump(self.data.to_dict(), fp)
             self.dirty = False
             self.poutput(f'Dane serwisu zostały zapisane do pliku {file_path}')
         except IOError:

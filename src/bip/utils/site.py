@@ -22,6 +22,9 @@ class Address:
     def display_value(self):
         return f'{self.street}, {self.zip_code} {self.town}'
 
+    def to_dict(self):
+        return {fn: getattr(self, fn) for fn in ['street', 'zip_code', 'town']}
+
 
 @dataclass
 class Contact:
@@ -36,6 +39,9 @@ class Contact:
             ('telefon', self.phone),
             ('email', self.email),
         ]
+
+    def to_dict(self):
+        return {fn: getattr(self, fn) for fn in ['phone', 'email', 'name']}
 
 
 @dataclass
@@ -60,15 +66,21 @@ class StaffMember:
             ('email', self.email),
         )
 
+    def to_dict(self):
+        fields = [
+            'role_name', 'role_type', 'person_name', 'photo_url', 'phone', 'email'
+        ]
+        return {fn: getattr(self, fn) for fn in fields}
+
 
 @dataclass
 class Department:
-    name: str
+    phone: str
+    email: str
     staff: List[StaffMember]
+    name: str = ''
     domain: str = ''
     location: str = ''
-    phone: str = ''
-    email: str = ''
 
     @classmethod
     def from_dict(cls, d: dict) -> Department:
@@ -85,18 +97,39 @@ class Department:
             ('email', self.email),
         )
 
+    def to_dict(self):
+        fields = ['phone', 'email', 'name', 'domain', 'location']
+        rv = {fn: getattr(self, fn) for fn in fields}
+        rv['staff'] = [p.to_dict() for p in self.staff]
+        return rv
+
 
 @dataclass
 class Site:
     name: str
-    short_name: str
     address: Address
     contacts: List[Contact]
     departments: List[Department]
-    bip_url: str = ''
-    NIP: str = ''
-    REGON: str = ''
-    KRS: str = ''
+    bip_url: str
+    nip: str
+    regon: str
+    short_name: str = ''
+    krs: str = ''
+
+    def __bool__(self):
+        if all([
+            self.name, self.address, self.contacts, self.departments, self.bip_url,
+            self.nip, self.regon,
+        ]):
+            return True
+        return False
+
+    @classmethod
+    def new(cls):
+        return cls(
+            name=None, address=None, contacts=None, departments=None,
+            bip_url=None, nip=None, regon=None,
+        )
 
     @classmethod
     def from_json(cls, s: str) -> Site:
@@ -113,25 +146,34 @@ class Site:
     def basic_information(self) -> List[Tuple]:
         data = [
             ('nazwa', self.name),
-            ('NIP', self.NIP),
-            ('REGON', self.REGON),
+            ('NIP', self.nip),
+            ('REGON', self.regon),
         ]
-        if self.KRS:
-            data.append(('KRS', self.KRS))
+        if self.krs:
+            data.append(('KRS', self.krs))
         return data
+
+    def to_dict(self):
+        fields = ['name', 'bip_url', 'nip', 'regon', 'short_name', 'krs']
+        rv = {fn: getattr(self, fn) for fn in fields}
+        rv['address'] = self.address.to_dict()
+        rv['contacts'] = [c.to_dict() for c in self.contacts]
+        rv['departments'] = [d.to_dict() for d in self.departments]
+        return rv
 
 
 def test_site() -> Site:  # pragma: no cover
     name = 'Test Site'
     site = Site(
-        name=name, short_name='Test',
+        name=name, short_name='Test', nip='1111-22-333-333', regon='1234567',
+        bip_url='http://bip.instytucja.info',
         address=Address(street='Street 1', zip_code='05-200', town='Test Town'),
         contacts=[
             Contact(phone='+48 500 666 777 888', email='contact@bip.instytucja.info')
         ],
         departments=[
             Department(
-                name=name,
+                name=name, phone='666-777-888', email='dyrektor@bip.instytucja.info',
                 staff=[
                     StaffMember(
                         role_name='dyrektor', role_type='manager',

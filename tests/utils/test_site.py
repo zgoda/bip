@@ -91,6 +91,8 @@ class TestDepartment:
         num_staff = 4
         data = {
             'name': fake.company(),
+            'phone': fake.phone_number(),
+            'email': fake.company_email(),
             'staff': [
                 {
                     'role_name': fake.job(),
@@ -123,6 +125,8 @@ class TestSite:
             'departments': [
                 {
                     'name': name,
+                    'phone': fake.phone_number(),
+                    'email': fake.company_email(),
                     'staff': [
                         {
                             'person_name': fake.name(),
@@ -133,8 +137,8 @@ class TestSite:
                 },
             ],
             'bip_url': fake.url(),
-            'NIP': fake.company_vat(),
-            'REGON': fake.regon(),
+            'nip': fake.company_vat(),
+            'regon': fake.regon(),
         }
 
     def test_from_dict(self):
@@ -167,7 +171,7 @@ class TestSite:
         name = fake.company()
         num_staff = 4
         data = self.make_data(name, num_staff)
-        data['KRS'] = 'qaz123'
+        data['krs'] = 'qaz123'
         obj = site.Site.from_dict(data)
         info = dict(obj.basic_information)
         assert 'KRS' in info
