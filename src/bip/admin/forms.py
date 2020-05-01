@@ -1,3 +1,4 @@
+import copy
 from datetime import datetime
 from typing import Optional
 
@@ -8,7 +9,7 @@ from wtforms.fields.html5 import EmailField, IntegerField
 from wtforms.validators import InputRequired, Optional as ValueOptional
 
 from ..models import Change, ChangeRecord, Label, Page, db
-from ..utils.forms import EmailValidator, ObjectForm
+from ..utils.forms import BaseForm, EmailValidator, ObjectForm
 from ..utils.text import slugify
 
 
@@ -68,3 +69,32 @@ class LabelForm(ObjectForm):
         label.description_html = markdown(label.description)
         label.save()
         return label
+
+
+class SiteForm(BaseForm):
+    name = StringField(
+        'nazwa', validators=[InputRequired()],
+        description='pełna (rejestrowa) nazwa instytucji',
+    )
+    short_name = StringField('nazwa skrócona')
+    bip_url = StringField(
+        'URL BIP', validators=[InputRequired()], description='pełen adres strony BIP',
+    )
+    nip = StringField('NIP', validators=[InputRequired()])
+    regon = StringField('REGON', validators=[InputRequired()])
+    krs = StringField('KRS')
+    street = StringField(
+        'ulica', validators=[InputRequired()],
+        description='ulica lub miejscowość z numerem budynku',
+    )
+    zip_code = StringField('kod pocztowy', validators=[InputRequired()])
+    town = StringField('miejscowość', validators=[InputRequired()])
+
+    def save(self, siteobj):
+        formdata = self.data
+        site = copy.deepcopy(siteobj)
+        for name in ['street', 'zip_code', 'town']:
+            setattr(site.address, name, formdata.pop(name))
+        for name, value in formdata:
+            setattr(site, name, value)
+        return site
