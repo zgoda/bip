@@ -12,26 +12,36 @@ role_names = {
 }
 
 
+class Serializable:
+
+    SERIALIZE_FIELDS = []
+
+    def to_dict(self):
+        return {
+            fn: getattr(self, fn) for fn in self.SERIALIZE_FIELDS  # skipcq: PTC-W0034
+        }
+
+
 @dataclass
-class Address:
+class Address(Serializable):
     street: str
     zip_code: str
     town: str
+
+    SERIALIZE_FIELDS = ['street', 'zip_code', 'town']
 
     @cached_property
     def display_value(self):
         return f'{self.street}, {self.zip_code} {self.town}'
 
-    def to_dict(self):
-        fields = ['street', 'zip_code', 'town']
-        return {fn: getattr(self, fn) for fn in fields}  # skipcq: PTC-W0034
-
 
 @dataclass
-class Contact:
+class Contact(Serializable):
     phone: str
     email: str
     name: str = ''
+
+    SERIALIZE_FIELDS = ['phone', 'email', 'name']
 
     @cached_property
     def basic_information(self) -> List[Tuple]:
@@ -41,19 +51,19 @@ class Contact:
             ('email', self.email),
         ]
 
-    def to_dict(self):
-        fields = ['phone', 'email', 'name']
-        return {fn: getattr(self, fn) for fn in fields}  # skipcq: PTC-W0034
-
 
 @dataclass
-class StaffMember:
+class StaffMember(Serializable):
     role_name: str
     role_type: str
     person_name: str
     photo_url: str = ''
     phone: str = ''
     email: str = ''
+
+    SERIALIZE_FIELDS = [
+        'role_name', 'role_type', 'person_name', 'photo_url', 'phone', 'email'
+    ]
 
     def __post_init__(self):
         if self.role_type not in role_names:
@@ -68,21 +78,17 @@ class StaffMember:
             ('email', self.email),
         )
 
-    def to_dict(self):
-        fields = [
-            'role_name', 'role_type', 'person_name', 'photo_url', 'phone', 'email'
-        ]
-        return {fn: getattr(self, fn) for fn in fields}  # skipcq: PTC-W0034
-
 
 @dataclass
-class Department:
+class Department(Serializable):
     staff: List[StaffMember]
     phone: str = ''
     email: str = ''
     name: str = ''
     domain: str = ''
     location: str = ''
+
+    SERIALIZE_FIELDS = ['phone', 'email', 'name', 'domain', 'location']
 
     @classmethod
     def from_dict(cls, d: dict) -> Department:
@@ -100,14 +106,13 @@ class Department:
         )
 
     def to_dict(self):
-        fields = ['phone', 'email', 'name', 'domain', 'location']
-        rv = {fn: getattr(self, fn) for fn in fields}  # skipcq: PTC-W0034
+        rv = super().to_dict()
         rv['staff'] = [p.to_dict() for p in self.staff]
         return rv
 
 
 @dataclass
-class Site:
+class Site(Serializable):
     name: str
     address: Address
     contacts: List[Contact]
@@ -117,6 +122,8 @@ class Site:
     regon: str
     short_name: str = ''
     krs: str = ''
+
+    SERIALIZE_FIELDS = ['name', 'bip_url', 'nip', 'regon', 'short_name', 'krs']
 
     def __bool__(self):
         if all([
@@ -156,8 +163,7 @@ class Site:
         return data
 
     def to_dict(self):
-        fields = ['name', 'bip_url', 'nip', 'regon', 'short_name', 'krs']
-        rv = {fn: getattr(self, fn) for fn in fields}  # skipcq: PTC-W0034
+        rv = super().to_dict()
         rv['address'] = self.address.to_dict()
         rv['contacts'] = [c.to_dict() for c in self.contacts]
         rv['departments'] = [d.to_dict() for d in self.departments]
