@@ -115,3 +115,8 @@ def label_list() -> Union[Response, str]:
 @admin_bp.route('/label/<int:label_pk>', methods=['POST', 'GET'])
 def label_detail(label_pk: int) -> Union[Response, str]:
     return default_admin_item_view(label_item_meta, label_pk)
+
+
+@admin_bp.route('/site', methods=['POST', 'GET'])
+def site():
+    return render_template('admin/site.html')
