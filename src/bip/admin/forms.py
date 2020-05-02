@@ -1,4 +1,3 @@
-import copy
 from datetime import datetime
 from typing import Optional
 
@@ -10,6 +9,7 @@ from wtforms.validators import InputRequired, Optional as ValueOptional
 
 from ..models import Change, ChangeRecord, Label, Page, db
 from ..utils.forms import BaseForm, EmailValidator, ObjectForm
+from ..utils.site import Address, Contact, Site
 from ..utils.text import slugify
 
 
@@ -90,11 +90,23 @@ class SiteForm(BaseForm):
     zip_code = StringField('kod pocztowy', validators=[InputRequired()])
     town = StringField('miejscowość', validators=[InputRequired()])
 
-    def save(self, siteobj):
-        formdata = self.data
-        site = copy.deepcopy(siteobj)
-        for name in ['street', 'zip_code', 'town']:
-            setattr(site.address, name, formdata.pop(name))
-        for name, value in formdata:
-            setattr(site, name, value)
+    def save(self):
+        address = Address(self.street.data, self.zip_code.data, self.town.data)
+        site = Site(
+            address=address, name=self.name.data, short_name=self.short_name.data,
+            bip_url=self.bip_url.data, nip=self.nip.data, regon=self.regon.data,
+            krs=self.krs.data,
+        )
         return site
+
+
+class SiteContactForm(BaseForm):
+    name = StringField('nazwa', description='wyświetlana nazwa kontaktu')
+    phone = StringField('telefon', validators=[InputRequired()])
+    email = StringField('email', validators=[InputRequired()])
+
+    def save(self):
+        contact = Contact(
+            phone=self.phone.data, email=self.email.data, name=self.name.data
+        )
+        return contact
