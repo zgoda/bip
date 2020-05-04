@@ -82,8 +82,21 @@ def user_list(active: bool):
     '--admin/--regular', default=False,
     help='Czy konto ma mieć uprawnienia administracyjne (domyślnie: NIE)',
 )
+@click.option(
+    '-u', '--user', 'user_name',
+    help='Nazwa użytkownika wykonującego czynność',
+)
 @with_appcontext
-def user_create(name: str, password: str, email: str, active: bool, admin: bool):
+def user_create(
+            name: str, password: str, email: str, active: bool, admin: bool,
+            user_name: str,
+        ):
+    if User.select().count() > 0:
+        if not user_name:
+            raise click.ClickException(
+                'tylko dodanie pierwszego użytkownika nie wymaga logowania'
+            )
+        login_user(user_name, admin=True)
     user = User(
         name=name, email=email, active=active, admin=admin
     )

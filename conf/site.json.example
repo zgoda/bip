@@ -14,7 +14,6 @@
   ],
   "departments": [
     {
-      "name": "Instytucja Publiczna",
       "staff": [
         {
           "role_name": "dyrektor",
@@ -25,6 +24,6 @@
     }
   ],
   "bip_url": "http://bip.instytucja.pl",
-  "NIP": "111-222-33-44",
-  "REGON": "123456789"
+  "nip": "111-222-33-44",
+  "regon": "123456789"
 }

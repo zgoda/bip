@@ -8,8 +8,7 @@ from wtforms.fields.html5 import EmailField, IntegerField
 from wtforms.validators import InputRequired, Optional as ValueOptional
 
 from ..models import Change, ChangeRecord, Label, Page, db
-from ..utils.forms import BaseForm, EmailValidator, ObjectForm
-from ..utils.site import Address, Contact, Site
+from ..utils.forms import EmailValidator, ObjectForm
 from ..utils.text import slugify
 
 
@@ -69,44 +68,3 @@ class LabelForm(ObjectForm):
         label.description_html = markdown(label.description)
         label.save()
         return label
-
-
-class SiteForm(BaseForm):
-    name = StringField(
-        'nazwa', validators=[InputRequired()],
-        description='pełna (rejestrowa) nazwa instytucji',
-    )
-    short_name = StringField('nazwa skrócona')
-    bip_url = StringField(
-        'URL BIP', validators=[InputRequired()], description='pełen adres strony BIP',
-    )
-    nip = StringField('NIP', validators=[InputRequired()])
-    regon = StringField('REGON', validators=[InputRequired()])
-    krs = StringField('KRS')
-    street = StringField(
-        'ulica', validators=[InputRequired()],
-        description='ulica lub miejscowość z numerem budynku',
-    )
-    zip_code = StringField('kod pocztowy', validators=[InputRequired()])
-    town = StringField('miejscowość', validators=[InputRequired()])
-
-    def save(self):
-        address = Address(self.street.data, self.zip_code.data, self.town.data)
-        site = Site(
-            address=address, name=self.name.data, short_name=self.short_name.data,
-            bip_url=self.bip_url.data, nip=self.nip.data, regon=self.regon.data,
-            krs=self.krs.data,
-        )
-        return site
-
-
-class SiteContactForm(BaseForm):
-    name = StringField('nazwa', description='wyświetlana nazwa kontaktu')
-    phone = StringField('telefon', validators=[InputRequired()])
-    email = StringField('email', validators=[InputRequired()])
-
-    def save(self):
-        contact = Contact(
-            phone=self.phone.data, email=self.email.data, name=self.name.data
-        )
-        return contact

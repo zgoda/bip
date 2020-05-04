@@ -59,7 +59,7 @@ def label_page_list(slug: str) -> str:
     )
     ctx = {
         'label': label,
-        'pages': pages,
+        'label_pages': pages,
         'num_pages': pages.count(),
     }
     return render_template('main/label_page_list.html', **ctx)

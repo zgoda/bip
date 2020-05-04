@@ -64,12 +64,31 @@ class TestUserOps(BIPCLITests):
         assert u1.email not in rv.output
         assert u2.email in rv.output
 
-    def test_user_create(self):
+    def test_user_create_1st(self):
         rv = self.runner.invoke(
             user_create, ['-n', self.username, '-p', self.password, '--active']
         )
         assert rv.exit_code == 0
         assert 'zostało założone' in rv.output
+
+    def test_user_create_next_ok(self, mocker, user_factory):
+        admin = user_factory(name='admin', password='admin', admin=True)
+        fake_login = mocker.Mock(return_value=admin)
+        mocker.patch('bip.cli.users.commands.login_user', fake_login)
+        rv = self.runner.invoke(
+            user_create,
+            ['-n', self.username, '-p', self.password, '--active', '-u', admin.name],
+        )
+        assert rv.exit_code == 0
+        assert 'zostało założone' in rv.output
+
+    def test_user_create_next_fail(self, mocker, user_factory):
+        user_factory(name='admin', password='admin', admin=True)
+        rv = self.runner.invoke(
+            user_create, ['-n', self.username, '-p', self.password, '--active']
+        )
+        assert rv.exit_code != 0
+        assert 'tylko dodanie pierwszego' in rv.output
 
     def test_user_change_noop(self, mocker, user_factory):
         admin = user_factory(name='admin', password='admin', admin=True)
