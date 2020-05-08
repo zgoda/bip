@@ -1,7 +1,32 @@
 {% extends "main/base.html" %}
 
+{% from "macros/pagination.html" import render_pagination %}
+
 {% block headpagetitle %}Etykieta: {{ label.name }}{% endblock %}
 
 {% block content %}
 <h2>Etykieta: {{ label.name }} ({{ num_pages|pluralize(['strona', 'strony', 'stron']) }})</h2>
+{% if pagination.items %}
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">tytuł</th>
+      <th scope="col">utworzona</th>
+      <th scope="col">zmodyfikowana</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for page in pagination.items %}
+    <tr>
+      <td><a href="{{ url_for('main.page', page_id=page.pk) }}">{{ page.title }}</a></td>
+      <td>{{ page.created|datetimeformat('short') }}</td>
+      <td>{{ page.updated|datetimeformat('short') }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{{ render_pagination(pagination) }}
+{% else %}
+<p>Nie ma żadnych stron z etykietą {{ label.name }}</p>
+{% endif %}
 {% endblock %}

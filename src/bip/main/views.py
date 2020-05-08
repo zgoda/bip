@@ -4,6 +4,7 @@ from flask import Response, render_template
 
 from ..models import ChangeRecord, Label, Page, PageLabel, User
 from ..utils.http import or_404
+from ..utils.pagination import paginate
 from . import main_bp
 
 
@@ -32,8 +33,7 @@ def page_view(page_id: int) -> Union[str, Response]:
     Author = User.alias()  # noqa: N806
     Editor = User.alias()  # noqa: N806
     page_obj = or_404(
-        Page
-        .select(Page, Author, Editor, ChangeRecord)
+        Page.select(Page, Author, Editor, ChangeRecord)
         .join(Author, on=(Page.created_by == Author.pk))
         .switch(Page)
         .join(Editor, on=(Page.updated_by == Editor.pk))
@@ -51,15 +51,14 @@ def page_view(page_id: int) -> Union[str, Response]:
 def label_page_list(slug: str) -> str:
     label = or_404(Label.get(Label.slug == slug))
     pages = (
-        Page
-        .select()
+        Page.select()
         .join(PageLabel)
         .where(PageLabel.label == label)
         .order_by(Page.title)
     )
     ctx = {
         'label': label,
-        'label_pages': pages,
+        'pagination': paginate(pages, size=10),
         'num_pages': pages.count(),
     }
     return render_template('main/label_page_list.html', **ctx)

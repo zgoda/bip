@@ -114,6 +114,18 @@ def get_page(arg_name: str = 'p') -> int:
 def paginate(
             query: Query, page: Optional[int] = None, size: Optional[int] = None
         ) -> Pagination:
+    """Create pagination object using sane defaults.
+
+    :param query: [description]
+    :type query: peewee.Query
+    :param page: page number, will be fetched from request if omitted, defaults to
+                 None
+    :type page: Optional[int], optional
+    :param size: page size, defaults to None
+    :type size: Optional[int], optional
+    :return: pagination object for query
+    :rtype: Pagination
+    """
     if page is None:
         page = get_page()
     if size is None:
