@@ -8,8 +8,7 @@ Flask-SQLAlchemy
 
 Plik: ``src/bip/utils/pagination.py``
 
-Zakres: klasa ``Pagination`` jest zaadaptowanym kodem tak, by działał z
-PeeWee ORM zamiast ze SQLAlchemy.
+Zakres: klasa ``Pagination`` jest zaadaptowanym kodem tak, by działał z PeeWee ORM zamiast ze SQLAlchemy.
 
 Copyright 2010 Pallets
 

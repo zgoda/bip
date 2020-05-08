@@ -1,14 +1,7 @@
 Przewodnik programisty
 ======================
 
-Kod tego projektu jest przeznaczony dla środowiska uruchmieniowego języka
-Python w wersji 3.7 lub nowszej. Automatyczne testy są uruchamiane na każdym
-powszechnie dostępnym środowisku które spełnia to wymaganie (w chwili pisania
-tego dokumentu są to 3.7 i 3.8). Z powodu ograniczonej dostępności środowiska
-w wersji 3.8, zalecamy do programowania lokalnie używać wersji 3.7, która jest
-dostępna zarówno w Debianie 10 (Buster) jak i Ubuntu 18.04. Dla starszych
-wersji Ubuntu jest możliwość zainstalowania Pythona 3.7 używając respozytorium
-`PPA Deadsnakes <https://launchpad.net/~deadsnakes/+archive/ubuntu/ppa>`_.
+Kod tego projektu jest przeznaczony dla środowiska uruchmieniowego języka Python w wersji 3.7 lub nowszej. Automatyczne testy są uruchamiane na każdym powszechnie dostępnym środowisku które spełnia to wymaganie (w chwili pisania tego dokumentu są to 3.7 i 3.8). Z powodu ograniczonej dostępności środowiska w wersji 3.8, zalecamy do programowania lokalnie używać wersji 3.7, która jest dostępna zarówno w Debianie 10 (Buster) jak i Ubuntu 18.04. Dla starszych wersji Ubuntu jest możliwość zainstalowania Pythona 3.7 używając respozytorium `PPA Deadsnakes <https://launchpad.net/~deadsnakes/+archive/ubuntu/ppa>`_.
 
 Wszystko co trzeba na początek
 ------------------------------
@@ -37,19 +30,15 @@ Utwórz środowisko wirtualne i zainstaluj podstawowe pakiety.
     $ source venv/bin/activate
     $ pip install -U pip wheel
 
-Od tej pory wszystkie polecenia są wykonywane z aktywowanym środowiskiem
-wirtualnym.
+Od tej pory wszystkie polecenia są wykonywane z aktywowanym środowiskiem wirtualnym.
 
-Zainstaluj zależności. Pakiet ma zdefiniowany tryb ``dev`` który instaluje
-wiele przydatnych narzędzi programistycznych, zorientowanych w szczególności
-na jakość kodu. Proponujemy uruchamiać ``flake8 .`` przed każdym commitem.
+Zainstaluj zależności. Pakiet ma zdefiniowany tryb ``dev`` który instaluje wiele przydatnych narzędzi programistycznych, zorientowanych w szczególności na jakość kodu. Proponujemy uruchamiać ``flake8 .`` przed każdym commitem.
 
 .. code-block:: console
 
     $ pip install -U -e .[dev]
 
-W tym momencie kod powinien już być uruchamialny, ale wcześniej dobrze będzie
-utworzyć sobie plik z lokalnymi zmiennymi środowiskowymi jak poniżej.
+W tym momencie kod powinien już być uruchamialny, ale wcześniej dobrze będzie utworzyć sobie plik z lokalnymi zmiennymi środowiskowymi jak poniżej.
 
 .. code-block:: shell
 
@@ -72,5 +61,4 @@ W tym momencie brakuje jeszcze tylko danych instytucji.
 
 Dane w przykładowym pliku powinny być wystarczające na początek.
 
-**Gratulacje**, twoja kopia kodu źródłowego pakietu ``biuletyn-bip`` jest
-gotowa do pracy. Baw się dobrze!
+**Gratulacje**, twoja kopia kodu źródłowego pakietu ``biuletyn-bip`` jest gotowa do pracy. Baw się dobrze!

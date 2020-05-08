@@ -50,12 +50,12 @@ def login_user(username: str, admin: bool = True) -> User:
     if not password:  # pragma: no cover
         click.echo(f'użytkownik {username} nie ma zapisanego hasła w pęku kluczy')
         password = click.prompt('Hasło', hide_input=True)
-    kw = {}
     if admin:
-        kw['admin'] = True
-    user_obj = User.get_or_none(
-        User.name == username & User.admin == admin
-    )
+        user_obj = User.get_or_none(
+            User.name == username & User.admin == admin
+        )
+    else:
+        user_obj = User.get_or_none(User.name == username)
     if not (user_obj and user_obj.check_password(password)):
         raise click.ClickException(
             'nieprawidłowe dane logowania lub niewystarczające uprawnienia - '

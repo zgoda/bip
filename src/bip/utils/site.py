@@ -12,23 +12,11 @@ role_names = {
 }
 
 
-class Serializable:
-
-    SERIALIZE_FIELDS = []
-
-    def to_dict(self):
-        return {
-            fn: getattr(self, fn) for fn in self.SERIALIZE_FIELDS  # skipcq: PTC-W0034
-        }
-
-
 @dataclass
-class Address(Serializable):
+class Address:
     street: str
     zip_code: str
     town: str
-
-    SERIALIZE_FIELDS = ['street', 'zip_code', 'town']
 
     @cached_property
     def display_value(self):
@@ -36,12 +24,10 @@ class Address(Serializable):
 
 
 @dataclass
-class Contact(Serializable):
+class Contact:
     phone: str
     email: str
     name: str = ''
-
-    SERIALIZE_FIELDS = ['phone', 'email', 'name']
 
     @cached_property
     def basic_information(self) -> List[Tuple]:
@@ -53,17 +39,13 @@ class Contact(Serializable):
 
 
 @dataclass
-class StaffMember(Serializable):
+class StaffMember:
     role_name: str
     role_type: str
     person_name: str
     photo_url: str = ''
     phone: str = ''
     email: str = ''
-
-    SERIALIZE_FIELDS = [
-        'role_name', 'role_type', 'person_name', 'photo_url', 'phone', 'email'
-    ]
 
     def __post_init__(self):
         if self.role_type not in role_names:
@@ -80,15 +62,13 @@ class StaffMember(Serializable):
 
 
 @dataclass
-class Department(Serializable):
+class Department:
+    name: str
     staff: List[StaffMember]
     phone: str = ''
     email: str = ''
-    name: str = ''
     domain: str = ''
     location: str = ''
-
-    SERIALIZE_FIELDS = ['phone', 'email', 'name', 'domain', 'location']
 
     @classmethod
     def from_dict(cls, d: dict) -> Department:
@@ -105,14 +85,9 @@ class Department(Serializable):
             ('email', self.email),
         )
 
-    def to_dict(self):
-        rv = super().to_dict()
-        rv['staff'] = [p.to_dict() for p in self.staff]
-        return rv
-
 
 @dataclass
-class Site(Serializable):
+class Site:
     name: str
     address: Address
     contacts: List[Contact]
@@ -122,23 +97,6 @@ class Site(Serializable):
     regon: str
     short_name: str = ''
     krs: str = ''
-
-    SERIALIZE_FIELDS = ['name', 'bip_url', 'nip', 'regon', 'short_name', 'krs']
-
-    def __bool__(self):
-        if all([
-            self.name, self.address, self.contacts, self.departments, self.bip_url,
-            self.nip, self.regon,
-        ]):
-            return True
-        return False
-
-    @classmethod
-    def new(cls):
-        return cls(
-            name=None, address=None, contacts=None, departments=None,
-            bip_url=None, nip=None, regon=None,
-        )
 
     @classmethod
     def from_json(cls, s: str) -> Site:
@@ -162,13 +120,6 @@ class Site(Serializable):
             data.append(('KRS', self.krs))
         return data
 
-    def to_dict(self):
-        rv = super().to_dict()
-        rv['address'] = self.address.to_dict()
-        rv['contacts'] = [c.to_dict() for c in self.contacts]
-        rv['departments'] = [d.to_dict() for d in self.departments]
-        return rv
-
 
 def test_site() -> Site:  # pragma: no cover
     """Generate site data object for tests.
@@ -186,6 +137,7 @@ def test_site() -> Site:  # pragma: no cover
         ],
         departments=[
             Department(
+                name='Ogólny',
                 staff=[
                     StaffMember(
                         role_name='dyrektor', role_type='manager',
