@@ -1,7 +1,7 @@
 import pytest
 
 from bip.models import User
-from bip.utils.pagination import url_for_other_page, get_page, paginate
+from bip.utils.pagination import Pagination, get_page, paginate, url_for_other_page
 
 
 @pytest.mark.usefixtures('app')
@@ -83,3 +83,18 @@ class TestPaginationUtils:
         rv = paginate(query, size=20)
         assert rv.has_next is False
         assert rv.has_prev is False
+
+
+@pytest.mark.usefixtures('app')
+class TestPagination:
+
+    @pytest.mark.parametrize('per_page,total', [
+        (0, None),
+        (0, 7),
+        (2, None)
+    ], ids=['pp0-t0', 'pp0', 't0'])
+    def test_init_empty(self, per_page, total, user_factory):
+        user_factory.create_batch(7, password='pass')
+        query = User.select()
+        pagination = Pagination(query, 1, per_page, total, query[:2])
+        assert pagination.pages == 0

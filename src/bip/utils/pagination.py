@@ -7,7 +7,7 @@ from peewee import Query
 
 class Pagination:
     """Copied almost verbatim from Flask-SQLAlchemy. Minor changes made to
-    work with Peewee query object.
+    work with Peewee query object. Removed unused code.
 
     Copyright 2010 Pallets
     """
@@ -28,45 +28,15 @@ class Pagination:
             pages = int(ceil(self.total / float(self.per_page)))
         return pages
 
-    def prev(self):
-        """Returns a :class:`Pagination` object for the previous page."""
-        page = self.page - 1
-        return Pagination(
-            self.query, page, self.per_page, self.total,
-            self.query.paginate(page, self.per_page),
-        )
-
-    @property
-    def prev_num(self):
-        """Number of the previous page."""
-        if not self.has_prev:
-            return None
-        return self.page - 1
-
     @property
     def has_prev(self):
         """True if a previous page exists"""
         return self.page > 1
 
-    def next(self):  # noqa: A003
-        """Returns a :class:`Pagination` object for the next page."""
-        page = self.page + 1
-        return Pagination(
-            self.query, page, self.per_page, self.total,
-            self.query.paginate(page, self.per_page)
-        )
-
     @property
     def has_next(self):
         """True if a next page exists."""
         return self.page < self.pages
-
-    @property
-    def next_num(self):
-        """Number of the next page"""
-        if not self.has_next:
-            return None
-        return self.page + 1
 
     def iter_pages(self, left_edge=2, left_current=2, right_current=5, right_edge=2):
         last = 0
