@@ -1,6 +1,6 @@
 import pytest
 
-from bip.cli.pages.commands import page_change, page_create, page_list
+from bip.cli.pages.commands import page_change, page_create, page_labels, page_list
 from bip.models import Page
 from bip.utils.text import slugify, truncate_string
 
@@ -112,8 +112,8 @@ class TestPageOps(BIPCLITests):
         assert f'strona {title} została utworzona' in rv.output
         page = Page.get(Page.title == title)
         assert page.labels().count() == 2
-        page_labels = [x.label.name for x in page.labels()]
-        assert all([label_a in page_labels, label_b in page_labels])
+        pagelabels = [x.label.name for x in page.labels()]
+        assert all([label_a in pagelabels, label_b in pagelabels])
 
     def test_create_fail_no_text(self, mocker, user_factory):
         title = 'Tytuł strony 1'
@@ -190,3 +190,44 @@ class TestPageOps(BIPCLITests):
         assert 'została zmieniona' in rv.output
         page_obj = Page[page.pk]
         assert page_obj.order == new_order
+
+    def test_labels_add_none(self, mocker, user_factory, page_factory):
+        actor = user_factory(name=self.username, password=self.password)
+        mocker.patch(
+            'bip.cli.pages.commands.login_user', mocker.Mock(return_value=actor)
+        )
+        page = page_factory()
+        rv = self.runner.invoke(
+            page_labels, ['-i', page.pk, '-o', 'add', '-u', actor.name]
+        )
+        assert f'etykiety strony {page.title} nie zostały zmienione' in rv.output
+        assert rv.exit_code == 0
+
+    def test_labels_add_one(self, mocker, user_factory, page_factory, label_factory):
+        actor = user_factory(name=self.username, password=self.password)
+        mocker.patch(
+            'bip.cli.pages.commands.login_user', mocker.Mock(return_value=actor)
+        )
+        page = page_factory()
+        label = label_factory(name='etykieta 1')
+        rv = self.runner.invoke(
+            page_labels,
+            ['-i', page.pk, '-o', 'add', '-u', actor.name, '-l', label.name],
+        )
+        assert rv.exit_code == 0
+        assert f'etykiety strony {page.title} zostały zaktualizowane' in rv.output
+
+    def test_labels_add_many(self, mocker, user_factory, page_factory, label_factory):
+        num_labels = 8
+        actor = user_factory(name=self.username, password=self.password)
+        mocker.patch(
+            'bip.cli.pages.commands.login_user', mocker.Mock(return_value=actor)
+        )
+        page = page_factory()
+        labels = label_factory.create_batch(num_labels)
+        call_args = ['-i', page.pk, '-o', 'add', '-u', actor.name]
+        for label in labels:
+            call_args.extend(['-l', label.name])
+        rv = self.runner.invoke(page_labels, call_args)
+        assert rv.exit_code == 0
+        assert f'etykiety strony {page.title} zostały zaktualizowane' in rv.output

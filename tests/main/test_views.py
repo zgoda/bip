@@ -62,13 +62,15 @@ class TestLabelPagesView(BIPTests):
         assert rv.status_code == 200
         assert f'tykieta: {label.name} (1 strona)' in rv.text
 
-    @pytest.mark.parametrize('numpages', [2, 4, 5, 14, 33, 221])
+    @pytest.mark.parametrize('numpages', [2, 4, 5, 14, 33, 78])
     def test_many_pages(
-                self, numpages, config, label_factory, page_factory, page_label_factory
+                self, numpages, config, user_factory, label_factory, page_factory,
+                page_label_factory,
             ):
+        user = user_factory()
         config['LIST_SIZE'] = 4
         label = label_factory(name='etykieta 1')
-        pages = page_factory.create_batch(numpages)
+        pages = page_factory.create_batch(numpages, created_by=user, updated_by=user)
         for page in pages:
             page_label_factory(page=page, label=label)
         rv = self.client.get(url_for('main.label_page_list', slug=label.slug))

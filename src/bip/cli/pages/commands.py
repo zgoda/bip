@@ -23,7 +23,7 @@ label_ops = click.Group(name='label', help='Zarządzanie etykietami stron')
     help='Wyświetl tylko aktywne lub nieaktywne (domyślnie: wszystkie)',
 )
 @with_appcontext
-def page_list(active: bool):
+def page_list(active: Optional[bool]):
     page_prop = ACTIVITY_NAME_MAP[active]
     sort = [Page.title]
     q = Page.select()
@@ -78,8 +78,8 @@ def page_list(active: bool):
 )
 @with_appcontext
 def page_create(
-            title: str, active: bool, main: bool, labels: List[str], order: int,
-            user_name: str,
+            title: str, active: bool, main: bool, labels: Optional[List[str]],
+            order: Optional[int], user_name: str,
         ):
     actor = login_user(user_name, admin=False)
     text = click.edit()
