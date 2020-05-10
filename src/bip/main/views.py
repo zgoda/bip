@@ -49,7 +49,7 @@ def page_view(page_id: int) -> Union[str, Response]:
 
 @main_bp.route('/label/<slug>')
 def label_page_list(slug: str) -> str:
-    label = or_404(Label.get(Label.slug == slug))
+    label = or_404(Label.get_or_none(Label.slug == slug))
     pages = (
         Page.select()
         .join(PageLabel)

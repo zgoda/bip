@@ -39,3 +39,37 @@ class TestPageViews(BIPTests):
     def test_get_notfound(self):
         rv = self.client.get(url_for('main.page', page_id=666))
         assert rv.status_code == 404
+
+
+@pytest.mark.usefixtures('client_class')
+class TestLabelPagesView(BIPTests):
+
+    def test_label_not_found(self):
+        rv = self.client.get(url_for('main.label_page_list', slug='dummy'))
+        assert rv.status_code == 404
+
+    def test_no_pages(self, label_factory):
+        label = label_factory(name='test')
+        rv = self.client.get(url_for('main.label_page_list', slug=label.slug))
+        assert rv.status_code == 200
+        assert f'tykieta: {label.name} (0 stron)' in rv.text
+
+    def test_one_page(self, label_factory, page_factory, page_label_factory):
+        label = label_factory(name='etykieta 1')
+        page = page_factory(title='tytuł 1', text='tekst 1')
+        page_label_factory(label=label, page=page)
+        rv = self.client.get(url_for('main.label_page_list', slug=label.slug))
+        assert rv.status_code == 200
+        assert f'tykieta: {label.name} (1 strona)' in rv.text
+
+    def test_many_pages(
+                self, config, label_factory, page_factory, page_label_factory
+            ):
+        config['LIST_SIZE'] = 4
+        label = label_factory(name='etykieta 1')
+        pages = page_factory.create_batch(14)
+        for page in pages:
+            page_label_factory(page=page, label=label)
+        rv = self.client.get(url_for('main.label_page_list', slug=label.slug))
+        assert rv.status_code == 200
+        assert f'tykieta: {label.name} (14 stron)' in rv.text
