@@ -1,10 +1,10 @@
+import ast
 import codecs
 import re
 from os import path
 
 from setuptools import find_packages, setup
 
-# parts below shamelessly stolen from pypa/pip
 here = path.abspath(path.dirname(__file__))
 
 
@@ -13,16 +13,11 @@ def read(*parts):
         return fp.read()
 
 
-def find_version(*file_paths):
-    version_file = read(*file_paths)
-    version_match = re.search(
-        r"^__version__ = ['\"]([^'\"]*)['\"]",
-        version_file,
-        re.M,
-    )
-    if version_match:
-        return version_match.group(1)
-    raise RuntimeError('Unable to find version string.')
+_version_re = re.compile(r"__version__\s+=\s+(.*)")
+
+
+def find_version(*where):
+    return str(ast.literal_eval(_version_re.search(read(*where)).group(1)))
 
 
 long_description = read('README.rst')
@@ -82,7 +77,7 @@ dev_reqs = [
 
 setup(
     name='biuletyn-bip',
-    version=find_version('src', 'bip', '_version.py'),
+    version=find_version('src', 'bip', '__init__.py'),
     author='Jarek Zgoda',
     author_email='jarek.zgoda@gmail.com',
     description='Polish BIP (Biuletyn Informacji Publicznej) as Flask application',
@@ -95,7 +90,7 @@ setup(
     zip_safe=False,
     url='http://github.com/zgoda/bip',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
         'Framework :: Flask',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',

@@ -1,7 +1,7 @@
 License
 =======
 
-**Please note this document if for informational purpose only.**
+**Please note this document is for informational purpose only.**
 
 You may find legally binding document in root directory of source
 distribution, or at `GNU site <https://www.gnu.org/licenses/gpl-3.0.html>`_.
