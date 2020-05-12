@@ -18,11 +18,11 @@
 # -- Project information -----------------------------------------------------
 
 project = 'BIP'
-copyright = '2019, Jarek Zgoda <jarek.zgoda@gmail.com>'  # noqa: A001
+copyright = '2019, Jarek Zgoda'  # noqa: A001
 author = 'Jarek Zgoda'
 
 # The full version, including alpha/beta/rc tags
-release = '1.0.0.dev0'
+release = '0.7.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -66,5 +66,5 @@ html_static_path = ['_static']
 # -- Extension configuretion -------------------------------------------------
 
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3', None)
+    'python': ('https://docs.python.org/3.7', None)
 }
