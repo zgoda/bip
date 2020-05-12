@@ -39,7 +39,6 @@ base_reqs = [
     'markdown',
     'python-dotenv',
     'text-unidecode',
-    'dataclasses ; python_version < "3.7"',
 ]
 
 cli_reqs = [
@@ -122,5 +121,5 @@ setup(
             'bip=bip.cli:main',
         ]
     },
-    python_requires='~=3.6',
+    python_requires='~=3.7',
 )
