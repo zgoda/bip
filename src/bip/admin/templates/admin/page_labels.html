@@ -21,13 +21,13 @@
 {% else %}
 <p>Nie ma żadnych etykiet.</p>
 {% endif %}
-{% if labels %}
+{% if available_labels %}
 <h3>Dostępne etykiety</h3>
 <form method="POST" action="{{ request.path }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <input type="hidden" name="op" value="add">
   <table class="table table-bordered">
-    {% for label in labels %}
+    {% for label in available_labels %}
     <tr>
       <td>{{ label.name }}</td>
       <td><input type="checkbox" name="label" value="{{ label.pk }}"/></td>

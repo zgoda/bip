@@ -95,7 +95,7 @@ def page_labels(page_pk: int) -> Union[Response, str]:
     ctx = {
         'page': page,
         'page_labels': cur_page_labels,
-        'labels': Label.select().where(
+        'available_labels': Label.select().where(
             Label.pk.not_in(page_label_ids)
         ).order_by(Label.name)
     }
