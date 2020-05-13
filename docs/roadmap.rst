@@ -6,9 +6,9 @@ Wersja oprogramowania odpowiada regułom `semantycznej numeracji wersji <https:/
 Wersje przedprodukcyjne (<1.0)
 ------------------------------
 
-Wersja **0.0.0.dev0** obejmowała prace nad implementacją kluczowych funkcji (strony, historia zmian, panel administracji przez WWW, program administracyjny z linii poleceń), jak również zaczątki dokumentacji.
+Wersje przed **0.7.0** obejmują prace nad implementacją kluczowych funkcji (strony, etykiety, załączniki, historia zmian, panel administracji przez WWW, program administracyjny z linii poleceń), jak również zaczątki dokumentacji, przede wszystkim programistycznej.
 
-Wersja **0.7.x** obejmuje prace nad implementacją ułatwień pracy redaktora oraz zapewnieniem poprawnego działania aplikacji na urządzeniach o różnych rozmiarach wyświetlaczy.
+Wersja **0.7.x** obejmie prace nad implementacją ułatwień pracy redaktora oraz zapewnieniem poprawnego działania aplikacji na urządzeniach o różnych rozmiarach wyświetlaczy.
 
 Wersja **0.8.x** obejmie dokumentację administracji systemu, testy integracyjne oraz innego rodzaju testy, wymagające uruchamiania pełnej aplikacji.
 
