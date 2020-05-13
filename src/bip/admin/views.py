@@ -92,12 +92,15 @@ def page_labels(page_pk: int) -> Union[Response, str]:
         return redirect(request.path)
     cur_page_labels = page.labels(order=Label.name)
     page_label_ids = [pl.label.pk for pl in cur_page_labels]
+    available_labels = (
+        Label.select()
+        .where(Label.pk.not_in(page_label_ids))
+        .order_by(Label.name)
+    )
     ctx = {
         'page': page,
         'page_labels': cur_page_labels,
-        'available_labels': Label.select().where(
-            Label.pk.not_in(page_label_ids)
-        ).order_by(Label.name)
+        'available_labels': available_labels,
     }
     return render_template('admin/page_labels.html', **ctx)
 

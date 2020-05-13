@@ -28,6 +28,18 @@ def contact() -> str:
     return render_template('main/contact.html')
 
 
+@main_bp.route('/changes')
+def changes() -> str:
+    changes = (
+        ChangeRecord.select()
+        .order_by(ChangeRecord.change_dt.desc())
+    )
+    ctx = {
+        'changes': changes,
+    }
+    return render_template('main/changes.html', **ctx)
+
+
 @main_bp.route('/<int:page_id>', endpoint='page')
 def page_view(page_id: int) -> Union[str, Response]:
     Author = User.alias()  # noqa: N806
@@ -48,7 +60,7 @@ def page_view(page_id: int) -> Union[str, Response]:
 
 
 @main_bp.route('/label/<slug>')
-def label_page_list(slug: str) -> str:
+def label_page_list(slug: str) -> Union[str, Response]:
     label = or_404(Label.get_or_none(Label.slug == slug))
     pages = (
         Page.select()

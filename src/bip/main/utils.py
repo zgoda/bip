@@ -60,6 +60,9 @@ def labels() -> ModelSelect:
     :return: Label query object
     :rtype: peewee.ModelSelect
     """
-    return Label.select(
-        Label, fn.Count(PageLabel.pk).alias('page_count')
-    ).join(PageLabel).group_by(Label).order_by(Label.name)
+    return (
+        Label.select(Label, fn.Count(PageLabel.pk).alias('page_count'))
+        .join(PageLabel)
+        .group_by(Label)
+        .order_by(Label.name)
+    )
