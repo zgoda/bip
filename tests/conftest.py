@@ -33,6 +33,11 @@ def fake_check_password_hash(stored, password):
     return stored == password
 
 
+@pytest.fixture(scope='session', autouse=True)
+def faker_session_locale():
+    return ['pl_PL']
+
+
 @pytest.fixture
 def app(mocker):
     """Pytest fixture that builds app object for testing purposes. This may be

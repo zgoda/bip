@@ -1,11 +1,8 @@
 import json
 
 import pytest
-from faker import Faker
 
 from bip.utils import site
-
-fake = Faker('pl_PL')
 
 
 class TestAddress:
@@ -79,17 +76,17 @@ class TestDepartment:
             site.Department(**data)
 
     @staticmethod
-    def test_from_dict():
+    def test_from_dict(faker):
         num_staff = 4
         data = {
-            'name': fake.company(),
-            'phone': fake.phone_number(),
-            'email': fake.company_email(),
+            'name': faker.company(),
+            'phone': faker.phone_number(),
+            'email': faker.company_email(),
             'staff': [
                 {
-                    'role_name': fake.job(),
+                    'role_name': faker.job(),
                     'role_type': 'staff',
-                    'person_name': fake.name(),
+                    'person_name': faker.name(),
                 }
             ] * num_staff,
         }
@@ -99,7 +96,7 @@ class TestDepartment:
 
 class TestSite:
 
-    def make_data(self, name, num_staff):
+    def make_data(self, name, num_staff, fake):
         return {
             'name': name,
             'short_name': fake.company_prefix(),
@@ -133,36 +130,36 @@ class TestSite:
             'regon': fake.regon(),
         }
 
-    def test_from_dict(self):
-        name = fake.company()
+    def test_from_dict(self, faker):
+        name = faker.company()
         num_staff = 4
-        data = self.make_data(name, num_staff)
+        data = self.make_data(name, num_staff, faker)
         obj = site.Site.from_dict(data)
         assert obj.name == name
         assert len(obj.departments[0].staff) == num_staff
         assert obj.departments[0].name == name
 
-    def test_from_json(self):
-        name = fake.company()
+    def test_from_json(self, faker):
+        name = faker.company()
         num_staff = 4
-        s = json.dumps(self.make_data(name, num_staff), ensure_ascii=False)
+        s = json.dumps(self.make_data(name, num_staff, faker), ensure_ascii=False)
         obj = site.Site.from_json(s)
         assert obj.name == name
         assert len(obj.departments[0].staff) == num_staff
         assert obj.departments[0].name == name
 
-    def test_basic_information_no_krs(self):
-        name = fake.company()
+    def test_basic_information_no_krs(self, faker):
+        name = faker.company()
         num_staff = 4
-        data = self.make_data(name, num_staff)
+        data = self.make_data(name, num_staff, faker)
         obj = site.Site.from_dict(data)
         info = dict(obj.basic_information)
         assert 'KRS' not in info
 
-    def test_basic_information_with_krs(self):
-        name = fake.company()
+    def test_basic_information_with_krs(self, faker):
+        name = faker.company()
         num_staff = 4
-        data = self.make_data(name, num_staff)
+        data = self.make_data(name, num_staff, faker)
         data['krs'] = 'qaz123'
         obj = site.Site.from_dict(data)
         info = dict(obj.basic_information)
