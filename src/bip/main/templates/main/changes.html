@@ -1,6 +1,23 @@
 {% extends "main/base.html" %}
 
+{% from "macros/pagination.html" import render_pagination %}
+
 {% block headpagetitle %}{{ site.name }} - Rejestr zmian{% endblock %}
 
 {% block content %}
+<h2>Ostatnie zmiany stron biuletynu</h2>
+{% if pagination.items %}
+{% for change in pagination.items %}
+<div class="card my-2">
+  <div class="card-body">
+    <h5 class="card-title">{{ change.page.title }}</h5>
+    <h6 class="card-subtitle mb-2 text-muted">zmiana: {{ change.change_dt|datetimeformat('short') }} przez: {{ change.user.name }}, rodzaj: {{ change.change_type_name }}</h6>
+    <p class="card-text">{{ change.description }}</p>
+  </div>
+</div>
+{% endfor %}
+{{ render_pagination(pagination) }}
+{% else %}
+<p>Nie ma żadnych zarejestrowanych zmian treści stron.</p>
+{% endif %}
 {% endblock %}

@@ -1,6 +1,9 @@
 import pytest
-from .. import BIPTests
 from flask import url_for
+
+from bip.models import Change, ChangeRecord
+
+from .. import BIPTests
 
 
 @pytest.mark.usefixtures('client_class')
@@ -76,3 +79,42 @@ class TestLabelPagesView(BIPTests):
         rv = self.client.get(url_for('main.label_page_list', slug=label.slug))
         assert rv.status_code == 200
         assert f'tykieta: {label.name} ({numpages} stro' in rv.text
+
+
+@pytest.mark.usefixtures('client_class')
+class TestChangesView(BIPTests):
+
+    @pytest.fixture(autouse=True)
+    def set_up(self):
+        self.url = url_for('main.changes')
+
+    def test_no_changes(self):
+        rv = self.client.get(self.url)
+        assert 'żadnych zarejestrowanych zmian' in rv.text
+
+    def test_changes(self, page_factory, user_factory):
+        num = 4
+        user = user_factory()
+        page_factory.create_batch(num, created_by=user, updated_by=user)
+        rv = self.client.get(self.url)
+        assert rv.text.count(f'przez: {user.name}') == num
+
+    def test_changes_paginated(self, page_factory, user_factory):
+        num = 12
+        user = user_factory()
+        page_factory.create_batch(num, created_by=user, updated_by=user)
+        rv = self.client.get(self.url)
+        assert rv.text.count(f'przez: {user.name}') == 10
+        assert 'aria-label="następna"' in rv.text
+
+    def test_change_types(self, page_factory, user_factory):
+        description = 'dummy'
+        user = user_factory()
+        page = page_factory(created_by=user, updated_by=user)
+        ChangeRecord.log_change(
+            page=page, change_type=Change.updated, user=user, description=description
+        )
+        rv = self.client.get(self.url)
+        assert rv.text.count(f'przez: {user.name}') == 2
+        assert rv.text.count('rodzaj: utworzenie') == 1
+        assert rv.text.count('rodzaj: zmiana') == 1

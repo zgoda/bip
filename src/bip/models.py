@@ -116,3 +116,9 @@ class ChangeRecord(Model):
         return cls.create(
             page=page, user=user, description=description, change_type=change_type,
         )
+
+    @property
+    def change_type_name(self):
+        if self.change_type == Change.created:
+            return 'utworzenie strony'
+        return 'zmiana treści strony'

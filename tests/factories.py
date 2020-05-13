@@ -35,7 +35,7 @@ class UserFactory(PeeweeModelFactory):
         model = User
         database = db
 
-    name = factory.Faker('name')
+    name = factory.Faker('name', locale='pl_PL')
     email = factory.Faker('email', locale='pl_PL')
     password = DEFAULT_PASSWORD
     active = True

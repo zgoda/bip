@@ -31,11 +31,14 @@ def contact() -> str:
 @main_bp.route('/changes')
 def changes() -> str:
     change_list = (
-        ChangeRecord.select()
+        ChangeRecord.select(ChangeRecord, Page, User)
+        .join(Page)
+        .switch(ChangeRecord)
+        .join(User)
         .order_by(ChangeRecord.change_dt.desc())
     )
     ctx = {
-        'changes': change_list,
+        'pagination': paginate(change_list, size=10),
     }
     return render_template('main/changes.html', **ctx)
 
