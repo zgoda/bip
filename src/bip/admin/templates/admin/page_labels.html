@@ -8,7 +8,7 @@
 <form method="POST" action="{{ request.path }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <input type="hidden" name="op" value="remove">
-  <table class="table table-bordered">
+  <table class="table table-borderless">
     {% for pl in page_labels %}
     <tr>
       <td>{{ pl.label.name }}</td>
@@ -26,7 +26,7 @@
 <form method="POST" action="{{ request.path }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <input type="hidden" name="op" value="add">
-  <table class="table table-bordered">
+  <table class="table table-borderless">
     {% for label in available_labels %}
     <tr>
       <td>{{ label.name }}</td>
@@ -37,6 +37,10 @@
   <p><button class="btn btn-primary" type="submit">Dodaj wybrane</button></p>
 </form>
 {% else %}
+{% if page_labels %}
 <p>Strona wykorzystuje wszystkie dostępne etykiety.</p>
+{% else %}
+<p>Nie ma żadnych etykiet.</p>
+{% endif %}
 {% endif %}
 {% endblock %}
