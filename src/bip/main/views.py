@@ -30,12 +30,12 @@ def contact() -> str:
 
 @main_bp.route('/changes')
 def changes() -> str:
-    changes = (
+    change_list = (
         ChangeRecord.select()
         .order_by(ChangeRecord.change_dt.desc())
     )
     ctx = {
-        'changes': changes,
+        'changes': change_list,
     }
     return render_template('main/changes.html', **ctx)
 
