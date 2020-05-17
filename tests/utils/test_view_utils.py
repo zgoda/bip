@@ -18,12 +18,11 @@ class TestSafeRedirect:
         mocker.patch('bip.utils.views.request', fake_request)
         assert is_redirect_safe(target)
 
-    @staticmethod
     @pytest.mark.parametrize('params', [
         [LOCAL_HOST_URL, 'sftp://localhost:5000/some/where'],
         [LOCAL_HOST_URL, 'http://otherhost:5000/some/where'],
     ], ids=['scheme', 'netloc'])
-    def test_not_safe(params, mocker):
+    def test_not_safe(self, params, mocker):
         host_url, target = params
         fake_request = mocker.Mock(host_url=host_url)
         mocker.patch('bip.utils.views.request', fake_request)

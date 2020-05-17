@@ -7,18 +7,16 @@ from bip.utils import site
 
 class TestAddress:
 
-    @staticmethod
     @pytest.mark.parametrize('data', [
         {'zip_code': '10-100', 'town': 'X'},
         {'street': 'A', 'town': 'X'},
         {'street': 'A', 'zip_code': '10-100'},
     ], ids=['street', 'zip', 'town'])
-    def test_all_fields_required(data):
+    def test_all_fields_required(self, data):
         with pytest.raises(TypeError):
             site.Address(**data)
 
-    @staticmethod
-    def test_display_value():
+    def test_display_value(self):
         data = {'street': 'A', 'zip_code': '10-100', 'town': 'X'}
         addr = site.Address(**data)
         assert addr.display_value == f'{addr.street}, {addr.zip_code} {addr.town}'
@@ -26,17 +24,15 @@ class TestAddress:
 
 class TestContact:
 
-    @staticmethod
     @pytest.mark.parametrize('data', [
         {'email': 'email'},
         {'phone': 'phone'},
     ], ids=['phone', 'email'])
-    def test_email_and_phone_required(data):
+    def test_email_and_phone_required(self, data):
         with pytest.raises(TypeError):
             site.Contact(**data)
 
-    @staticmethod
-    def test_basic_information():
+    def test_basic_information(self):
         data = {'email': 'X', 'phone': 'Y'}
         contact = site.Contact(**data)
         assert len(contact.basic_information) == 3
@@ -44,24 +40,21 @@ class TestContact:
 
 class TestStaffMember:
 
-    @staticmethod
     @pytest.mark.parametrize('data', [
         {'role_name': 'X', 'role_type': 'staff'},
         {'role_type': 'staff', 'person_name': 'A'},
         {'role_name': 'X', 'person_name': 'A'}
     ], ids=['name', 'role-name', 'role-type'])
-    def test_name_and_role_required(data):
+    def test_name_and_role_required(self, data):
         with pytest.raises(TypeError):
             site.StaffMember(**data)
 
-    @staticmethod
-    def test_invalid_role_type():
+    def test_invalid_role_type(self):
         data = {'role_name': 'X', 'role_type': 'invalid', 'person_name': 'A'}
         with pytest.raises(ValueError):
             site.StaffMember(**data)
 
-    @staticmethod
-    def test_basic_information():
+    def test_basic_information(self):
         data = {'role_name': 'X', 'role_type': 'staff', 'person_name': 'A'}
         sm = site.StaffMember(**data)
         assert len(sm.basic_information) == 4
@@ -69,14 +62,12 @@ class TestStaffMember:
 
 class TestDepartment:
 
-    @staticmethod
-    def test_members_required():
+    def test_members_required(self):
         data = {'name': 'A'}
         with pytest.raises(TypeError):
             site.Department(**data)
 
-    @staticmethod
-    def test_from_dict(faker):
+    def test_from_dict(self, faker):
         num_staff = 4
         data = {
             'name': faker.company(),
