@@ -5,6 +5,8 @@ from markdown import markdown
 from bip.models import Change, ChangeRecord, Label, Page, PageLabel, User, db
 from bip.utils.text import slugify
 
+factory.Faker._DEFAULT_LOCALE = 'pl_PL'
+
 DEFAULT_PASSWORD = 'password'
 
 
@@ -35,8 +37,8 @@ class UserFactory(PeeweeModelFactory):
         model = User
         database = db
 
-    name = factory.Faker('name', locale='pl_PL')
-    email = factory.Faker('email', locale='pl_PL')
+    name = factory.Faker('name')
+    email = factory.Faker('email')
     password = DEFAULT_PASSWORD
     active = True
     admin = False
@@ -48,10 +50,10 @@ class PageFactory(PeeweeModelFactory):
         model = Page
         database = db
 
-    title = factory.Faker('sentence', nb_words=4, locale='pl_PL')
+    title = factory.Faker('sentence', nb_words=4)
     active = True
-    text = factory.Faker('paragraph', locale='pl_PL')
-    description = factory.Faker('paragraph', locale='pl_PL')
+    text = factory.Faker('paragraph')
+    description = factory.Faker('paragraph')
     created_by = factory.SubFactory(UserFactory)
 
     @factory.lazy_attribute
@@ -81,8 +83,8 @@ class LabelFactory(PeeweeModelFactory):
         model = Label
         database = db
 
-    name = factory.Faker('sentence', nb_words=2, locale='pl_PL')
-    description = factory.Faker('paragraph', locale='pl_PL')
+    name = factory.Faker('sentence', nb_words=2)
+    description = factory.Faker('paragraph')
 
     @factory.lazy_attribute
     def slug(self):
