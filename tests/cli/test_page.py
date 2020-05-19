@@ -292,8 +292,9 @@ class TestPageOps(BIPCLITests):
         assert f'etykiety strony {page.title} zostały zaktualizowane' in rv.output
         assert PageLabel.select().filter(PageLabel.page == page).count() == new_label_count  # noqa: E501
 
+    @pytest.mark.parametrize('abort', [False, True], ids=['continue', 'abort'])
     def test_labels_add_notfound_one_continue(
-                self, mocker, page_factory, label_factory, page_label_factory
+                self, mocker, page_factory, label_factory, page_label_factory, abort
             ):
         label_count = 2
         actor = self.user
@@ -301,37 +302,19 @@ class TestPageOps(BIPCLITests):
             'bip.cli.pages.commands.login_user', mocker.Mock(return_value=actor)
         )
         page = page_factory(created_by=actor, updated_by=actor)
+        if abort:
+            expected_msg = 'operacja zmiany etykiet strony przerwana'
+        else:
+            expected_msg = f'etykiety strony {page.title} nie zostały zmienione'
         labels = label_factory.create_batch(label_count)
         for label in labels:
             page_label_factory(page=page, label=label)
         new_label_name = 'dummy'
         call_args = ['-i', page.pk, '-o', 'add', '-u', actor.name, '-l', new_label_name]
         mocker.patch(
-            'bip.cli.pages.commands.click.confirm', mocker.Mock(return_value=True)
+            'bip.cli.pages.commands.click.confirm', mocker.Mock(return_value=not abort)
         )
         rv = self.runner.invoke(page_labels, call_args)
-        assert f'etykiety strony {page.title} nie zostały zmienione' in rv.output
-        assert rv.exit_code == 0
-        assert PageLabel.select().filter(PageLabel.page == page).count() == label_count
-
-    def test_labels_add_notfound_one_abort(
-                self, mocker, page_factory, label_factory, page_label_factory
-            ):
-        label_count = 2
-        actor = self.user
-        mocker.patch(
-            'bip.cli.pages.commands.login_user', mocker.Mock(return_value=actor)
-        )
-        page = page_factory(created_by=actor, updated_by=actor)
-        labels = label_factory.create_batch(label_count)
-        for label in labels:
-            page_label_factory(page=page, label=label)
-        new_label_name = 'dummy'
-        call_args = ['-i', page.pk, '-o', 'add', '-u', actor.name, '-l', new_label_name]
-        mocker.patch(
-            'bip.cli.pages.commands.click.confirm', mocker.Mock(return_value=False)
-        )
-        rv = self.runner.invoke(page_labels, call_args)
-        assert 'operacja zmiany etykiet strony przerwana' in rv.output
+        assert expected_msg in rv.output
         assert rv.exit_code == 0
         assert PageLabel.select().filter(PageLabel.page == page).count() == label_count
