@@ -9,7 +9,7 @@ Biuletyn Informacji Publicznej
     :target: https://bip.readthedocs.io/pl/latest/?badge=latest
     :alt: Documentation Status
 
-.. image:: https://static.deepsource.io/deepsource-badge-dark-mini.svg
+.. image:: https://static.deepsource.io/deepsource-badge-light-mini.svg
     :target: https://deepsource.io/gh/zgoda/bip/?ref=repository-badge
     :alt: DeepSource code quality report
 
