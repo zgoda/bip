@@ -232,3 +232,21 @@ class TestPageOps(BIPCLITests):
         assert rv.exit_code == 0
         assert f'etykiety strony {page.title} zostały zaktualizowane' in rv.output
         assert PageLabel.select().filter(PageLabel.page == page).count() == num_labels
+
+    def test_labels_replace_none(
+                self, mocker, page_factory, label_factory, page_label_factory
+            ):
+        actor = self.user
+        mocker.patch(
+            'bip.cli.pages.commands.login_user', mocker.Mock(return_value=actor)
+        )
+        page = page_factory(created_by=actor, updated_by=actor)
+        labels = label_factory.create_batch(2)
+        for label in labels:
+            page_label_factory(page=page, label=label)
+        rv = self.runner.invoke(
+            page_labels, ['-i', page.pk, '-o', 'replace', '-u', actor.name]
+        )
+        assert rv.exit_code == 0
+        assert f'etykiety strony {page.title} zostały zaktualizowane' in rv.output
+        assert PageLabel.select().filter(PageLabel.page == page).count() == 0
