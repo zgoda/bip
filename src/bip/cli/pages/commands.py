@@ -177,9 +177,10 @@ def page_labels(page_id: int, op: str, labels: Optional[List[str]], user_name: s
     actor = login_user(user_name, admin=False)
     op = op.lower()
     page = Page.get_by_id(page_id)
+    noop_msg = f'etykiety strony {page.title} nie zostały zmienione'
     if op == 'add':
         if not labels:
-            click.echo(f'etykiety strony {page.title} nie zostały zmienione')
+            click.echo(noop_msg)
             sys.exit(0)
     change_args = {
         'page': page,
@@ -198,8 +199,11 @@ def page_labels(page_id: int, op: str, labels: Optional[List[str]], user_name: s
             PageLabel.delete().where(PageLabel.page == page).execute()
         for label in label_objs:
             PageLabel.create(page=page, label=label)
-        ChangeRecord.log_change(**change_args)
-        click.echo(f'etykiety strony {page.title} zostały zaktualizowane')
+        if op == 'add' and label_objs.count() == 0:
+            click.echo(noop_msg)
+        else:
+            ChangeRecord.log_change(**change_args)
+            click.echo(f'etykiety strony {page.title} zostały zaktualizowane')
 
 
 @label_ops.command(name='list', help='Wyświetl listę etykiet')
