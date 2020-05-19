@@ -1,26 +1,17 @@
 Biuletyn Informacji Publicznej
 ==============================
 
-.. image:: https://github.com/zgoda/bip/workflows/CI/badge.svg
-    :target: https://github.com/zgoda/bip/actions?query=workflow%3ACI
-    :alt: CI pipeline status
-
-.. image:: https://readthedocs.org/projects/bip/badge/?version=latest
-    :target: https://bip.readthedocs.io/pl/latest/?badge=latest
-    :alt: Documentation Status
-
-.. image:: https://static.deepsource.io/deepsource-badge-light-mini.svg
-    :target: https://deepsource.io/gh/zgoda/bip/?ref=repository-badge
-    :alt: DeepSource code quality report
-
-.. image:: https://codecov.io/gh/zgoda/bip/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/zgoda/bip
-    :alt: Test coverage report
-
-
 Flask application that implements Polish BIP baseline (`Bulletin of Public Information <https://en.wikipedia.org/wiki/Biuletyn_Informacji_Publicznej>`_) according to Polish law requirements.
 
 Aplikacja Flask implementująca podstawowy Biuletyn Informacji Publicznej (BIP) zgodnie z polskimi wymogami prawnymi.
+
+Links / łącza
+-------------
+
+* `Tests / testy <https://github.com/zgoda/bip/actions?query=workflow%3ACI>`_
+* `Coverage / pokrycie testami <https://codecov.io/gh/zgoda/bip>`_
+* `Docs / dokumentacja <https://bip.readthedocs.io/pl/latest>`_
+* `Code quality report / raport z jakości kodu <https://deepsource.io/gh/zgoda/bip>`_ 
 
 License
 -------
