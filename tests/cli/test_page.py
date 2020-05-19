@@ -250,3 +250,44 @@ class TestPageOps(BIPCLITests):
         assert rv.exit_code == 0
         assert f'etykiety strony {page.title} zostały zaktualizowane' in rv.output
         assert PageLabel.select().filter(PageLabel.page == page).count() == 0
+
+    def test_labels_replace_one(
+                self, mocker, page_factory, label_factory, page_label_factory
+            ):
+        actor = self.user
+        mocker.patch(
+            'bip.cli.pages.commands.login_user', mocker.Mock(return_value=actor)
+        )
+        page = page_factory(created_by=actor, updated_by=actor)
+        labels = label_factory.create_batch(2)
+        for label in labels:
+            page_label_factory(page=page, label=label)
+        new_label = label_factory()
+        rv = self.runner.invoke(
+            page_labels,
+            ['-i', page.pk, '-o', 'replace', '-u', actor.name, '-l', new_label.name]
+        )
+        assert rv.exit_code == 0
+        assert f'etykiety strony {page.title} zostały zaktualizowane' in rv.output
+        assert PageLabel.select().filter(PageLabel.page == page).count() == 1
+
+    def test_labels_replace_many(
+                self, mocker, page_factory, label_factory, page_label_factory
+            ):
+        actor = self.user
+        mocker.patch(
+            'bip.cli.pages.commands.login_user', mocker.Mock(return_value=actor)
+        )
+        page = page_factory(created_by=actor, updated_by=actor)
+        labels = label_factory.create_batch(2)
+        for label in labels:
+            page_label_factory(page=page, label=label)
+        new_label_count = 4
+        new_labels = label_factory.create_batch(new_label_count)
+        call_args = ['-i', page.pk, '-o', 'replace', '-u', actor.name]
+        for label in new_labels:
+            call_args.extend(['-l', label.name])
+        rv = self.runner.invoke(page_labels, call_args)
+        assert rv.exit_code == 0
+        assert f'etykiety strony {page.title} zostały zaktualizowane' in rv.output
+        assert PageLabel.select().filter(PageLabel.page == page).count() == new_label_count  # noqa: E501
