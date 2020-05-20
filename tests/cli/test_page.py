@@ -1,9 +1,9 @@
 import pytest
 
 from bip.cli.pages.commands import (
-    label_list, page_change, page_create, page_labels, page_list,
+    label_create, label_list, page_change, page_create, page_labels, page_list,
 )
-from bip.models import Page, PageLabel
+from bip.models import Label, Page, PageLabel
 from bip.utils.text import slugify, truncate_string
 
 from . import BIPCLITests
@@ -337,3 +337,39 @@ class TestLabelOps(BIPCLITests):
         assert rv.exit_code == 0
         assert truncate_string(l1.name, 80) in rv.output
         assert truncate_string(l2.name, 80) in rv.output
+
+    def test_create_with_description(self):
+        name = 'etykieta1'
+        description = 'Etykieta 1'
+        rv = self.runner.invoke(label_create, ['-n', name, '-d', description])
+        assert rv.exit_code == 0
+        assert f'etykieta {name} została utworzona' in rv.output
+        label = Label.get_or_none(Label.name == name)
+        assert label is not None
+        assert label.description == description
+
+    def test_create_no_description_accept(self, mocker):
+        name = 'etykieta1'
+        description = 'Etykieta 1'
+        mocker.patch(
+            'bip.cli.pages.commands.click.confirm', mocker.Mock(return_value=True)
+        )
+        mocker.patch(
+            'bip.cli.pages.commands.click.edit', mocker.Mock(return_value=description)
+        )
+        rv = self.runner.invoke(label_create, ['-n', name])
+        assert rv.exit_code == 0
+        assert f'etykieta {name} została utworzona' in rv.output
+        label = Label.get_or_none(Label.name == name)
+        assert label is not None
+        assert label.description == description
+
+    def test_create_no_description_reject(self, mocker):
+        name = 'etykieta1'
+        mocker.patch(
+            'bip.cli.pages.commands.click.confirm', mocker.Mock(return_value=False)
+        )
+        rv = self.runner.invoke(label_create, ['-n', name])
+        assert rv.exit_code == 0
+        assert f'etykieta {name} została utworzona' in rv.output
+        assert Label.select().filter(Label.name == name).count() == 1

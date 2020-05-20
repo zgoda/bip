@@ -232,10 +232,14 @@ def label_list():
 
 @label_ops.command(name='create', help='Utwórz nową etykietę')
 @click.option('--name', '-n', required=True, help='Nazwa etykiety')
+@click.option(
+    '--description', '-d', help='Opis etykiety (może być wprowadzony z edytora tekstu)'
+)
 @with_appcontext
-def label_create(name: str):
-    description = None
-    if click.confirm('Czy chcesz wprowadzić opis etykiety?', default=True):
+def label_create(name: str, description: Optional[str]):
+    if not description and click.confirm(
+        'Czy chcesz wprowadzić opis etykiety?', default=True
+    ):
         description = click.edit()
     label = Label(name=name, slug=slugify(name))
     if description:
