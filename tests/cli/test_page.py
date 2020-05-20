@@ -1,6 +1,8 @@
 import pytest
 
-from bip.cli.pages.commands import page_change, page_create, page_labels, page_list
+from bip.cli.pages.commands import (
+    label_list, page_change, page_create, page_labels, page_list,
+)
 from bip.models import Page, PageLabel
 from bip.utils.text import slugify, truncate_string
 
@@ -318,3 +320,20 @@ class TestPageOps(BIPCLITests):
         assert expected_msg in rv.output
         assert rv.exit_code == 0
         assert PageLabel.select().filter(PageLabel.page == page).count() == label_count
+
+
+@pytest.mark.usefixtures('app')
+class TestLabelOps(BIPCLITests):
+
+    def test_list_no_labels(self):
+        rv = self.runner.invoke(label_list)
+        assert rv.exit_code == 0
+        assert 'żadnych etykiet' in rv.output
+
+    def test_list_labels_present(self, label_factory):
+        l1 = label_factory(name='etykieta1')
+        l2 = label_factory(name='etykieta2')
+        rv = self.runner.invoke(label_list)
+        assert rv.exit_code == 0
+        assert truncate_string(l1.name, 80) in rv.output
+        assert truncate_string(l2.name, 80) in rv.output
