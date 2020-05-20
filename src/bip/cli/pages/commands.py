@@ -252,16 +252,22 @@ def label_create(name: str, description: Optional[str]):
 @label_ops.command(name='change', help='Zmień istniejącą etykietę')
 @click.option('--name', '-n', required=True, help='Nazwa etykiety')
 @click.option('--new-name', help='Nowa nazwa dla etykiety')
+@click.option(
+    '--description', '-d',
+    help='Nowy opis etykiety (może być wprowadzony z edytora tekstu)',
+)
 @with_appcontext
-def label_change(name: str, new_name: Optional[str]):
+def label_change(name: str, new_name: Optional[str], description: Optional[str]):
     label = Label.get_or_none(Label.name == name)
     if label is None:
-        raise click.Abort(f'etykieta {name} nie istnieje')
+        raise click.ClickException(f'etykieta {name} nie istnieje')
     if new_name is None:
         new_name = label.name
-    change_desc = name == new_name
-    new_description = label.description
-    if click.confirm('Czy chcesz zmienić opis etykiety?', default=change_desc):
+    change_desc = name == new_name or description is not None
+    new_description = description
+    if not description and click.confirm(
+        'Czy chcesz zmienić opis etykiety?', default=change_desc
+    ):
         new_description = click.edit(label.description)
     if new_description is None:
         new_description = label.description or ''
