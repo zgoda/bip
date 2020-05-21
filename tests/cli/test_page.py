@@ -127,6 +127,14 @@ class TestPageOps(BIPCLITests):
         assert rv.exit_code != 0
         assert 'Tekst strony jest wymagany' in rv.output
 
+    def test_change_fail_notfound(self, mocker):
+        mocker.patch(
+            'bip.cli.pages.commands.login_user', mocker.Mock(return_value=self.user)
+        )
+        rv = self.runner.invoke(page_change, ['-i', 666, '-u', self.user.name])
+        assert rv.exit_code != 0
+        assert 'nie istnieje' in rv.output
+
     def test_change_noop(self, mocker, page_factory):
         mocker.patch(
             'bip.cli.pages.commands.login_user', mocker.Mock(return_value=self.user)
@@ -188,6 +196,16 @@ class TestPageOps(BIPCLITests):
         assert 'została zmieniona' in rv.output
         page_obj = Page[page.pk]
         assert page_obj.order == new_order
+
+    def test_labels_fail_notfound(self, mocker):
+        mocker.patch(
+            'bip.cli.pages.commands.login_user', mocker.Mock(return_value=self.user)
+        )
+        rv = self.runner.invoke(
+            page_labels, ['-i', 666, '-o', 'add', '-u', self.user.name]
+        )
+        assert rv.exit_code != 0
+        assert 'nie istnieje' in rv.output
 
     def test_labels_add_none(self, mocker, page_factory):
         actor = self.user

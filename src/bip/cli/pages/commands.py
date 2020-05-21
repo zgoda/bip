@@ -1,3 +1,6 @@
+import mimetypes
+import os
+import shutil
 import sys
 from typing import List, Optional
 
@@ -7,10 +10,11 @@ from flask.cli import with_appcontext
 from markdown import markdown
 
 from ...display import ColumnOverride, DisplayMeta
-from ...models import Change, ChangeRecord, Label, Page, PageLabel, db
+from ...models import Attachment, Change, ChangeRecord, Label, Page, PageLabel, db
 from ...utils.cli import (
     ACTIVITY_NAME_MAP, ColDataType, create_table, login_user, print_table,
 )
+from ...utils.files import calc_sha256
 from ...utils.text import slugify, truncate_string, yesno
 
 page_ops = click.Group(name='page', help='Zarządzanie stronami biuletynu')
@@ -129,7 +133,9 @@ def page_change(
         ):
     actor = login_user(user_name, admin=False)
     with db.atomic():
-        page = Page.get_by_id(page_id)
+        page = Page.get_or_none(Page.pk == page_id)
+        if page is None:
+            raise click.ClickException(f'strona o ID {page_id} nie istnieje')
         if all([title is None, active is None, main is None, order is None]):
             click.echo(f'nie wprowadzono żadnych zmian strony {page.title}')
         else:
@@ -176,7 +182,9 @@ def page_change(
 def page_labels(page_id: int, op: str, labels: Optional[List[str]], user_name: str):
     actor = login_user(user_name, admin=False)
     op = op.lower()
-    page = Page.get_by_id(page_id)
+    page = Page.get_or_none(Page.pk == page_id)
+    if page is None:
+        raise click.ClickException(f'strona o ID {page_id} nie istnieje')
     noop_msg = f'etykiety strony {page.title} nie zostały zmienione'
     if op == 'add':
         if not labels:
@@ -204,6 +212,61 @@ def page_labels(page_id: int, op: str, labels: Optional[List[str]], user_name: s
         else:
             ChangeRecord.log_change(**change_args)
             click.echo(f'etykiety strony {page.title} zostały zaktualizowane')
+
+
+@page_ops.command(name='attach', help='Dodaj załącznik do strony')
+@click.option('-i', '--id', 'page_id', required=True, help='ID strony', type=int)
+@click.option(
+    '-f', '--file-name', required=True,
+    type=click.Path(exists=True, dir_okay=False, resolve_path=True),
+    help='Ścieżka do pliku do załączenia',
+)
+@click.option('-t', '--title', help='Opcjonalny tytuł załącznika')
+@click.option('-d', '--description', help='Opcjonalny opis załącznika')
+@click.option(
+    '-u', '--user', 'user_name', required=True,
+    help='Nazwa użytkownika który wykonuje operację',
+)
+@with_appcontext
+def page_attach(page_id, file_name, title, description, user_name):
+    actor = login_user(user_name, admin=False)
+    page = Page.get_or_none(Page.pk == page_id)
+    if page is None:
+        raise click.ClickException(f'strona o ID {page_id} nie istnieje')
+    _, name = os.path.split(file_name)
+    _, ext = os.path.splitext(name)
+    checksum = calc_sha256(file_name)
+    if not title:
+        title = name
+    if not description and click.confirm(
+        'Czy chcesz wprowadzić opis załącznika?', default=True
+    ):
+        description = click.edit()
+        description = description.strip()
+    if description:
+        description_html = markdown(description)
+    new_file_name = f'{checksum}{ext}'
+    file_type, _ = mimetypes.guess_type(file_name, strict=False)
+    target = os.path.join(current_app.instance_path, new_file_name)
+    with db.atomic():
+        shutil.copy2(file_name, target)
+        args = {
+            'page': page,
+            'filename': new_file_name,
+            'file_type': file_type,
+            'title': title,
+        }
+        if description:
+            args.update({
+                'description': description,
+                'description_html': description_html,
+            })
+        Attachment.create(**args)
+        ChangeRecord.log_change(
+            page=page, change_type=Change.updated, user=actor,
+            description=f'dodano załącznik {title}',
+        )
+        click.echo(f'plik {file_name} został załączony do strony {page.title}')
 
 
 @label_ops.command(name='list', help='Wyświetl listę etykiet')

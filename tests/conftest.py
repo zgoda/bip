@@ -6,14 +6,17 @@ from pytest_factoryboy import register
 from werkzeug.utils import cached_property
 
 from bip import make_app
-from bip.models import ChangeRecord, Label, Page, PageLabel, User, db
+from bip.models import Attachment, ChangeRecord, Label, Page, PageLabel, User, db
 
-from .factories import LabelFactory, PageFactory, PageLabelFactory, UserFactory
+from .factories import (
+    AttachmentFactory, LabelFactory, PageFactory, PageLabelFactory, UserFactory,
+)
 
 register(PageFactory)
 register(UserFactory)
 register(LabelFactory)
 register(PageLabelFactory)
+register(AttachmentFactory)
 
 
 class TestResponse(Response):
@@ -39,7 +42,7 @@ def faker_session_locale():
 
 
 @pytest.fixture
-def app(mocker):
+def app(mocker, tmp_path):
     """Pytest fixture that builds app object for testing purposes. This may be
     used separately as lighter weight alternative to `client` or
     `client_class` fixtures provided by :mod:`pytest-flask` in situations
@@ -51,8 +54,9 @@ def app(mocker):
     mocker.patch('bip.models.check_password_hash', fake_check_password_hash)
     os.environ['FLASK_ENV'] = 'test'
     app = make_app(env='test')
+    app.instance_path = tmp_path
     app.response_class = TestResponse
-    models = [ChangeRecord, Label, Page, PageLabel, User]
+    models = [Attachment, ChangeRecord, Label, Page, PageLabel, User]
     with app.app_context():
         db.create_tables(models)
         yield app
