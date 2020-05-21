@@ -157,16 +157,23 @@ W pliku tym należy umieścić poniższą zawartość. Proszę zwrócić uwagę,
 
     [Unit]
     Description=uruchomienie BIP jako aplikacji WSGI (uWSGI)
+    # uruchom serwis po pełnej konfiguracji sieci
     After=network.target
 
     [Service]
+    # użytkownik który uruchomi proces usługi
     User=mojekonto
+    # grupa www-data jest również używana przez Nginx
     Group=www-data
+    # ustawienie zmiennej ścieżki wyszukiwania programów
     Environment="PATH=/home/mojekonto/bip/venv/bin"
+    # ustawienie zmiennej rodzaju instancji
     Environment="ENV=production"
+    # komenda uruchamiająca usługę
     ExecStart=/home/mojekonto/bip/venv/bin/uwsgi --ini /home/mojekonto/bip/bip.ini
 
     [Install]
+    # w którym momencie włączyć usługę, multi-user to ostatni krok
     WantedBy=multi-user.target
 
 Po zapisaniu tego pliku będzie możliwe uruchomienie usługi pod kontrolą zarządcy ``systemd``.
@@ -247,16 +254,23 @@ Zawartość tego pliku bedzie podobna jak w przypadku uWSGI we wcześniejszym pr
 
     [Unit]
     Description=uruchomienie BIP jako aplikacji WSGI (Gunicorn)
+    # uruchom serwis po pełnej konfiguracji sieci
     After=network.target
 
     [Service]
+    # użytkownik który uruchomi proces usługi
     User=mojekonto
+    # grupa www-data jest również używana przez Nginx
     Group=www-data
+    # ustawienie zmiennej ścieżki wyszukiwania programów
     Environment="PATH=/home/mojekonto/bip/venv/bin"
+    # ustawienie zmiennej rodzaju instancji
     Environment="ENV=production"
+    # komenda uruchamiająca usługę
     ExecStart=/home/mojekonto/bip/venv/bin/gunicorn --workers 2 --bind unix:/tmp/bip.sock -m 007 bip.wsgi:application
 
     [Install]
+    # w którym momencie włączyć usługę, multi-user to ostatni krok
     WantedBy=multi-user.target
 
 Po zapisaniu tego pliku będzie możliwe uruchomienie usługi pod kontrolą zarządcy ``systemd``.
