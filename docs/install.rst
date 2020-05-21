@@ -1,9 +1,7 @@
 Instalacja i uruchomienie
 =========================
 
-Aplikacja BIP może zostać uruchomiona zarówno samodzielnie, jak i w postaci kontenerów. Ten dokument opisuje oba te sposoby, kładąc jednak nacisk na instalację samodzielną, ponieważ jej zasady dotyczą również instalacji w postaci kontenerów, a sposób ten daje najwięcej możliwości dostosowania instalacji do dostępnych warunków.
-
-Podane poniżej polecenia odpowiadają tym w Debianie 10 i Ubuntu. Dla systemów bazujących na RPM (Fedora, Centos) trzeba będzie je odpowiednio zmodyfikować.
+Dokument ten opisuje sposób instalacji i konfiguracji aplikacji BIP w systemie Linux. Podane poniżej polecenia odpowiadają tym w Debianie 10 i Ubuntu. Dla systemów bazujących na RPM (Fedora, Centos) trzeba będzie je odpowiednio zmodyfikować.
 
 Zalecane systemy operacyjne
 ---------------------------
@@ -19,10 +17,8 @@ W nawiasie podane są wartości *zadowalające*. Wartości minimalne dotyczą se
 * RAM: 1 GB (2 GB)
 * wolna przestrzeń dyskowa: 2 GB
 
-Uruchmienie instalacji w kontenerze będzie wymagało nieznacznie więcej zasobów.
-
-Instalacja samodzielna
-----------------------
+Instalacja aplikacji
+--------------------
 
 Do uruchomienia serwisu w wersji samodzielnej wymagany jest dostęp do powłoki serwera, na którym będzie zainstalowana aplikacja (tzw. *shell*). Dla pełnej instalacji wymagane są również uprawnienia administracyjne w systemie operacyjnym.
 
@@ -40,8 +36,8 @@ Oprogramowanie opcjonalne
 
 * serwer bazy danych (PostgreSQL lub MySQL)
 
-Instalacja samodzielna krok po kroku
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Instalacja aplikacji krok po kroku
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Zalecam, by instalację przeprowadzić na zwykłym (nie administracyjnym) koncie użytkownika. Można do tego celu utworzyć nowe konto, ale zazwyczaj nie ma takiej potrzeby. Aplikacja zainstalowana w sposób opisany w tej instrukcji będzie działała używając uprawnień *zwykłego* użytkownika, a do działania w ogóle nie potrzebuje uprawnień administracyjnych.
 
@@ -94,8 +90,8 @@ Utwórz również katalog na statyczne dane konfiguracji serwisu i skopiuj do ni
 
 W ten sposób zainstalowana aplikacja jest gotowa do uruchmonienia pod kontrolą serwera aplikacji WSGI.
 
-Instalacja i konfiguracja serwera aplikacji WSGI
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Instalacja, konfiguracja i uruchomienie serwera aplikacji WSGI
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Najpopularniejszymi serwerami aplikacji WSGI są uWSGI i Gunicorn. Każdy z nich dostarcza różnych możliwości uruchomienia aplikacji:
 
