@@ -299,8 +299,7 @@ def label_delete(name, force, user_name):
     label = Label.get_or_none(Label.name == name)
     if label is None:
         raise click.ClickException(f'etykieta {name} nie istnieje')
-    page_labels = PageLabel.select().where(PageLabel.label == label)
-    if page_labels.count() and not force:
+    if PageLabel.select().where(PageLabel.label == label).count() and not force:
         raise click.ClickException(
             f'etykieta {name} jest przypisana do stron, wymuś usunięcie z -f'
         )
