@@ -45,11 +45,11 @@ Instalacja samodzielna krok po kroku
 
 Zalecam, by instalację przeprowadzić na zwykłym (nie administracyjnym) koncie użytkownika. Można do tego celu utworzyć nowe konto, ale zazwyczaj nie ma takiej potrzeby. Aplikacja zainstalowana w sposób opisany w tej instrukcji będzie działała używając uprawnień *zwykłego* użytkownika, a do działania w ogóle nie potrzebuje uprawnień administracyjnych.
 
-Zainstaluj wszystkie niezbędne narzędzia programistyczne.
+Zainstaluj wszystkie niezbędne narzędzia programistyczne oraz wymagane dodatkowe pakiety związane z Pythonem.
 
 .. code-block:: shell-session
 
-    $ sudo apt install build-essential libffi-dev
+    $ sudo apt install build-essential libffi-dev python3-venv python3-dev
 
 Utwórz katalog na instalację aplikacji.
 
@@ -104,17 +104,123 @@ Najpopularniejszymi serwerami aplikacji WSGI są uWSGI i Gunicorn. Każdy z nich
 
 Uruchomienie jako samodzielny proces daje możliwość wykorzystania dowolnego serwera WWW jako *reverse proxy*, natomiast ścisła integracja z Nginx ułatwia konfigurację.
 
-W ramach przykładu pokażemy uruchomienie aplikacji pod kontrolą uWSGI działającego w integracji z serwerem WWW Nginx oraz pod kontrolą Gunicorn z Lighttpd działającym jako *reverse proxy*. Pakiety obu serwerów WWW są dostępne w repozytoriach Debiana 10 we w miarę świeżych wersjach. Oba te sposoby uruchamiania są mniej-więcej równoważne przy niewielkim ruchu (do 100 odsłon na godzinę). Przy zakładanym większym ruchu zalecamy przeprowadzenie testów i dostosowanie instalacji.
+W ramach przykładu pokazane zostanie uruchomienie aplikacji pod kontrolą uWSGI działającego w integracji z serwerem WWW Nginx oraz pod kontrolą Gunicorn z Lighttpd działającym jako *reverse proxy*. Pakiety obu serwerów WWW są dostępne w repozytoriach Debiana 10 we w miarę świeżych wersjach. Oba te sposoby uruchamiania są mniej-więcej równoważne przy niewielkim ruchu (do 100 odsłon na godzinę). Przy zakładanym większym ruchu zalecane jest przeprowadzenie testów i dostosowanie instalacji.
 
 uWSGI + Nginx
 ~~~~~~~~~~~~~
 
-Zaczynamy od zainstalowania wymaganego oprogramowania. Zakładamy, że cały czas jesteśmy w katalogu aplikacji jak to jest opisane wcześniej, oraz że wirtualne środowisko Pythona jest aktywne - jeżeli nie jest to należy je zawczasu aktywować.
+Na początek należy zainstalować wymagane oprogramowanie. Dla uproszczenia wszystkie polecenia wykonywane będą z katalogu domowego aplikacji jak to jest opisane wcześniej, oraz przy aktywnym środowisku wirtualnym Pythona - jeżeli nie jest aktywne to należy je zawczasu aktywować.
 
 .. code-block:: shell-session
 
     $ sudo apt install nginx
     $ pip install -U uwsgi
+
+W tym momencie powinno być już możliwe uruchomienie samodzielnego kontenera aplikacji WSGI.
+
+.. code-block:: shell-session
+
+    $ export ENV="production"
+    $ uwsgi --socket 0.0.0.0:5000 --protocol=http -w bip.wsgi:application
+
+W ten sposób uruchomiony serwer powinien być dostępny z zewnątrz na porcie 5000. Po weryfikacji że tak rzeczywiście się dzieje można go wyłączyć kombinacją klawiszy Ctrl+C i przystąpić do konfiguracji aplikacji w kontenerze WSGI.
+
+.. code-block:: shell-session
+
+    $ vim bip.ini
+
+W pliku należy umieścić poniższą zawartość (linie zaczynające się od ``#`` są komentarzem i mogą zostać pominięte).
+
+.. code-block:: ini
+
+    [uwsgi]
+    # lokalizacja obiektu aplikacji
+    module = bip.wsgi:application
+
+    # uruchom proces zarządzający i 2 procesy robocze
+    master = true
+    processes = 2
+
+    # komunikacja z Nginx będzie się odbywać poprzez wspólne gniazdo
+    socket = /tmp/bip.sock
+    chmod-socket = 660
+    vacuum = true
+
+    # obsługa sygnału zakończenia
+    die-on-term = true
+
+Za nadzór nad uruchomieniem całości będzie odpowiadał ``systemd``, dla którego potrzebny będzie również plik sterujący, tzw. *unit*.
+
+.. code-block:: shell-session
+
+    $ sudo vim /etc/systemd/system/bip.service
+
+W pliku tym należy umieścić poniższą zawartość. Proszę zwrócić uwagę, że ``systemd`` wszędzie w konfiguracji wymaga ścieżek absolutnych. W poniższym przykładzie należy zmienić ``mojekonto`` na rzeczywistą nazwę konta, na jakim została zainstalowana aplikacja.
+
+.. code-block:: ini
+
+    [Unit]
+    Description=uruchomienie BIP jako aplikacji WSGI (uWSGI)
+    After=network.target
+
+    [Service]
+    User=mojekonto
+    Group=www-data
+    Environment="PATH=/home/mojekonto/bip/venv/bin"
+    Environment="ENV=production"
+    ExecStart=/home/mojekonto/bip/venv/bin/uwsgi --ini /home/mojekonto/bip/bip.ini
+
+    [Install]
+    WantedBy=multi-user.target
+
+Po zapisaniu tego pliku będzie możliwe uruchomienie usługi pod kontrolą zarządcy ``systemd``.
+
+.. code-block:: shell-session
+
+    $ sudo systemctl start bip
+    $ sudo systemctl enable bip
+    $ sudo systemctl status bip
+
+Ostatnie polecenie powinno dać skutek jak na poniższym obrazku.
+
+.. image:: /_static/install_uwsgi_debian10.png
+
+Tak skonfigurowana usługa będzie się uruchamiała automatycznie po każdym restarcie systemu.
+
+Ostatnim krokiem jest konfiguracja serwera WWW Nginx aby komunikował się z aplikacją.
+
+.. code-block:: shell-session
+
+    $ sudo vim /etc/nginx/sites-available/bip
+
+W pliku tym należy umieścić poniższą zawartość. ``bip.domena.pl`` oraz ``mojekonto`` należy zastąpić rzeczywistymi wartościami, tj. nazwą domenową serwera oraz prawdziwą nazwą konta użytkownika, na którym została zainstalowana aplikacja.
+
+.. code-block:: nginx
+
+    server {
+        listen 80;
+        server_name bip.domena.pl;
+
+        location / {
+            include uwsgi_params;
+            uwsgi_pass unix:/tmp/bip.sock;
+            uwsgi_param UWSGI_SCHEME $scheme;
+            uwsgi_param SERVER_SOFTWARE nginx/$nginx_version;
+        }
+
+        location /static {
+            root /home/mojekonto/bip;
+        }
+    }
+
+Plik ten należy ostatecznie zlinkować do katalogu z konfiguracjami włączonych aplikacji.
+
+.. code-block:: shell-session
+
+    $ sudo ln -s /etc/nginx/sites-available/bip /etc/nginx/sites-enabled
+    $ sudo systemctl reload nginx
+
+Po przeładowaniu konfiguracji Nginxa aplikacja powinna być już dostępna pod adresem domenowym podanym w powyższym przykładzie.
 
 Gunicorn + Lighttpd
 ~~~~~~~~~~~~~~~~~~~

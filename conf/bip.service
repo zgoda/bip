@@ -1,0 +1,13 @@
+[Unit]
+Description=uruchomienie BIP jako aplikacji WSGI (uWSGI)
+After=network.target
+
+[Service]
+User=mojekonto
+Group=www-data
+Environment="PATH=/home/mojekonto/bip/venv/bin"
+Environment="ENV=production"
+ExecStart=/home/mojekonto/bip/venv/bin/uwsgi --ini /home/mojekonto/bip/bip.ini
+
+[Install]
+WantedBy=multi-user.target
