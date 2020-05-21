@@ -281,3 +281,31 @@ def label_change(name: str, new_name: Optional[str], description: Optional[str])
         label.description = label.description_html = None
     label.save()
     click.echo(f'etykieta {name} została zmieniona')
+
+
+@label_ops.command(name='delete', help='Usunięcie etykiety')
+@click.option('--name', '-n', required=True, help='Nazwa etykiety')
+@click.option(
+    '--force', '-f', is_flag=True, default=False,
+    help='Wymuszenie usunięcia nawet gdy została nadana stronom',
+)
+@click.option(
+    '-u', '--user', 'user_name', required=True,
+    help='Nazwa użytkownika który wykonuje operację',
+)
+@with_appcontext
+def label_delete(name, force, user_name):
+    login_user(user_name)
+    label = Label.get_or_none(Label.name == name)
+    if label is None:
+        raise click.ClickException(f'etykieta {name} nie istnieje')
+    page_labels = PageLabel.select().where(PageLabel.label == label)
+    if page_labels.count() and not force:
+        raise click.ClickException(
+            f'etykieta {name} jest przypisana do stron, wymuś usunięcie z -f'
+        )
+    with db.atomic():
+        delete_query = PageLabel.delete().where(PageLabel.label == label)
+        delete_query.execute()
+        label.delete_instance()
+    click.echo(f'etykieta {name} została usunięta')

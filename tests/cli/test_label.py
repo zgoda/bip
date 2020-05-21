@@ -1,6 +1,6 @@
 import pytest
 
-from bip.cli.pages.commands import label_change, label_create, label_list
+from bip.cli.pages.commands import label_change, label_create, label_delete, label_list
 from bip.models import Label
 from bip.utils.text import truncate_string
 
@@ -142,3 +142,59 @@ class TestLabelOps(BIPCLITests):
         label = Label.get_or_none(Label.name == name)
         assert label is not None
         assert label.description is None
+
+    def test_delete_notfound(self, mocker, user_factory):
+        user = user_factory(admin=True)
+        mocker.patch(
+            'bip.cli.pages.commands.login_user', mocker.Mock(return_value=user)
+        )
+        name = 'etykieta1'
+        rv = self.runner.invoke(label_delete, ['-u', user.name, '-n', name])
+        assert rv.exit_code != 0
+        assert 'nie istnieje' in rv.output
+
+    def test_delete_not_assigned(self, mocker, user_factory, label_factory):
+        user = user_factory(admin=True)
+        mocker.patch(
+            'bip.cli.pages.commands.login_user', mocker.Mock(return_value=user)
+        )
+        name = 'etykieta1'
+        label_factory(name=name)
+        rv = self.runner.invoke(label_delete, ['-u', user.name, '-n', name])
+        assert rv.exit_code == 0
+        assert 'została usunięta' in rv.output
+        assert Label.get_or_none(Label.name == name) is None
+
+    def test_delete_assigned_fail(
+                self, mocker, user_factory, page_factory, label_factory,
+                page_label_factory,
+            ):
+        user = user_factory(admin=True)
+        mocker.patch(
+            'bip.cli.pages.commands.login_user', mocker.Mock(return_value=user)
+        )
+        name = 'etykieta1'
+        label = label_factory(name=name)
+        page = page_factory()
+        page_label_factory(label=label, page=page)
+        rv = self.runner.invoke(label_delete, ['-u', user.name, '-n', name])
+        assert rv.exit_code != 0
+        assert 'jest przypisana do stron' in rv.output
+
+    def test_delete_assigned_ok(
+                self, mocker, user_factory, page_factory, label_factory,
+                page_label_factory,
+            ):
+        user = user_factory(admin=True)
+        mocker.patch(
+            'bip.cli.pages.commands.login_user', mocker.Mock(return_value=user)
+        )
+        name = 'etykieta1'
+        label = label_factory(name=name)
+        page = page_factory()
+        page_label_factory(label=label, page=page)
+        rv = self.runner.invoke(label_delete, ['-u', user.name, '-n', name, '-f'])
+        assert rv.exit_code == 0
+        assert 'została usunięta' in rv.output
+        assert Label.get_or_none(Label.name == name) is None
+        assert page.labels().count() == 0
