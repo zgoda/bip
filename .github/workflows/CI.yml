@@ -15,7 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
@@ -23,14 +23,22 @@ jobs:
         python -m pip install -U -q pip
         pip install -U -q -e .[test]
         pip install -U -q Sphinx wheel
+    - name: get pip cache dir
+      id: pip-cache-dir
+      run: echo "::set-output name=dir::$(pip cache dir)"
+    - name: cache pip
+      uses: actions/cache@v1
+      with:
+        path: ${{ steps.pip-cache-dir.outputs.dir }}
+        key: pip|${{ matrix.python }}|${{ hashFiles('setup.py') }}
     - name: Test with pytest
       run: |
         pytest --cov-branch --cov-report xml --cov bip tests
+    - name: Test package build
+      run: |
+        python setup.py -q sdist bdist_wheel build_sphinx
     - name: Codecov
       if: matrix.python-version == 3.7
       uses: codecov/codecov-action@v1.0.6
       with:
         fail_ci_if_error: true
-    - name: Test package build
-      run: |
-        python setup.py -q sdist bdist_wheel build_sphinx
