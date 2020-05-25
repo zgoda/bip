@@ -1,6 +1,8 @@
 import pytest
 
-from bip.cli.pages.commands import page_change, page_create, page_labels, page_list
+from bip.cli.pages.commands import (
+    page_attach, page_change, page_create, page_labels, page_list,
+)
 from bip.models import Page, PageLabel
 from bip.utils.text import slugify, truncate_string
 
@@ -336,3 +338,20 @@ class TestPageOps(BIPCLITests):
         assert expected_msg in rv.output
         assert rv.exit_code == 0
         assert PageLabel.select().filter(PageLabel.page == page).count() == label_count
+
+    def test_attach_ok(self, tmp_path, mocker, page_factory):
+        actor = self.user
+        mocker.patch(
+            'bip.cli.pages.commands.login_user', mocker.Mock(return_value=actor)
+        )
+        page = page_factory(created_by=actor, updated_by=actor)
+        f = tmp_path / 'testfile.csv'
+        f.write_text('c1,c2\nv1,v2')
+        mocker.patch(
+            'bip.cli.pages.commands.click.confirm', mocker.Mock(return_value=False)
+        )
+        rv = self.runner.invoke(
+            page_attach, ['-i', page.pk, '-f', f.as_posix(), '-u', actor.name]
+        )
+        assert rv.exit_code == 0
+        assert 'został załączony do strony' in rv.output

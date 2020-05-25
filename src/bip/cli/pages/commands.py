@@ -243,8 +243,6 @@ def page_attach(page_id, file_name, title, description, user_name):
     ):
         description = click.edit()
         description = description.strip()
-    if description:
-        description_html = markdown(description)
     new_file_name = f'{checksum}{ext}'
     file_type, _ = mimetypes.guess_type(file_name, strict=False)
     target = os.path.join(current_app.instance_path, new_file_name)
@@ -259,7 +257,7 @@ def page_attach(page_id, file_name, title, description, user_name):
         if description:
             args.update({
                 'description': description,
-                'description_html': description_html,
+                'description_html': markdown(description),
             })
         Attachment.create(**args)
         ChangeRecord.log_change(
