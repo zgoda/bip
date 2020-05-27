@@ -239,8 +239,12 @@ def page_attach(page_id, file_name, title, description, user_name):
     ):
         description = click.edit()
         description = description.strip()
+    target_dir = os.path.join(
+        current_app.instance_path, current_app.config['ATTACHMENTS_DIR']
+    )
+    os.makedirs(target_dir, exist_ok=True)
     with db.atomic():
-        file_data = process_incoming_file(file_name, current_app.instance_path)
+        file_data = process_incoming_file(file_name, target_dir)
         args = {
             'page': page,
             'filename': file_data.filename,

@@ -1,10 +1,13 @@
+import os
 from typing import Optional, Union
 
-from flask import Response, abort, flash, redirect, render_template, request
+from flask import (
+    Response, abort, current_app, flash, redirect, render_template, request,
+)
 from flask_login import current_user, login_required
 from werkzeug.exceptions import BadRequest
 
-from ..models import Label, Page, PageLabel, User, db
+from ..models import Attachment, Label, Page, PageLabel, User, db
 from ..utils.http import or_404
 from . import admin_bp
 from .forms import AttachmentCreateForm, LabelForm, PageForm, UserForm
@@ -115,7 +118,16 @@ def page_attachments(page_pk: int) -> Union[Response, str]:
             if form.validate_on_submit():
                 form.save(page)
         elif op == 'remove':
-            pass
+            attachment_ids = request.form.getlist('attachment')
+            files_dir = os.path.join(
+                current_app.instance_path, current_app.config['ATTACHMENTS_DIR']
+            )
+            query = Attachment.select().where(Attachment.pk.in_(attachment_ids))
+            with db.atomic():
+                for att in query:
+                    path = os.path.join(files_dir, att.filename)
+                    att.delete_instance()
+                    os.remove(path)
         else:
             raise BadRequest(f'unknown operation {op}')
         flash(

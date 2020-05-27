@@ -90,13 +90,15 @@ class AttachmentCreateForm(BaseForm):
         obj.description = self.description.data
         if obj.description:
             obj.description_html = markdown(obj.description)
+        target_dir = os.path.join(
+            current_app.instance_path, current_app.config['ATTACHMENTS_DIR']
+        )
+        os.makedirs(target_dir, exist_ok=True)
         with tempfile.TemporaryDirectory() as tmpdir:
             temp_filename = os.path.join(tmpdir, filename)
             file_storage.save(temp_filename)
             with db.atomic():
-                file_data = process_incoming_file(
-                    temp_filename, current_app.instance_path
-                )
+                file_data = process_incoming_file(temp_filename, target_dir)
                 obj.filename = file_data.filename
                 obj.file_type = file_data.file_type
                 obj.file_size = file_data.file_size
