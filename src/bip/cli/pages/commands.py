@@ -1,6 +1,4 @@
-import mimetypes
 import os
-import shutil
 import sys
 from typing import List, Optional
 
@@ -14,7 +12,7 @@ from ...models import Attachment, Change, ChangeRecord, Label, Page, PageLabel, 
 from ...utils.cli import (
     ACTIVITY_NAME_MAP, ColDataType, create_table, login_user, print_table,
 )
-from ...utils.files import calc_sha256
+from ...utils.files import process_incoming_file
 from ...utils.text import slugify, truncate_string, yesno
 
 page_ops = click.Group(name='page', help='Zarządzanie stronami biuletynu')
@@ -234,8 +232,6 @@ def page_attach(page_id, file_name, title, description, user_name):
     if page is None:
         raise click.ClickException(f'strona o ID {page_id} nie istnieje')
     _, name = os.path.split(file_name)
-    _, ext = os.path.splitext(name)
-    checksum = calc_sha256(file_name)
     if not title:
         title = name
     if not description and click.confirm(
@@ -243,17 +239,13 @@ def page_attach(page_id, file_name, title, description, user_name):
     ):
         description = click.edit()
         description = description.strip()
-    new_file_name = f'{checksum}{ext}'
-    file_type, _ = mimetypes.guess_type(file_name, strict=False)
-    file_size = os.stat(file_name).st_size
-    target = os.path.join(current_app.instance_path, new_file_name)
     with db.atomic():
-        shutil.copy2(file_name, target)
+        file_data = process_incoming_file(file_name, current_app.instance_path)
         args = {
             'page': page,
-            'filename': new_file_name,
-            'file_type': file_type,
-            'file_size': file_size,
+            'filename': file_data.filename,
+            'file_type': file_data.file_type,
+            'file_size': file_data.file_size,
             'title': title,
         }
         if description:

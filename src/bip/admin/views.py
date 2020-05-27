@@ -75,7 +75,7 @@ def page_detail(page_pk: int) -> Union[Response, str]:
 
 @admin_bp.route('/page/<int:page_pk>/labels', methods=['POST', 'GET'])
 def page_labels(page_pk: int) -> Union[Response, str]:
-    page = or_404(Page.get(page_pk))
+    page = or_404(Page.get_or_none(Page.pk == page_pk))
     if request.method == 'POST':
         label_ids = request.form.getlist('label')
         op = request.form.get('op')
@@ -103,6 +103,15 @@ def page_labels(page_pk: int) -> Union[Response, str]:
         'available_labels': available_labels,
     }
     return render_template('admin/page_labels.html', **ctx)
+
+
+@admin_bp.route('/page/<int:page_pk>/attachments', methods=['POST', 'GET'])
+def page_attachments(page_pk: int) -> Union[Response, str]:
+    page = or_404(Page.get_or_none(Page.pk == page_pk))
+    ctx = {
+        'page': page,
+    }
+    return render_template('admin/page_attachments.html', **ctx)
 
 
 @admin_bp.route('/label/list', methods=['POST', 'GET'])

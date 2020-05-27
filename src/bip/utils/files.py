@@ -1,4 +1,22 @@
 import hashlib
+import mimetypes
+import os
+import shutil
+from collections import namedtuple
+
+FileData = namedtuple('FileData', ['filename', 'file_type', 'file_size'])
+
+
+def process_incoming_file(path: str, target_dir: str) -> FileData:
+    file_name_hash = calc_sha256(path)
+    _, name = os.path.split(path)
+    _, ext = os.path.splitext(name)
+    new_file_name = f'{file_name_hash}{ext}'
+    file_type, _ = mimetypes.guess_type(path, strict=False)
+    file_size = os.stat(path).st_size
+    target = os.path.join(target_dir, new_file_name)
+    shutil.copy2(path, target)
+    return FileData(filename=new_file_name, file_type=file_type, file_size=file_size)
 
 
 def calc_sha256(filename: str) -> str:
