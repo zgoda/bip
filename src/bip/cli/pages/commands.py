@@ -245,6 +245,7 @@ def page_attach(page_id, file_name, title, description, user_name):
         description = description.strip()
     new_file_name = f'{checksum}{ext}'
     file_type, _ = mimetypes.guess_type(file_name, strict=False)
+    file_size = os.stat(file_name).st_size
     target = os.path.join(current_app.instance_path, new_file_name)
     with db.atomic():
         shutil.copy2(file_name, target)
@@ -252,6 +253,7 @@ def page_attach(page_id, file_name, title, description, user_name):
             'page': page,
             'filename': new_file_name,
             'file_type': file_type,
+            'file_size': file_size,
             'title': title,
         }
         if description:

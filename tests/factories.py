@@ -1,3 +1,5 @@
+from random import randint  # noqa: DUO102
+
 import factory
 from factory.base import Factory, FactoryOptions, OptionDefault
 from markdown import markdown
@@ -113,6 +115,7 @@ class AttachmentFactory(PeeweeModelFactory):
     description = factory.Faker('paragraph')
     filename = factory.Faker('file_name')
     file_type = factory.Faker('mime_type')
+    file_size = randint(500, 5000)
 
     @factory.lazy_attribute
     def description_html(self):

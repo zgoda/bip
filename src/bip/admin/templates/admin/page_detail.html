@@ -21,7 +21,7 @@
 {% if object.attachments %}
 <ul>
   {% for attachment in object.attachments %}
-  <li>{{ attachment.title }} ({{ attachment.file_type }})</li>
+  <li>{{ attachment.title }} ({{ attachment.file_type }}, {{ attachment.file_size }} bajtów)</li>
   {% endfor %}
 </ul>
 {% else %}
