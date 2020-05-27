@@ -27,6 +27,7 @@
 {% else %}
 <p>Nie ma żadnych załączników.</p>
 {% endif %}
+<p><a href="{{ url_for('admin.page_attachments', page_pk=object.pk) }}">Zarządzaj</a></p>
 {% endblock %}
 
 {% block extrahead %}

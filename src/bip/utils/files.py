@@ -8,6 +8,15 @@ FileData = namedtuple('FileData', ['filename', 'file_type', 'file_size'])
 
 
 def process_incoming_file(path: str, target_dir: str) -> FileData:
+    """Processing of incoming page attachment file.
+
+    :param path: path to file in local filesystem
+    :type path: str
+    :param target_dir: destination where the file will be stored
+    :type target_dir: str
+    :return: file object related data for attachment
+    :rtype: FileData
+    """
     file_name_hash = calc_sha256(path)
     _, name = os.path.split(path)
     _, ext = os.path.splitext(name)

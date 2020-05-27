@@ -1,14 +1,20 @@
+import os
+import tempfile
 from datetime import datetime
 from typing import Optional
 
+from flask import current_app
 from flask_login import current_user
+from flask_wtf.file import FileField, FileRequired
 from markdown import markdown
-from wtforms.fields import BooleanField, StringField, TextAreaField
+from werkzeug.utils import secure_filename
+from wtforms.fields import BooleanField, StringField, TextAreaField, HiddenField
 from wtforms.fields.html5 import EmailField, IntegerField
 from wtforms.validators import InputRequired, Optional as ValueOptional
 
-from ..models import Change, ChangeRecord, Label, Page, db
-from ..utils.forms import EmailValidator, ObjectForm
+from ..models import Attachment, Change, ChangeRecord, Label, Page, db
+from ..utils.files import process_incoming_file
+from ..utils.forms import BaseForm, EmailValidator, ObjectForm
 from ..utils.text import slugify
 
 
@@ -68,3 +74,31 @@ class LabelForm(ObjectForm):
         label.description_html = markdown(label.description)
         label.save()
         return label
+
+
+class AttachmentCreateForm(BaseForm):
+    op = HiddenField(default='add')
+    file = FileField('plik załącznika', validators=[FileRequired()])
+    title = StringField('tytuł')
+    description = TextAreaField('opis')
+
+    def save(self, page: Page) -> Attachment:
+        obj = Attachment(page=page)
+        file_storage = self.file.data
+        filename = secure_filename(file_storage.filename)
+        obj.title = self.title.data or filename
+        obj.description = self.description.data
+        if obj.description:
+            obj.description_html = markdown(obj.description)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            temp_filename = os.path.join(tmpdir, filename)
+            file_storage.save(temp_filename)
+            with db.atomic():
+                file_data = process_incoming_file(
+                    temp_filename, current_app.instance_path
+                )
+                obj.filename = file_data.filename
+                obj.file_type = file_data.file_type
+                obj.file_size = file_data.file_size
+                obj.save()
+        return obj

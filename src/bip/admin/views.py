@@ -7,7 +7,7 @@ from werkzeug.exceptions import BadRequest
 from ..models import Label, Page, PageLabel, User, db
 from ..utils.http import or_404
 from . import admin_bp
-from .forms import LabelForm, PageForm, UserForm
+from .forms import AttachmentCreateForm, LabelForm, PageForm, UserForm
 from .utils import (
     ItemCollectionMeta, ItemMeta, default_admin_item_view, default_admin_list_view,
 )
@@ -108,8 +108,23 @@ def page_labels(page_pk: int) -> Union[Response, str]:
 @admin_bp.route('/page/<int:page_pk>/attachments', methods=['POST', 'GET'])
 def page_attachments(page_pk: int) -> Union[Response, str]:
     page = or_404(Page.get_or_none(Page.pk == page_pk))
+    form = AttachmentCreateForm()
+    if request.method == 'POST':
+        op = request.form.get('op')
+        if op == 'add':
+            if form.validate_on_submit():
+                form.save(page)
+        elif op == 'remove':
+            pass
+        else:
+            raise BadRequest(f'unknown operation {op}')
+        flash(
+            f'załączniki strony {page.title} zostały zaktualizowane', category='success'
+        )
+        return redirect(request.path)
     ctx = {
         'page': page,
+        'form': form,
     }
     return render_template('admin/page_attachments.html', **ctx)
 
