@@ -110,6 +110,10 @@ class AttachmentFactory(PeeweeModelFactory):
         model = Attachment
         database = db
 
+    description = factory.Faker('paragraph')
+    filename = factory.Faker('file_name')
+    file_type = factory.Faker('mime_type')
+
     @factory.lazy_attribute
     def description_html(self):
         return markdown(self.description)
