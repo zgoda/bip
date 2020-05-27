@@ -129,6 +129,7 @@ class Attachment(Model):
     page = ForeignKeyField(Page, backref='attachments')
     filename = CharField(max_length=200)
     file_type = CharField(max_length=100)
+    file_size = IntegerField()
     created = DateTimeField(default=datetime.utcnow, index=True)
     title = CharField(max_length=200, index=True)
     description = TextField(null=True)
