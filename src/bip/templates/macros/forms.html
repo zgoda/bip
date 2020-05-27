@@ -4,9 +4,9 @@
   {% set hints = kwargs.pop('hints', None) %}
   {{ form.hidden_tag() }}
   {{ form_errors(form, hiddens='only') }}
-  {%- for field in form %}
-    {% if not bootstrap_is_hidden_field(field) -%}
-      {% if field.type == 'DecimalField' -%}
+  {% for field in form %}
+    {% if not bootstrap_is_hidden_field(field) %}
+      {% if field.type == 'DecimalField' %}
         {{ render_field(
           field,
           form_type=form_type,
@@ -26,20 +26,20 @@
           form_type=form_type,
           horizontal_columns=horizontal_columns,
           button_map=button_map) }}
-        {%- endif %}
-    {%- endif %}
-  {%- endfor %}
-{%- endmacro %}
+        {% endif %}
+    {% endif %}
+  {% endfor %}
+{% endmacro %}
 
 {% macro render_form_buttons(buttons) %}
 <div class="form-group row">
   <div class="offset-sm-2 col-sm-10">
-    {%- for button in buttons %}
+    {% for button in buttons %}
     {{ button.render() }}&nbsp;
-    {%- endfor %}
+    {% endfor %}
   </div>
 </div>
-{%- endmacro %}
+{% endmacro %}
 
 {% macro render_form(form, action) %}
 {% set hints = kwargs.pop('hints', None) %}
@@ -48,4 +48,4 @@
 {{ render_form_fields(form, hints=hints) }}
 {{ render_form_buttons(form.buttons) }}
 </form>
-{%- endmacro %}
+{% endmacro %}

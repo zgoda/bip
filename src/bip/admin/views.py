@@ -10,7 +10,7 @@ from werkzeug.exceptions import BadRequest
 from ..models import Attachment, Label, Page, PageLabel, User, db
 from ..utils.http import or_404
 from . import admin_bp
-from .forms import AttachmentCreateForm, LabelForm, PageForm, UserForm
+from .forms import AttachmentCreateForm, LabelForm, PageForm, UserForm, AttachmentForm
 from .utils import (
     ItemCollectionMeta, ItemMeta, default_admin_item_view, default_admin_list_view,
 )
@@ -154,3 +154,14 @@ def label_list() -> Union[Response, str]:
 @admin_bp.route('/label/<int:label_pk>', methods=['POST', 'GET'])
 def label_detail(label_pk: int) -> Union[Response, str]:
     return default_admin_item_view(label_item_meta, label_pk)
+
+
+@admin_bp.route('/attachment/<int:attachment_pk>', methods=['POST', 'GET'])
+def attachment_detail(attachment_pk: int) -> Union[Response, str]:
+    obj = or_404(Attachment.get_or_none(Attachment.pk == attachment_pk))
+    form = AttachmentForm(obj=obj)
+    if form.validate_on_submit():
+        obj = form.save(obj)
+        flash(f'załącznik {obj.title} został zmieniony', category='success')
+        return redirect(request.path)
+    return render_template('admin/attachment_detail.html', object=obj, form=form)

@@ -14,7 +14,7 @@
   <table class="table borderless">
     {% for att in page.attachments %}
     <tr>
-      <td>{{ att.title }}</td>
+      <td><a href="{{ url_for('admin.attachment_detail', attachment_pk=att.pk) }}">{{ att.title }}</a></td>
       <td>{{ att.file_type }}</td>
       <td><input type="checkbox" name="attachment" value="{{ att.pk }}"></td>
     </tr>

@@ -103,4 +103,23 @@ class AttachmentCreateForm(BaseForm):
                 obj.file_type = file_data.file_type
                 obj.file_size = file_data.file_size
                 obj.save()
+                ChangeRecord.log_change(
+                    page=page, change_type=Change.updated, user=current_user,
+                    description=f'dodano załącznik {obj.title}',
+                )
+        return obj
+
+
+class AttachmentForm(ObjectForm):
+    title = StringField('tytuł')
+    description = TextAreaField('opis')
+
+    def save(self, obj: Attachment, save: bool = True) -> Attachment:
+        obj = super().save(obj, save=False)
+        if obj.description:
+            obj.description_html = markdown(obj.description)
+        else:
+            obj.description_html = obj.description
+        if save:
+            obj.save()
         return obj
