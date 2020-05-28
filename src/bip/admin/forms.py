@@ -93,7 +93,6 @@ class AttachmentCreateForm(BaseForm):
         target_dir = os.path.join(
             current_app.instance_path, current_app.config['ATTACHMENTS_DIR']
         )
-        os.makedirs(target_dir, exist_ok=True)
         with tempfile.TemporaryDirectory() as tmpdir:
             temp_filename = os.path.join(tmpdir, filename)
             file_storage.save(temp_filename)

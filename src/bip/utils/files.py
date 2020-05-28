@@ -17,6 +17,7 @@ def process_incoming_file(path: str, target_dir: str) -> FileData:
     :return: file object related data for attachment
     :rtype: FileData
     """
+    os.makedirs(target_dir, exist_ok=True)
     file_name_hash = calc_sha256(path)
     _, name = os.path.split(path)
     _, ext = os.path.splitext(name)
