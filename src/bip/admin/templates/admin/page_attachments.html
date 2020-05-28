@@ -23,6 +23,8 @@
   <p class="small">Usunięcie załącznika jest nieodwaracalne, wraz z jego danymi usunięty zostanie plik który opisuje.</p>
   <p><button class="btn btn-primary" type="submit">Usuń wybrane</button></p>
 </form>
+{% else %}
+<p>Nie ma żadnych załączników.</p>
 {% endif %}
 <h3>Dodaj załącznik</h3>
 <p class="small">Maksymalny rozmiar załączanego pliku nie może przekroczyć 32 MB. Aby załączyć większy plik użyj narzędzia administracyjnego z linii poleceń.</p>
