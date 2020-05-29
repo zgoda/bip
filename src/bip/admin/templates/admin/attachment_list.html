@@ -1,0 +1,34 @@
+{% extends "admin/base.html" %}
+
+{% from "macros/pagination.html" import render_pagination %}
+
+{% block headpagetitle %}Załączniki{% endblock %}
+
+{% block content %}
+<h2>Załączniki</h2>
+{% if pagination.items %}
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">tytuł</th>
+      <th scope="col">strona</th>
+      <th scope="col">typ pliku</th>
+      <th scope="col">rozmiar</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for attachment in pagination.items %}
+    <tr>
+      <td><a href="{{ url_for('admin.attachment_detail', attachment_pk=attachment.pk) }}">{{ attachment.title }}</a></td>
+      <td><a href="{{ url_for('admin.page_detail', page_pk=attachment.page.pk) }}">{{ attachment.page.title }}</a></td>
+      <td>{{ attachment.file_type }}</td>
+      <td>{{ attachment.file_size }} B</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{{ render_pagination(pagination) }}
+{% else %}
+<p>Nie ma żadnych załączników.</p>
+{% endif %}
+{% endblock %}

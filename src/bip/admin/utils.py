@@ -23,7 +23,7 @@ class ItemMeta:
 @dataclass
 class ItemCollectionMeta:
     dataobject: Model
-    form: Type[FlaskForm]
+    form: Optional[Type[FlaskForm]]
     message: Optional[str] = None
     template: Optional[str] = None
     order: Optional[Field] = None
@@ -70,11 +70,13 @@ def default_admin_list_view(item_meta: ItemCollectionMeta) -> Union[str, Respons
     :return: Flask response (Response object or str)
     :rtype: Union[str, Response]
     """
-    form = item_meta.form()
-    if form.validate_on_submit():
-        form.save()
-        flash(item_meta.message, category='success')
-        return redirect(request.path)
+    form = None
+    if item_meta.form:
+        form = item_meta.form()
+        if form.validate_on_submit():
+            form.save()
+            flash(item_meta.message, category='success')
+            return redirect(request.path)
     query = item_meta.dataobject.select()
     query = query.order_by(item_meta.order)
     context = {

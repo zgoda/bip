@@ -33,6 +33,12 @@ label_item_meta = ItemMeta(
     success_url='admin.label_list', title_field='name',
 )
 
+attachment_item_meta = ItemMeta(
+    dataobject=Attachment, form=AttachmentForm,
+    message='dane załącznika {obj_name} zostały zmienione', title_field='title',
+    success_url='admin.attachment_list',
+)
+
 
 @admin_bp.before_request
 @login_required
@@ -113,9 +119,11 @@ def page_attachments(page_pk: int) -> Union[Response, str]:
     page = or_404(Page.get_or_none(Page.pk == page_pk))
     form = AttachmentCreateForm()
     if request.method == 'POST':
+        has_err = True
         op = request.form.get('op')
         if op == 'add':
             if form.validate_on_submit():
+                has_err = False
                 form.save(page)
         elif op == 'remove':
             attachment_ids = request.form.getlist('attachment')
@@ -128,12 +136,15 @@ def page_attachments(page_pk: int) -> Union[Response, str]:
                     path = os.path.join(files_dir, att.filename)
                     att.delete_instance()
                     os.remove(path)
+                has_err = False
         else:
             raise BadRequest(f'unknown operation {op}')
-        flash(
-            f'załączniki strony {page.title} zostały zaktualizowane', category='success'
-        )
-        return redirect(request.path)
+        if not has_err:
+            flash(
+                f'załączniki strony {page.title} zostały zaktualizowane',
+                category='success',
+            )
+            return redirect(request.path)
     ctx = {
         'page': page,
         'form': form,
@@ -156,12 +167,15 @@ def label_detail(label_pk: int) -> Union[Response, str]:
     return default_admin_item_view(label_item_meta, label_pk)
 
 
+@admin_bp.route('/attachment/list')
+def attachment_list() -> Union[Response, str]:
+    return default_admin_list_view(
+        ItemCollectionMeta(
+            dataobject=Attachment, order=[Attachment.title], form=None
+        )
+    )
+
+
 @admin_bp.route('/attachment/<int:attachment_pk>', methods=['POST', 'GET'])
 def attachment_detail(attachment_pk: int) -> Union[Response, str]:
-    obj = or_404(Attachment.get_or_none(Attachment.pk == attachment_pk))
-    form = AttachmentForm(obj=obj)
-    if form.validate_on_submit():
-        obj = form.save(obj)
-        flash(f'załącznik {obj.title} został zmieniony', category='success')
-        return redirect(request.path)
-    return render_template('admin/attachment_detail.html', object=obj, form=form)
+    return default_admin_item_view(attachment_item_meta, attachment_pk)
