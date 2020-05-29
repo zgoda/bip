@@ -136,9 +136,7 @@ class Attachment(Model):
     description_html = TextField(null=True)
 
     @property
-    def download_url(self):
-        pass
-
-    @property
     def file_save_as(self):
-        pass
+        _, ext = os.path.splitext(self.filename)
+        base = self.title.replace(' ', '_')
+        return f'{base}{ext}'
