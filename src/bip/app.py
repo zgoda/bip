@@ -4,7 +4,7 @@ from logging.config import dictConfig
 from typing import Optional
 
 import keyring
-from flask import render_template
+from flask import render_template, request, send_from_directory
 from keyrings.cryptfile.cryptfile import CryptFileKeyring
 from werkzeug.utils import ImportStringError
 
@@ -30,12 +30,18 @@ def make_app(env: Optional[str] = None) -> Application:
     flask_environment = os.environ.get('FLASK_ENV', '')
     if flask_environment == 'production':
         configure_logging()
-    app = Application(__name__.split('.')[0])
+    extra = {}
+    instance_path = os.environ.get('INSTANCE_PATH')
+    if instance_path:
+        extra['instance_path'] = instance_path
+    app = Application(__name__.split('.')[0], **extra)
     configure_app(app, env)
     # setup keyring for headless environments
     if flask_environment == 'production' or app.testing:
         keyring.set_keyring(CryptFileKeyring())
     with app.app_context():
+        if flask_environment == 'development' or app.testing:
+            register_development_routes(app)
         configure_database(app)
         configure_extensions(app)
         configure_templating(app)
@@ -43,6 +49,24 @@ def make_app(env: Optional[str] = None) -> Application:
         configure_blueprints(app)
         configure_error_handlers(app)
     return app
+
+
+def register_development_routes(app: Application):
+    """Register routes that are served only by dev server. On production this
+    will be serviced directly by web server.
+
+    :param app: application object
+    :type app: Application
+    """
+
+    @app.route('/files/<filename>', endpoint='attachment')
+    def serve_attachment(filename):
+        dir_name = os.path.join(app.instance_path, app.config['ATTACHMENTS_DIR'])
+        attachment_filename = request.args.get('save')
+        kw = {}
+        if attachment_filename:
+            kw['attachment_filename'] = attachment_filename
+        return send_from_directory(dir_name, filename, as_attachment=True, **kw)
 
 
 def configure_app(app: Application, env: Optional[str]):

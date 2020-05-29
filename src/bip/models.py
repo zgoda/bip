@@ -11,6 +11,8 @@ from peewee import (
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 
+from .utils.text import slugify
+
 DB_DRIVER_MAP = {
     'postgres': peewee.PostgresqlDatabase,
     'mysql': peewee.MySQLDatabase,
@@ -134,3 +136,9 @@ class Attachment(Model):
     title = CharField(max_length=200, index=True)
     description = TextField(null=True)
     description_html = TextField(null=True)
+
+    @property
+    def file_save_as(self):
+        _, ext = os.path.splitext(self.filename)
+        base = slugify(self.title)
+        return f'{base}{ext}'

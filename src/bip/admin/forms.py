@@ -86,7 +86,8 @@ class AttachmentCreateForm(BaseForm):
         obj = Attachment(page=page)
         file_storage = self.file.data
         filename = secure_filename(file_storage.filename)
-        obj.title = self.title.data or filename
+        root, _ = os.path.splitext(filename)
+        obj.title = self.title.data or root
         obj.description = self.description.data
         if obj.description:
             obj.description_html = markdown(obj.description)
