@@ -234,6 +234,10 @@ W pliku tym należy umieścić poniższą zawartość. ``bip.domena.pl`` oraz ``
             root /home/mojekonto/instance;
             sendfile on;
             sendfile_max_chunk 1m;
+            # pliki mają zawsze być pobierane, a nie wyświetlane
+            if ($arg_f) {
+                add_header Content-Disposition "attachment; filename=$arg_f";
+            }
         }
     }
 
@@ -344,6 +348,10 @@ W pliku tym należy umieścić poniższą zawartość. ``bip.domena.pl`` oraz ``
             root /home/mojekonto/instance;
             sendfile on;
             sendfile_max_chunk 1m;
+            # pliki mają zawsze być pobierane, a nie wyświetlane
+            if ($arg_f) {
+                add_header Content-Disposition "attachment; filename=$arg_f";
+            }
         }
 
     }
