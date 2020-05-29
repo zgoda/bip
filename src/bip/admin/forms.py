@@ -113,12 +113,11 @@ class AttachmentForm(ObjectForm):
     title = StringField('tytuł')
     description = TextAreaField('opis')
 
-    def save(self, obj: Attachment, save: bool = True) -> Attachment:
+    def save(self, obj: Attachment) -> Attachment:
         obj = super().save(obj, save=False)
         if obj.description:
             obj.description_html = markdown(obj.description)
         else:
-            obj.description_html = obj.description
-        if save:
-            obj.save()
+            obj.description_html = None
+        obj.save()
         return obj
