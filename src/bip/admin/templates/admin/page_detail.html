@@ -17,6 +17,17 @@
   {% endfor %}
 </p>
 <p><a href="{{ url_for('admin.page_labels', page_pk=object.pk) }}">Zarządzaj</a></p>
+<h3>Załączniki</h3>
+{% if object.attachments %}
+<ul>
+  {% for attachment in object.attachments %}
+  <li>{{ attachment.title }} ({{ attachment.file_type }}, {{ attachment.file_size }} bajtów)</li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>Nie ma żadnych załączników.</p>
+{% endif %}
+<p><a href="{{ url_for('admin.page_attachments', page_pk=object.pk) }}">Zarządzaj</a></p>
 {% endblock %}
 
 {% block extrahead %}

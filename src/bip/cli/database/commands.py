@@ -1,12 +1,11 @@
 import click
-
 from flask.cli import with_appcontext
 
-from ...models import ChangeRecord, Label, Page, PageLabel, User, db
+from ...models import Attachment, ChangeRecord, Label, Page, PageLabel, User, db
 
 db_ops = click.Group(name='db', help='Narzędzia bazy danych')
 
-MODELS = [ChangeRecord, Label, Page, PageLabel, User]
+MODELS = [Attachment, ChangeRecord, Label, Page, PageLabel, User]
 
 
 @db_ops.command(name='init', help='Initialize missing database objects')

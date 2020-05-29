@@ -1,8 +1,12 @@
+from random import randint  # noqa: DUO102
+
 import factory
 from factory.base import Factory, FactoryOptions, OptionDefault
 from markdown import markdown
 
-from bip.models import Change, ChangeRecord, Label, Page, PageLabel, User, db
+from bip.models import (
+    Attachment, Change, ChangeRecord, Label, Page, PageLabel, User, db,
+)
 from bip.utils.text import slugify
 
 factory.Faker._DEFAULT_LOCALE = 'pl_PL'
@@ -100,3 +104,20 @@ class PageLabelFactory(PeeweeModelFactory):
     class Meta:
         model = PageLabel
         database = db
+
+
+class AttachmentFactory(PeeweeModelFactory):
+
+    class Meta:
+        model = Attachment
+        database = db
+
+    title = factory.Faker('sentence', nb_words=2)
+    description = factory.Faker('paragraph')
+    filename = factory.Faker('file_name')
+    file_type = factory.Faker('mime_type')
+    file_size = randint(500, 5000)
+
+    @factory.lazy_attribute
+    def description_html(self):
+        return markdown(self.description)

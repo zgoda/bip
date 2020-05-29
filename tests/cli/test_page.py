@@ -1,7 +1,9 @@
 import pytest
 
-from bip.cli.pages.commands import page_change, page_create, page_labels, page_list
-from bip.models import Page, PageLabel
+from bip.cli.pages.commands import (
+    page_attach, page_change, page_create, page_labels, page_list,
+)
+from bip.models import Attachment, Page, PageLabel
 from bip.utils.text import slugify, truncate_string
 
 from . import BIPCLITests
@@ -127,6 +129,14 @@ class TestPageOps(BIPCLITests):
         assert rv.exit_code != 0
         assert 'Tekst strony jest wymagany' in rv.output
 
+    def test_change_fail_notfound(self, mocker):
+        mocker.patch(
+            'bip.cli.pages.commands.login_user', mocker.Mock(return_value=self.user)
+        )
+        rv = self.runner.invoke(page_change, ['-i', 666, '-u', self.user.name])
+        assert rv.exit_code != 0
+        assert 'nie istnieje' in rv.output
+
     def test_change_noop(self, mocker, page_factory):
         mocker.patch(
             'bip.cli.pages.commands.login_user', mocker.Mock(return_value=self.user)
@@ -188,6 +198,16 @@ class TestPageOps(BIPCLITests):
         assert 'została zmieniona' in rv.output
         page_obj = Page[page.pk]
         assert page_obj.order == new_order
+
+    def test_labels_fail_notfound(self, mocker):
+        mocker.patch(
+            'bip.cli.pages.commands.login_user', mocker.Mock(return_value=self.user)
+        )
+        rv = self.runner.invoke(
+            page_labels, ['-i', 666, '-o', 'add', '-u', self.user.name]
+        )
+        assert rv.exit_code != 0
+        assert 'nie istnieje' in rv.output
 
     def test_labels_add_none(self, mocker, page_factory):
         actor = self.user
@@ -318,3 +338,105 @@ class TestPageOps(BIPCLITests):
         assert expected_msg in rv.output
         assert rv.exit_code == 0
         assert PageLabel.select().filter(PageLabel.page == page).count() == label_count
+
+    def test_attach_ok(self, tmp_path, mocker, page_factory):
+        actor = self.user
+        mocker.patch(
+            'bip.cli.pages.commands.login_user', mocker.Mock(return_value=actor)
+        )
+        page = page_factory(created_by=actor, updated_by=actor)
+        f = tmp_path / 'testfile.csv'
+        f.write_text('c1,c2\nv1,v2')
+        mocker.patch(
+            'bip.cli.pages.commands.click.confirm', mocker.Mock(return_value=False)
+        )
+        rv = self.runner.invoke(
+            page_attach, ['-i', page.pk, '-f', f.as_posix(), '-u', actor.name]
+        )
+        assert rv.exit_code == 0
+        assert 'został załączony do strony' in rv.output
+        obj = Attachment.get_or_none(Attachment.page == page)
+        assert obj is not None
+
+    def test_attach_ok_with_title(self, tmp_path, mocker, page_factory):
+        actor = self.user
+        mocker.patch(
+            'bip.cli.pages.commands.login_user', mocker.Mock(return_value=actor)
+        )
+        page = page_factory(created_by=actor, updated_by=actor)
+        f = tmp_path / 'testfile.csv'
+        f.write_text('c1,c2\nv1,v2')
+        mocker.patch(
+            'bip.cli.pages.commands.click.confirm', mocker.Mock(return_value=False)
+        )
+        a_title = 'Tytuł załącznika 1'
+        rv = self.runner.invoke(
+            page_attach,
+            ['-i', page.pk, '-f', f.as_posix(), '-u', actor.name, '-t', a_title],
+        )
+        assert rv.exit_code == 0
+        assert 'został załączony do strony' in rv.output
+        obj = Attachment.get_or_none(Attachment.page == page)
+        assert obj is not None
+        assert obj.title == a_title
+
+    def test_attach_ok_with_description(self, tmp_path, mocker, page_factory):
+        actor = self.user
+        mocker.patch(
+            'bip.cli.pages.commands.login_user', mocker.Mock(return_value=actor)
+        )
+        page = page_factory(created_by=actor, updated_by=actor)
+        f = tmp_path / 'testfile.csv'
+        f.write_text('c1,c2\nv1,v2')
+        mocker.patch(
+            'bip.cli.pages.commands.click.confirm', mocker.Mock(return_value=False)
+        )
+        a_description = 'Tytuł załącznika 1'
+        rv = self.runner.invoke(
+            page_attach,
+            ['-i', page.pk, '-f', f.as_posix(), '-u', actor.name, '-d', a_description],
+        )
+        assert rv.exit_code == 0
+        assert 'został załączony do strony' in rv.output
+        obj = Attachment.get_or_none(Attachment.page == page)
+        assert obj is not None
+        assert obj.description == a_description
+
+    def test_attach_ok_interactive_description(self, tmp_path, mocker, page_factory):
+        actor = self.user
+        mocker.patch(
+            'bip.cli.pages.commands.login_user', mocker.Mock(return_value=actor)
+        )
+        page = page_factory(created_by=actor, updated_by=actor)
+        f = tmp_path / 'testfile.csv'
+        f.write_text('c1,c2\nv1,v2')
+        mocker.patch(
+            'bip.cli.pages.commands.click.confirm', mocker.Mock(return_value=True)
+        )
+        description = 'Opis załącznika 1'
+        mocker.patch(
+            'bip.cli.pages.commands.click.edit', mocker.Mock(return_value=description)
+        )
+        rv = self.runner.invoke(
+            page_attach,
+            ['-i', page.pk, '-f', f.as_posix(), '-u', actor.name],
+        )
+        assert rv.exit_code == 0
+        assert 'został załączony do strony' in rv.output
+        obj = Attachment.get_or_none(Attachment.page == page)
+        assert obj is not None
+        assert obj.description == description
+
+    def test_attach_page_not_found(self, tmp_path, mocker):
+        actor = self.user
+        mocker.patch(
+            'bip.cli.pages.commands.login_user', mocker.Mock(return_value=actor)
+        )
+        f = tmp_path / 'testfile.csv'
+        f.write_text('c1,c2\nv1,v2')
+        page_id = '666'
+        rv = self.runner.invoke(
+            page_attach, ['-i', page_id, '-f', f.as_posix(), '-u', actor.name]
+        )
+        assert rv.exit_code != 0
+        assert f'ID {page_id} nie istnieje' in rv.output

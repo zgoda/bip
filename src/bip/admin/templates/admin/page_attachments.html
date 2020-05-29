@@ -1,0 +1,41 @@
+{% extends "admin/base.html" %}
+
+{% from "macros/forms.html" import render_form %}
+{% import "macros/mde.html" as mde %}
+
+{% block headpagetitle %}Załączniki strony {{ page.title }}{% endblock %}
+
+{% block content %}
+<h2>Załączniki strony {{ page.title }}</h2>
+{% if page.attachments %}
+<form method="POST" action="{{ request.path }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" name="op" value="remove">
+  <table class="table borderless">
+    {% for att in page.attachments %}
+    <tr>
+      <td><a href="{{ url_for('admin.attachment_detail', attachment_pk=att.pk) }}">{{ att.title }}</a></td>
+      <td>{{ att.file_type }}</td>
+      <td><input type="checkbox" name="attachment" value="{{ att.pk }}"></td>
+    </tr>
+    {% endfor %}
+  </table>
+  <p class="small">Usunięcie załącznika jest nieodwaracalne, wraz z jego danymi usunięty zostanie plik który opisuje.</p>
+  <p><button class="btn btn-primary" type="submit">Usuń wybrane</button></p>
+</form>
+{% else %}
+<p>Nie ma żadnych załączników.</p>
+{% endif %}
+<h3>Dodaj załącznik</h3>
+<p class="small">Maksymalny rozmiar załączanego pliku nie może przekroczyć 32 MB. Aby załączyć większy plik użyj narzędzia administracyjnego z linii poleceń.</p>
+{{ render_form(form, action=request.path, enctype='multipart/form-data') }}
+{% endblock %}
+
+{% block extrahead %}
+{{ mde.css() }}
+{{ mde.js() }}
+{% endblock %}
+
+{% block extrajs %}
+{{ mde.load_for('description') }}
+{% endblock %}
