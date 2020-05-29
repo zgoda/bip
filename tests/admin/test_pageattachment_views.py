@@ -21,3 +21,19 @@ class TestPageAttachmentAdminViews(BIPTests):
         assert 'ie ma żadnych załączników' in rv.text
         assert 'value="remove"' not in rv.text
         assert 'value="add"' in rv.text
+
+    def test_get_att_present(self, attachment_factory):
+        attachment = attachment_factory(page=self.page)
+        self.login(self.admin.name)
+        rv = self.client.get(self.url)
+        assert f'{attachment.title}</a>' in rv.text
+        assert 'value="remove"' in rv.text
+        assert 'value="add"' in rv.text
+
+    def test_post_fail_unknown_op(self):
+        self.login(self.admin.name)
+        data = {
+            'op': 'dummy',
+        }
+        rv = self.client.post(self.url, data=data, follow_redirects=True)
+        assert rv.status_code == 400

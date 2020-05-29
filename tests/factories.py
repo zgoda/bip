@@ -112,6 +112,7 @@ class AttachmentFactory(PeeweeModelFactory):
         model = Attachment
         database = db
 
+    title = factory.Faker('sentence', nb_words=2)
     description = factory.Faker('paragraph')
     filename = factory.Faker('file_name')
     file_type = factory.Faker('mime_type')
