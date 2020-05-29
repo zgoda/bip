@@ -1,11 +1,13 @@
 from typing import Union
 
-from flask import Response, render_template
+from flask import Response, render_template, request
 
 from ..models import ChangeRecord, Label, Page, PageLabel, User
+from ..search import search_results
 from ..utils.http import or_404
 from ..utils.pagination import paginate
 from . import main_bp
+from .forms import SearchForm
 
 
 @main_bp.route('/')
@@ -77,3 +79,13 @@ def label_page_list(slug: str) -> Union[str, Response]:
         'num_pages': pages.count(),
     }
     return render_template('main/label_page_list.html', **ctx)
+
+
+@main_bp.route('/search')
+def search() -> Union[str, Response]:
+    query = request.args.get('q')
+    results = None
+    if query:
+        results = search_results(query)
+    form = SearchForm()
+    return render_template('main/search.html', results=results, form=form)

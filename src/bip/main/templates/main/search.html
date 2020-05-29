@@ -1,0 +1,10 @@
+{% extends "main/base.html" %}
+
+{% from "macros/forms.html" import render_form %}
+
+{% block headpagetitle %}Wyszukiwanie{% endblock %}
+
+{% block content %}
+<h2>Wyszukiwanie</h2>
+{{ render_form(form, action=request.path, method='GET') }}
+{% endblock %}

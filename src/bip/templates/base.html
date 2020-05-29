@@ -33,6 +33,7 @@
             <li class="nav-item">
               <a class="nav-link {% if request.url_rule.endpoint == 'main.contact' %}active{% endif %}" href="{{ url_for('main.contact') }}">Kontakt</a>
             </li>
+            <li class="nav-item"><form method="GET" action="{{ url_for('main.search') }}"><input class="form-control form-control-sm" name="q" type="text" placeholder="szukaj..."><input type="submit" style="position: absolute; left: -9999px"/></form></li>
           </ul>
         </div>
       </div>
