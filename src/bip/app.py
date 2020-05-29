@@ -30,13 +30,17 @@ def make_app(env: Optional[str] = None) -> Application:
     flask_environment = os.environ.get('FLASK_ENV', '')
     if flask_environment == 'production':
         configure_logging()
-    app = Application(__name__.split('.')[0])
+    extra = {}
+    instance_path = os.environ.get('INSTANCE_PATH')
+    if instance_path:
+        extra['instance_path'] = instance_path
+    app = Application(__name__.split('.')[0], **extra)
     configure_app(app, env)
     # setup keyring for headless environments
     if flask_environment == 'production' or app.testing:
         keyring.set_keyring(CryptFileKeyring())
     with app.app_context():
-        if flask_environment == 'development':
+        if flask_environment == 'development' or app.testing:
             register_development_routes(app)
         configure_database(app)
         configure_extensions(app)

@@ -81,6 +81,12 @@ Po zakończeniu instalacji utwórz w katalogu aplikacji łącze symboliczne do k
 
     $ ln -s venv/lib/python3.7/site-packages/bip/static static
 
+Innym rodzajem zawartości serwisu są pliki udostępnione do pobrania. Aplikacja umieszcza je we wskazanym miejscu i je również dobrze będzie trzymać tam gdzie i całą resztę. Ścieżka do tego katalogu jest później przekazana w zmiennej środowiskowej.
+
+.. code-block:: shell-session
+
+    $ mkdir -p instance/attachments
+
 Utwórz również katalog na statyczne dane konfiguracji serwisu i skopiuj do niego przykładowy plik konfiguracją serwisu.
 
 .. code-block:: shell-session
@@ -169,6 +175,8 @@ W pliku tym należy umieścić poniższą zawartość. Proszę zwrócić uwagę,
     Environment="PATH=/home/mojekonto/bip/venv/bin"
     # ustawienie zmiennej rodzaju instancji
     Environment="ENV=production"
+    # ustawienie zmiennej z katalogiem plików do pobrania
+    Environment="INSTANCE_PATH=/home/mojekonto/bip/instance"
     # komenda uruchamiająca usługę
     ExecStart=/home/mojekonto/bip/venv/bin/uwsgi --ini /home/mojekonto/bip/bip.ini
 
@@ -205,14 +213,27 @@ W pliku tym należy umieścić poniższą zawartość. ``bip.domena.pl`` oraz ``
         server_name bip.domena.pl;
 
         location / {
+            # zmiana początku ścieżki do plików do pobrania
+            rewrite ^/files/(.*)$ /attachments/$1 last;
+            # włączenie obsługi uWSGI
             include uwsgi_params;
             uwsgi_pass unix:/tmp/bip.sock;
             uwsgi_param UWSGI_SCHEME $scheme;
             uwsgi_param SERVER_SOFTWARE nginx/$nginx_version;
         }
 
+        # reguła dla zasobów statycznych
         location /static {
             root /home/mojekonto/bip;
+            sendfile on;
+            sendfile_max_chunk 1m;
+        }
+
+        # reguła dla plików do pobrania
+        location /attachments {
+            root /home/mojekonto/instance;
+            sendfile on;
+            sendfile_max_chunk 1m;
         }
     }
 
@@ -266,6 +287,8 @@ Zawartość tego pliku bedzie podobna jak w przypadku uWSGI we wcześniejszym pr
     Environment="PATH=/home/mojekonto/bip/venv/bin"
     # ustawienie zmiennej rodzaju instancji
     Environment="ENV=production"
+    # ustawienie zmiennej z katalogiem plików do pobrania
+    Environment="INSTANCE_PATH=/home/mojekonto/bip/instance"
     # komenda uruchamiająca usługę
     ExecStart=/home/mojekonto/bip/venv/bin/gunicorn --workers 2 --bind unix:/tmp/bip.sock -m 007 bip.wsgi:application
 
@@ -302,12 +325,25 @@ W pliku tym należy umieścić poniższą zawartość. ``bip.domena.pl`` oraz ``
         server_name bip.domena.pl;
 
         location / {
+            # zmiana początku ścieżki do plików do pobrania
+            rewrite ^/files/(.*)$ /attachments/$1 last;
+            # włączenie proxy
             include proxy_params;
             proxy_pass http://unix:/tmp/bip.sock;
         }
 
+        # reguła dla zasobów statycznych
         location /static {
             root /home/mojekonto/bip;
+            sendfile on;
+            sendfile_max_chunk 1m;
+        }
+
+        # reguła dla plików do pobrania
+        location /attachments {
+            root /home/mojekonto/instance;
+            sendfile on;
+            sendfile_max_chunk 1m;
         }
 
     }
