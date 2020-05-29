@@ -10,6 +10,14 @@
   <span class="badge badge-secondary">{{ pl.label.name }}</span>
   {% endfor %}
 </p>
+{% if page.attachments %}
+<h3>Załączniki</h3>
+<ul>
+  {% for attachment in page.attachments %}
+  <li><a href="{{ attachment.file_url }}" download="{{ attachment.file_download_as }}">{{ attachment.title }}</a> ({{ attachment.file_type }}, {{ attachment.file_size }} bajtów)</li>
+  {% endfor %}
+</ul>
+{% endif %}
 <hr>
 <table class="table table-bordered">
   <tr>

@@ -134,3 +134,11 @@ class Attachment(Model):
     title = CharField(max_length=200, index=True)
     description = TextField(null=True)
     description_html = TextField(null=True)
+
+    @property
+    def download_url(self):
+        pass
+
+    @property
+    def file_save_as(self):
+        pass
