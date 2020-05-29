@@ -29,6 +29,8 @@ class TestAttachmentAdminViews(BIPTests):
         rv = self.client.get(self.list_url)
         for title in titles:
             assert f'>{title}</a>' in rv.text
+        page_list_url = url_for('admin.page_list')
+        assert f'href="{page_list_url}"' in rv.text
 
     def test_list_post(self):
         data = {
