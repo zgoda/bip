@@ -127,3 +127,78 @@ class TestChangesView(BIPTests):
         assert rv.text.count(f'przez: {user.name}') == 2
         assert rv.text.count('rodzaj: utworzenie') == 1
         assert rv.text.count('rodzaj: zmiana') == 1
+
+
+@pytest.mark.usefixtures('client_class')
+class TestSearchView(BIPTests):
+
+    def test_get_no_search(self):
+        url = url_for('main.search')
+        rv = self.client.get(url)
+        assert 'yniki</h3>' not in rv.text
+
+    def test_get_no_results(self):
+        query = 'wyszukiwanie'
+        url = url_for('main.search', q=query)
+        rv = self.client.get(url)
+        assert 'yniki</h3>' in rv.text
+        assert f'zukany tekst: <strong>{query}</strong>' in rv.text
+
+    def test_get_generic(self, page_factory, label_factory, attachment_factory):
+        query = 'wyszukiwanie'
+        page = page_factory(title=f'xxx {query} yyy', main=False)
+        label = label_factory(name=f'aaa {query} bbb')
+        attachment = attachment_factory(page=page, title=f'nnn {query} mmm')
+        url = url_for('main.search', q=query)
+        rv = self.client.get(url)
+        assert 'ie znaleziono stron.' not in rv.text
+        assert 'ie znaleziono etykiet.' not in rv.text
+        assert 'ie znaleziono załączników.' not in rv.text
+        assert page.title in rv.text
+        assert label.name in rv.text
+        assert attachment.title in rv.text
+
+    def test_get_pages(self, page_factory, label_factory, attachment_factory):
+        query = 'wyszukiwanie'
+        sections = ['pages']
+        page = page_factory(title=f'xxx {query} yyy', main=False)
+        label = label_factory(name=f'aaa {query} bbb')
+        attachment = attachment_factory(page=page, title=f'nnn {query} mmm')
+        url = url_for('main.search', q=query, d=sections)
+        rv = self.client.get(url)
+        assert 'ie znaleziono stron.' not in rv.text
+        assert '<h4>Etykiety</h4>' not in rv.text
+        assert '<h4>Załączniki</h4>' not in rv.text
+        assert page.title in rv.text
+        assert label.name not in rv.text
+        assert attachment.title not in rv.text
+
+    def test_get_labels(self, page_factory, label_factory, attachment_factory):
+        query = 'wyszukiwanie'
+        sections = ['labels']
+        page = page_factory(title=f'xxx {query} yyy', main=False)
+        label = label_factory(name=f'aaa {query} bbb')
+        attachment = attachment_factory(page=page, title=f'nnn {query} mmm')
+        url = url_for('main.search', q=query, d=sections)
+        rv = self.client.get(url)
+        assert '<h4>Strony</h4>' not in rv.text
+        assert 'ie znaleziono etykiet.' not in rv.text
+        assert '<h4>Załączniki</h4>' not in rv.text
+        assert page.title not in rv.text
+        assert label.name in rv.text
+        assert attachment.title not in rv.text
+
+    def test_get_attachments(self, page_factory, label_factory, attachment_factory):
+        query = 'wyszukiwanie'
+        sections = ['attachments']
+        page = page_factory(title=f'xxx {query} yyy', main=False)
+        label = label_factory(name=f'aaa {query} bbb')
+        attachment = attachment_factory(page=page, title=f'nnn {query} mmm')
+        url = url_for('main.search', q=query, d=sections)
+        rv = self.client.get(url)
+        assert '<h4>Strony</h4>' not in rv.text
+        assert '<h4>Etykiety</h4>' not in rv.text
+        assert 'ie znaleziono załączników.' not in rv.text
+        assert page.title not in rv.text
+        assert label.name not in rv.text
+        assert attachment.title in rv.text

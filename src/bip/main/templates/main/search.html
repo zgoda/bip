@@ -1,0 +1,74 @@
+{% extends "main/base.html" %}
+
+{% block headpagetitle %}Wyszukiwanie{% endblock %}
+
+{% block content %}
+<h2>Wyszukiwanie</h2>
+<form method="GET" action="{{ request.path }}" role="form" novalidate>
+  <div class="form-row align-items-center">
+    <div class="col">
+      <label for="search" class="sr-only">Szukany tekst</label>
+      <input type="text" name="q" class="form-control" id="search">
+    </div>
+    <div class="col">
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="sel_pages" name="d" value="pages" checked>
+        <label class="form-check-label" for="sel_pages">strony</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="sel_labels" name="d" value="labels" checked>
+        <label class="form-check-label" for="sel_labels">etykiety</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="sel_attachments" name="d" value="attachments" checked>
+        <label class="form-check-label" for="sel_attachments">załączniki</label>
+      </div>
+    </div>
+  </div>
+  <div class="form-row align-items-center mt-2">
+    <div class="col">
+      <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i>&nbsp;szukaj</button>
+    </div>
+  </div>
+</form>
+{% if results %}
+<h3>Wyniki</h3>
+<p>Szukany tekst: <strong>{{ query }}</strong></p>
+{% if 'pages' in results %}
+<h4>Strony</h4>
+{% if results['pages'] %}
+<ul>
+  {% for page in results['pages'] %}
+  <li>{{ page.title }}</li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>Nie znaleziono stron.</p>
+{% endif %}
+{% endif %}
+{% if 'labels' in results %}
+<h4>Etykiety</h4>
+{% if results['labels'] %}
+<ul>
+  {% for label in results['labels'] %}
+  <li>{{ label.name }}</li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>Nie znaleziono etykiet.</p>
+{% endif %}
+{% endif %}
+{% if 'attachments' in results %}
+<h4>Załączniki</h4>
+{% if results['attachments'] %}
+<ul>
+  {% for attachment in results['attachments'] %}
+  <li>{{ attachment.title }}</li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>Nie znaleziono załączników.</p>
+{% endif %}
+{% endif %}
+{% endif %}
+{% endblock %}
