@@ -181,6 +181,8 @@ def configure_templating(app: Application):
 
 
 def configure_logging():
+    """Configure application logging on prod.
+    """
     dictConfig({
         'version': 1,
         'formatters': {
