@@ -14,6 +14,12 @@ def search_results(
     returned ordered by modification date, labels by name, attachments by
     creation date.
 
+    Search fields:
+
+    * pages: title and text
+    * labels: name
+    * attachments: title and description
+
     :param query: search query
     :type query: str
     :param sections: where to search, defaults to None
@@ -21,7 +27,7 @@ def search_results(
     :return: search result partitioned by data type
     :rtype: Mapping[str, BaseQuery]
     """
-    if sections is None:
+    if not sections:
         sections = ['pages', 'labels', 'attachments']
     results = {}
     query = f'%{query}%'

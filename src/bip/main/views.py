@@ -84,8 +84,9 @@ def label_page_list(slug: str) -> Union[str, Response]:
 @main_bp.route('/search')
 def search() -> Union[str, Response]:
     query = request.args.get('q')
+    sections = request.args.getlist('d')
     results = None
     if query:
-        results = search_results(query)
+        results = search_results(query, sections=sections)
     form = SearchForm()
-    return render_template('main/search.html', results=results, form=form)
+    return render_template('main/search.html', query=query, results=results, form=form)
