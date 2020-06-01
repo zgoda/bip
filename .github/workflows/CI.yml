@@ -23,10 +23,10 @@ jobs:
         python -m pip install -U -q pip
         pip install -U -q -e .[test]
         pip install -U -q Sphinx wheel
-    - name: get pip cache dir
+    - name: Get pip cache dir
       id: pip-cache-dir
       run: echo "::set-output name=dir::$(pip cache dir)"
-    - name: cache pip
+    - name: Cache pip
       uses: actions/cache@v1
       with:
         path: ${{ steps.pip-cache-dir.outputs.dir }}
@@ -34,9 +34,15 @@ jobs:
     - name: Test with pytest
       run: |
         pytest --cov-branch --cov-report xml --cov bip tests
-    - name: Test package build
+    - name: Build packages
       run: |
-        python setup.py -q sdist bdist_wheel build_sphinx
+        python setup.py -q sdist bdist_wheel
+    - name: Upload packages to PyPI
+      if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags') && matrix.python-version == 3.7
+      uses: pypa/gh-action-pypi-publish@v1
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_TOKEN }}
     - name: Codecov
       if: matrix.python-version == 3.7
       uses: codecov/codecov-action@v1.0.6
