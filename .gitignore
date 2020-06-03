@@ -110,7 +110,4 @@ venv.bak/
 .idea
 
 # secrets, configs, etc
-conf/*.py
-conf/*.json
-conf/*.yml
-conf/*.yaml
+conf/site.json

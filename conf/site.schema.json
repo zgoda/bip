@@ -1,0 +1,484 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "title": "Schemat danych serwisu BIP",
+  "description": "Schemat danych serwisu BIP",
+  "default": {},
+  "examples": [
+    {
+      "name": "Instytucja Publiczna",
+      "bip_url": "http://bip.instytucja.pl",
+      "nip": "111-222-33-44",
+      "regon": "123456789",
+      "short_name": "instytucja",
+      "krs": "",
+      "address": {
+        "street": "Ulica 21a",
+        "zip_code": "99-777",
+        "town": "Miejscowość"
+      },
+      "contacts": [
+        {
+          "phone": "666 777 888",
+          "email": "instytucja@serwer.pl",
+          "name": "Ogólny"
+        }
+      ],
+      "departments": [
+        {
+          "phone": "",
+          "email": "",
+          "name": "Ogólny",
+          "domain": "",
+          "location": "",
+          "staff": [
+            {
+              "role_name": "dyrektor",
+              "role_type": "manager",
+              "person_name": "Alicja Bębenek",
+              "photo_url": "",
+              "phone": "",
+              "email": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "required": [
+    "name",
+    "bip_url",
+    "nip",
+    "regon",
+    "short_name",
+    "krs",
+    "address",
+    "contacts",
+    "departments"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "name": {
+      "$id": "#/properties/name",
+      "type": "string",
+      "title": "Nazwa",
+      "description": "Pełna nazwa instytucji",
+      "default": "",
+      "examples": [
+        "Instytucja Publiczna"
+      ]
+    },
+    "bip_url": {
+      "$id": "#/properties/bip_url",
+      "type": "string",
+      "title": "Adres strony BIP",
+      "description": "Adres URL strony BIP",
+      "default": "",
+      "examples": [
+        "http://bip.instytucja.pl"
+      ]
+    },
+    "nip": {
+      "$id": "#/properties/nip",
+      "type": "string",
+      "title": "NIP",
+      "description": "NIP",
+      "default": "",
+      "examples": [
+        "111-222-33-44"
+      ]
+    },
+    "regon": {
+      "$id": "#/properties/regon",
+      "type": "string",
+      "title": "REGON",
+      "description": "REGON",
+      "default": "",
+      "examples": [
+        "123456789"
+      ]
+    },
+    "short_name": {
+      "$id": "#/properties/short_name",
+      "type": "string",
+      "title": "Nazwa skrócona",
+      "description": "Nazwa skrócona",
+      "default": "",
+      "examples": [
+        "instytucja"
+      ]
+    },
+    "krs": {
+      "$id": "#/properties/krs",
+      "type": "string",
+      "title": "KRS",
+      "description": "Numer wpisu w KRS",
+      "default": "",
+      "examples": [
+        ""
+      ]
+    },
+    "address": {
+      "$id": "#/properties/address",
+      "type": "object",
+      "title": "Adres",
+      "description": "Adres",
+      "default": {},
+      "examples": [
+        {
+          "street": "Ulica 21a",
+          "zip_code": "99-777",
+          "town": "Miejscowość"
+        }
+      ],
+      "required": [
+        "street",
+        "zip_code",
+        "town"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "street": {
+          "$id": "#/properties/address/properties/street",
+          "type": "string",
+          "title": "Ulica lub miejscowość z numerem budynku",
+          "description": "Ulica lub miejscowość z numerem budynku",
+          "default": "",
+          "examples": [
+            "Wola Dzbądzka 21a"
+          ]
+        },
+        "zip_code": {
+          "$id": "#/properties/address/properties/zip_code",
+          "type": "string",
+          "title": "Kod pocztowy",
+          "description": "Kod pocztowy",
+          "default": "",
+          "examples": [
+            "99-777"
+          ]
+        },
+        "town": {
+          "$id": "#/properties/address/properties/town",
+          "type": "string",
+          "title": "Miejscowość",
+          "description": "Miejscowość",
+          "default": "",
+          "examples": [
+            "Wieczfnia"
+          ]
+        }
+      }
+    },
+    "contacts": {
+      "$id": "#/properties/contacts",
+      "type": "array",
+      "title": "Zbiór danych kontaktowych",
+      "description": "Zbiór danych kontaktowych",
+      "default": [],
+      "examples": [
+        [
+          {
+            "phone": "666 777 888",
+            "email": "instytucja@serwer.pl",
+            "name": "Ogólny"
+          }
+        ]
+      ],
+      "additionalItems": true,
+      "items": {
+        "anyOf": [
+          {
+            "$id": "#/properties/contacts/items/anyOf/0",
+            "type": "object",
+            "title": "Dane kontaktowe",
+            "description": "Dane kontaktowe",
+            "default": {},
+            "examples": [
+              {
+                "phone": "666 777 888",
+                "email": "instytucja@serwer.pl",
+                "name": "Ogólny"
+              }
+            ],
+            "required": [
+              "phone",
+              "email",
+              "name"
+            ],
+            "additionalProperties": true,
+            "properties": {
+              "phone": {
+                "$id": "#/properties/contacts/items/anyOf/0/properties/phone",
+                "type": "string",
+                "title": "Numer telefonu",
+                "description": "Numer telefonu",
+                "default": "",
+                "examples": [
+                  "666 777 888"
+                ]
+              },
+              "email": {
+                "$id": "#/properties/contacts/items/anyOf/0/properties/email",
+                "type": "string",
+                "title": "Adres email",
+                "description": "Adres email",
+                "default": "",
+                "examples": [
+                  "instytucja@serwer.pl"
+                ]
+              },
+              "name": {
+                "$id": "#/properties/contacts/items/anyOf/0/properties/name",
+                "type": "string",
+                "title": "Nazwa",
+                "description": "Nazwa kontaktu",
+                "default": "",
+                "examples": [
+                  "Ogólny"
+                ]
+              }
+            }
+          }
+        ],
+        "$id": "#/properties/contacts/items"
+      }
+    },
+    "departments": {
+      "$id": "#/properties/departments",
+      "type": "array",
+      "title": "Zbiór wydziałów",
+      "description": "Zbiór wydziałów",
+      "default": [],
+      "examples": [
+        [
+          {
+            "phone": "",
+            "email": "",
+            "name": "Ogólny",
+            "domain": "",
+            "location": "",
+            "staff": [
+              {
+                "role_name": "dyrektor",
+                "role_type": "manager",
+                "person_name": "Alicja Bębenek",
+                "photo_url": "",
+                "phone": "",
+                "email": ""
+              }
+            ]
+          }
+        ]
+      ],
+      "additionalItems": true,
+      "items": {
+        "anyOf": [
+          {
+            "$id": "#/properties/departments/items/anyOf/0",
+            "type": "object",
+            "title": "Wydział",
+            "description": "Dane wydziału",
+            "default": {},
+            "examples": [
+              {
+                "phone": "",
+                "email": "",
+                "name": "Ogólny",
+                "domain": "",
+                "location": "",
+                "staff": [
+                  {
+                    "role_name": "dyrektor",
+                    "role_type": "manager",
+                    "person_name": "Alicja Bębenek",
+                    "photo_url": "",
+                    "phone": "",
+                    "email": ""
+                  }
+                ]
+              }
+            ],
+            "required": [
+              "phone",
+              "email",
+              "name",
+              "domain",
+              "location",
+              "staff"
+            ],
+            "additionalProperties": true,
+            "properties": {
+              "phone": {
+                "$id": "#/properties/departments/items/anyOf/0/properties/phone",
+                "type": "string",
+                "title": "Numer telefonu",
+                "description": "Numer telefonu",
+                "default": "",
+                "examples": [
+                  ""
+                ]
+              },
+              "email": {
+                "$id": "#/properties/departments/items/anyOf/0/properties/email",
+                "type": "string",
+                "title": "Adres email",
+                "description": "Adres email",
+                "default": "",
+                "examples": [
+                  ""
+                ]
+              },
+              "name": {
+                "$id": "#/properties/departments/items/anyOf/0/properties/name",
+                "type": "string",
+                "title": "Nazwa",
+                "description": "Nazwa wydziału",
+                "default": "",
+                "examples": [
+                  "Ogólny"
+                ]
+              },
+              "domain": {
+                "$id": "#/properties/departments/items/anyOf/0/properties/domain",
+                "type": "string",
+                "title": "Zakres działalności",
+                "description": "Zakres działalności",
+                "default": "",
+                "examples": [
+                  ""
+                ]
+              },
+              "location": {
+                "$id": "#/properties/departments/items/anyOf/0/properties/location",
+                "type": "string",
+                "title": "Lokalizacja",
+                "description": "Lokalizacja",
+                "default": "",
+                "examples": [
+                  ""
+                ]
+              },
+              "staff": {
+                "$id": "#/properties/departments/items/anyOf/0/properties/staff",
+                "type": "array",
+                "title": "Zbiór pracowników wydziału",
+                "description": "Zbiór pracowników wydziału",
+                "default": [],
+                "examples": [
+                  [
+                    {
+                      "role_name": "dyrektor",
+                      "role_type": "manager",
+                      "person_name": "Alicja Bębenek",
+                      "photo_url": "",
+                      "phone": "",
+                      "email": ""
+                    }
+                  ]
+                ],
+                "additionalItems": true,
+                "items": {
+                  "anyOf": [
+                    {
+                      "$id": "#/properties/departments/items/anyOf/0/properties/staff/items/anyOf/0",
+                      "type": "object",
+                      "title": "Dane pracownika",
+                      "description": "Dane pracownika",
+                      "default": {},
+                      "examples": [
+                        {
+                          "role_name": "dyrektor",
+                          "role_type": "manager",
+                          "person_name": "Alicja Bębenek",
+                          "photo_url": "",
+                          "phone": "",
+                          "email": ""
+                        }
+                      ],
+                      "required": [
+                        "role_name",
+                        "role_type",
+                        "person_name",
+                        "photo_url",
+                        "phone",
+                        "email"
+                      ],
+                      "additionalProperties": true,
+                      "properties": {
+                        "role_name": {
+                          "$id": "#/properties/departments/items/anyOf/0/properties/staff/items/anyOf/0/properties/role_name",
+                          "type": "string",
+                          "title": "Nazwa stanowiska",
+                          "description": "Nazwa stanowiska",
+                          "default": "",
+                          "examples": [
+                            "dyrektor"
+                          ]
+                        },
+                        "role_type": {
+                          "$id": "#/properties/departments/items/anyOf/0/properties/staff/items/anyOf/0/properties/role_type",
+                          "type": "string",
+                          "title": "Rodzaj stanowiska",
+                          "description": "Rodzaj stanowiska",
+                          "default": "",
+                          "examples": [
+                            "manager",
+                            "staff"
+                          ]
+                        },
+                        "person_name": {
+                          "$id": "#/properties/departments/items/anyOf/0/properties/staff/items/anyOf/0/properties/person_name",
+                          "type": "string",
+                          "title": "Imię i nazwisko",
+                          "description": "Imię i nazwisko",
+                          "default": "",
+                          "examples": [
+                            "Alicja Bębenek"
+                          ]
+                        },
+                        "photo_url": {
+                          "$id": "#/properties/departments/items/anyOf/0/properties/staff/items/anyOf/0/properties/photo_url",
+                          "type": "string",
+                          "title": "Adres URL do zdjęcia",
+                          "description": "Adres URL do zdjęcia",
+                          "default": "",
+                          "examples": [
+                            ""
+                          ]
+                        },
+                        "phone": {
+                          "$id": "#/properties/departments/items/anyOf/0/properties/staff/items/anyOf/0/properties/phone",
+                          "type": "string",
+                          "title": "Numer telefonu",
+                          "description": "Numer telefonu",
+                          "default": "",
+                          "examples": [
+                            ""
+                          ]
+                        },
+                        "email": {
+                          "$id": "#/properties/departments/items/anyOf/0/properties/staff/items/anyOf/0/properties/email",
+                          "type": "string",
+                          "title": "Adres email",
+                          "description": "Adres email",
+                          "default": "",
+                          "examples": [
+                            ""
+                          ]
+                        }
+                      }
+                    }
+                  ],
+                  "$id": "#/properties/departments/items/anyOf/0/properties/staff/items"
+                }
+              }
+            }
+          }
+        ],
+        "$id": "#/properties/departments/items"
+      }
+    }
+  }
+}
