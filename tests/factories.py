@@ -41,7 +41,7 @@ class UserFactory(PeeweeModelFactory):
         model = User
         database = db
 
-    name = factory.Faker('name')
+    name = factory.Sequence(lambda n: f'user{n}')
     email = factory.Faker('email')
     password = DEFAULT_PASSWORD
     active = True
@@ -54,7 +54,9 @@ class PageFactory(PeeweeModelFactory):
         model = Page
         database = db
 
-    title = factory.Faker('sentence', nb_words=4)
+    title = factory.Sequence(
+        lambda n: '{0} {1}'.format(n, factory.Faker('sentence', nb_words=4).generate())
+    )
     active = True
     text = factory.Faker('paragraph')
     description = factory.Faker('paragraph')
@@ -87,7 +89,9 @@ class LabelFactory(PeeweeModelFactory):
         model = Label
         database = db
 
-    name = factory.Faker('sentence', nb_words=2)
+    name = factory.Sequence(
+        lambda n: '{0} {1}'.format(n, factory.Faker('sentence', nb_words=2).generate())
+    )
     description = factory.Faker('paragraph')
 
     @factory.lazy_attribute
