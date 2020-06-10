@@ -38,6 +38,7 @@ base_reqs = [
     'keyring',
     'keyrings.cryptfile',
     'texttable',
+    'python-magic',
 ]
 
 test_reqs = [
