@@ -66,5 +66,12 @@ html_static_path = ['_static']
 # -- Extension configuretion -------------------------------------------------
 
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3.7', None)
+    'python': ('https://docs.python.org/3.7', None),
+    'flask': ('https://flask.palletsprojects.com/en/1.1.x', None),
+    'flask_wtf': ('https://flask-wtf.readthedocs.io/en/stable', None),
+    'wtforms': ('https://wtforms.readthedocs.io/en/2.3.x', None),
+    'peewee': ('http://docs.peewee-orm.com/en/latest', None),
 }
+
+autoclass_content = 'both'
+autodoc_member_order = 'groupwise'

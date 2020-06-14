@@ -30,6 +30,7 @@ Dokumentacja programistyczna
     :maxdepth: 2
 
     devguide
+    apidocs
 
 
 Dokumenty ogólne
