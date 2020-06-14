@@ -18,12 +18,16 @@ ACTIVITY_NAME_MAP = {
 
 
 class ColAlign:
+    """Column alignment enum
+    """
     right = 'r'
     center = 'c'
     left = 'l'
 
 
 class ColDataType:
+    """Column data type enum
+    """
     auto = 'a'
     text = 't'
     float = 'f'  # noqa: A003
