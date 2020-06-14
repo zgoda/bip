@@ -177,6 +177,9 @@ W pliku tym należy umieścić poniższą zawartość. Proszę zwrócić uwagę,
     Environment="ENV=production"
     # ustawienie zmiennej z katalogiem plików do pobrania
     Environment="INSTANCE_PATH=/home/mojekonto/bip/instance"
+    # ustawienie zmiennych dot. bazy danych programu
+    Environment="DB_DRIVER=sqlite"
+    Environment="DB_NAME=/home/mojekonto/bip/db.sqlite3"
     # komenda uruchamiająca usługę
     ExecStart=/home/mojekonto/bip/venv/bin/uwsgi --ini /home/mojekonto/bip/bip.ini
 
@@ -293,6 +296,9 @@ Zawartość tego pliku bedzie podobna jak w przypadku uWSGI we wcześniejszym pr
     Environment="ENV=production"
     # ustawienie zmiennej z katalogiem plików do pobrania
     Environment="INSTANCE_PATH=/home/mojekonto/bip/instance"
+    # ustawienie zmiennych dot. bazy danych programu
+    Environment="DB_DRIVER=sqlite"
+    Environment="DB_NAME=/home/mojekonto/bip/db.sqlite3"
     # komenda uruchamiająca usługę
     ExecStart=/home/mojekonto/bip/venv/bin/gunicorn --workers 2 --bind unix:/tmp/bip.sock -m 007 bip.wsgi:application
 
