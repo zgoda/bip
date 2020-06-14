@@ -71,6 +71,7 @@ intersphinx_mapping = {
     'flask_wtf': ('https://flask-wtf.readthedocs.io/en/stable', None),
     'wtforms': ('https://wtforms.readthedocs.io/en/2.3.x', None),
     'peewee': ('http://docs.peewee-orm.com/en/latest', None),
+    'markupsafe': ('https://markupsafe.palletsprojects.com/en/1.1.x', None),
 }
 
 autoclass_content = 'both'
