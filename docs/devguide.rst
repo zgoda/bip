@@ -44,7 +44,7 @@ W tym momencie kod powinien już być uruchamialny, ale wcześniej dobrze będzi
 
     export FLASK_ENV="development"
     export SITE_JSON="${PWD}/conf/site.json"
-    export SQLALCHEMY_DATABASE_URI="sqlite:///${PWD}/db.sqlite3"
+    export DB_NAME="${PWD}/db.sqlite3"
     export SECRET_KEY="losowe znaki"
 
 Zastąp ``losowe znaki`` czymś co jest naprawdę losowe, poniżej przykład.
