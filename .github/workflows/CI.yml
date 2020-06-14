@@ -13,7 +13,7 @@ jobs:
       matrix:
         python-version: [3.7, 3.8]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v2.2.0
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
@@ -22,7 +22,7 @@ jobs:
       id: pip-cache-dir
       run: echo "::set-output name=dir::$(pip cache dir)"
     - name: Cache pip
-      uses: actions/cache@v1
+      uses: actions/cache@v2.0.0
       with:
         path: ${{ steps.pip-cache-dir.outputs.dir }}
         key: pip|${{ matrix.python-version }}|${{ hashFiles('setup.py') }}
