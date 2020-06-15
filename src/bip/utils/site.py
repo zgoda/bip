@@ -104,6 +104,7 @@ class Site:
 
     @classmethod
     def from_dict(cls, d: dict) -> Site:
+        d.pop('$schema', None)
         address = Address(**d.pop('address'))
         contacts = [Contact(**c) for c in d.pop('contacts')]
         departments = [Department.from_dict(data) for data in d.pop('departments')]

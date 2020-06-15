@@ -117,7 +117,6 @@ def configure_database(app: Application):
             'password': os.getenv('DB_PASSWORD')
         }
     db.init(db_name, **kw)
-    db.connect()
 
 
 def configure_hooks(app: Application):
@@ -128,7 +127,7 @@ def configure_hooks(app: Application):
     """
 
     @app.before_first_request
-    def load_site_objects():  # pylint: disable=unused-variable
+    def load_site_objects():
         if app.testing and not os.getenv('SITE_JSON'):
             site = test_site()
         else:
@@ -136,6 +135,15 @@ def configure_hooks(app: Application):
             with open(site_object_path) as fp:
                 site = Site.from_json(fp.read())
         app.site = app.jinja_env.globals['site'] = site
+
+    @app.before_request
+    def db_connect():
+        db.connect(reuse_if_open=True)
+
+    @app.teardown_request
+    def db_close(exc):
+        if not db.is_closed():
+            db.close()
 
 
 def configure_blueprints(app: Application):
