@@ -30,7 +30,7 @@ def contact() -> str:
     return render_template('main/contact.html')
 
 
-@main_bp.route('/changes')
+@main_bp.route('/zmiany')
 def changes() -> str:
     change_list = (
         ChangeRecord.select(ChangeRecord, Page, User)
@@ -45,8 +45,8 @@ def changes() -> str:
     return render_template('main/changes.html', **ctx)
 
 
-@main_bp.route('/<int:page_id>', endpoint='page')
-def page_view(page_id: int) -> Union[str, Response]:
+@main_bp.route('/<slug>', endpoint='page')
+def page_view(slug: str) -> Union[str, Response]:
     Author = User.alias()  # noqa: N806
     Editor = User.alias()  # noqa: N806
     page_obj = or_404(
@@ -56,7 +56,7 @@ def page_view(page_id: int) -> Union[str, Response]:
         .join(Editor, on=(Page.updated_by == Editor.pk))
         .switch(Page)
         .join(ChangeRecord)
-        .where(Page.pk == page_id)
+        .where(Page.slug == slug)
         .peek()
     )
     return render_template(
@@ -64,7 +64,7 @@ def page_view(page_id: int) -> Union[str, Response]:
     )
 
 
-@main_bp.route('/label/<slug>')
+@main_bp.route('/etykieta/<slug>')
 def label_page_list(slug: str) -> Union[str, Response]:
     label = or_404(Label.get_or_none(Label.slug == slug))
     pages = (
@@ -81,7 +81,7 @@ def label_page_list(slug: str) -> Union[str, Response]:
     return render_template('main/label_page_list.html', **ctx)
 
 
-@main_bp.route('/search')
+@main_bp.route('/szukaj')
 def search() -> Union[str, Response]:
     query = request.args.get('q')
     sections = request.args.getlist('d')

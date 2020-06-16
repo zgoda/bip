@@ -10,8 +10,10 @@ class BIPTests:
             'password': password,
         }
         return self.client.post(
-            '/auth/login', data=data, follow_redirects=follow_redirects
+            '/identyfikacja/zaloguj', data=data, follow_redirects=follow_redirects
         )
 
     def logout(self, follow_redirects=True):
-        return self.client.get('/auth/logout', follow_redirects=follow_redirects)
+        return self.client.get(
+            '/identyfikacja/wyloguj', follow_redirects=follow_redirects
+        )

@@ -36,7 +36,7 @@ class TestPageViews(BIPTests):
         page = page_factory(
             title='tytuł strony 1', text='tekst strony 1', created_by=user
         )
-        rv = self.client.get(url_for('main.page', page_id=page.pk))
+        rv = self.client.get(url_for('main.page', slug=page.slug))
         assert f'<h2>{page.title}</h2>' in rv.text
 
     def test_get_with_attachments(self, page_factory, user_factory, attachment_factory):
@@ -45,11 +45,11 @@ class TestPageViews(BIPTests):
             title='tytuł strony 1', text='tekst strony 1', created_by=user
         )
         attachment = attachment_factory(page=page, title='Tytuł załącznika 1')
-        rv = self.client.get(url_for('main.page', page_id=page.pk))
+        rv = self.client.get(url_for('main.page', slug=page.slug))
         assert f'?save={attachment.file_save_as}' in rv.text
 
     def test_get_notfound(self):
-        rv = self.client.get(url_for('main.page', page_id=666))
+        rv = self.client.get(url_for('main.page', slug='does-not-exist'))
         assert rv.status_code == 404
 
 

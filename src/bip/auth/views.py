@@ -6,7 +6,7 @@ from . import auth_bp
 from .forms import LoginForm
 
 
-@auth_bp.route('/login', methods=['POST', 'GET'])
+@auth_bp.route('/zaloguj', methods=['POST', 'GET'])
 def login() -> Response:
     form = None
     if request.method == 'POST':
@@ -26,7 +26,7 @@ def login() -> Response:
     return render_template('auth/login.html', **context)
 
 
-@auth_bp.route('/logout')
+@auth_bp.route('/wyloguj')
 @login_required
 def logout() -> Response:
     user_name = current_user.name

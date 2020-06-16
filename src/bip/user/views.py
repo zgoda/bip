@@ -5,7 +5,7 @@ from . import user_bp
 from .forms import ChangePasswordForm, ProfileForm
 
 
-@user_bp.route('/profile', methods=['POST', 'GET'])
+@user_bp.route('/profil', methods=['POST', 'GET'])
 @login_required
 def profile() -> Response:
     form = None
@@ -24,7 +24,7 @@ def profile() -> Response:
     return render_template('user/profile.html', **ctx)
 
 
-@user_bp.route('/password', methods=['POST', 'GET'])
+@user_bp.route('/haslo', methods=['POST', 'GET'])
 @login_required
 def password_change() -> Response:
     form = None
