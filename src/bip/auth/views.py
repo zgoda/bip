@@ -8,20 +8,18 @@ from .forms import LoginForm
 
 @auth_bp.route('/zaloguj', methods=['POST', 'GET'])
 def login() -> Response:
-    form = None
-    if request.method == 'POST':
-        form = LoginForm()
-        if form.validate_on_submit():
-            user = form.save()
-            if user is None:
-                flash('nieprawidłowe dane logowania', category='danger')
-                return redirect(request.path)
-            login_user(user)
-            session.permanent = True
-            flash(f'użytkownik {user.name} zalogowany pomyślnie', category='success')
-            return redirect(next_redirect('main.home'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = form.save()
+        if user is None:
+            flash('nieprawidłowe dane logowania', category='danger')
+            return redirect(request.path)
+        login_user(user)
+        session.permanent = True
+        flash(f'użytkownik {user.name} zalogowany pomyślnie', category='success')
+        return redirect(next_redirect('main.home'))
     context = {
-        'form': form or LoginForm(),
+        'form': form,
     }
     return render_template('auth/login.html', **context)
 

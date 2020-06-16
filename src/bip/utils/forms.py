@@ -5,7 +5,7 @@ import validators
 from flask import Markup, render_template_string
 from flask_wtf import FlaskForm
 from peewee import Model
-from wtforms.fields import BooleanField, Field
+from wtforms.fields import Field
 from wtforms.validators import ValidationError
 
 
@@ -49,17 +49,6 @@ class Button(Renderable):
         '{{ obj.text }}',
         '</button>',
     ])
-
-
-class ConfirmationForm(FlaskForm):
-    is_confirmed = BooleanField('potwierdź', default=False)
-
-    buttons = [Button(text='potwierdź')]
-
-    def confirm(self) -> bool:
-        if self.is_confirmed.data:
-            return True
-        return False
 
 
 class BaseForm(FlaskForm):

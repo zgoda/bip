@@ -27,17 +27,15 @@ def profile() -> Response:
 @user_bp.route('/haslo', methods=['POST', 'GET'])
 @login_required
 def password_change() -> Response:
-    form = None
-    if request.method == 'POST':
-        form = ChangePasswordForm()
-        if form.validate_on_submit():
-            form.save(current_user)
-            flash(
-                f'hasło użytkownika {current_user.name} zostało pomyślnie zmienione',
-                category='success',
-            )
-            return redirect(url_for('user.profile'))
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        form.save(current_user)
+        flash(
+            f'hasło użytkownika {current_user.name} zostało pomyślnie zmienione',
+            category='success',
+        )
+        return redirect(url_for('.profile'))
     ctx = {
-        'form': form or ChangePasswordForm()
+        'form': form
     }
     return render_template('user/password.html', **ctx)
