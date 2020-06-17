@@ -1,5 +1,7 @@
 {% extends "admin/base.html" %}
 
+{% from "macros/navigation.html" import breadcrumbs %}
+
 {% block headpagetitle %}Etykiety strony {{ page.title }}{% endblock %}
 
 {% block content %}
@@ -43,4 +45,9 @@
 <p>Nie ma żadnych etykiet.</p>
 {% endif %}
 {% endif %}
+{% endblock %}
+
+{% block breadcrumbs %}
+{% set pages = [(url_for('admin.home'), 'Początek'), (url_for('admin.page_list'), 'Lista stron'), (url_for('admin.page_detail', page_pk=page.pk), page.title), (request.path, 'Etykiety')] %}
+{{ breadcrumbs(pages) }}
 {% endblock %}

@@ -1,6 +1,7 @@
 {% extends "admin/base.html" %}
 
 {% from "macros/forms.html" import render_form %}
+{% from "macros/navigation.html" import breadcrumbs %}
 {% import "macros/mde.html" as mde %}
 
 {% block headpagetitle %}Załączniki strony {{ page.title }}{% endblock %}
@@ -29,6 +30,11 @@
 <h3>Dodaj załącznik</h3>
 <p class="small">Maksymalny rozmiar załączanego pliku nie może przekroczyć 32 MB. Aby załączyć większy plik użyj narzędzia administracyjnego z linii poleceń.</p>
 {{ render_form(form, action=request.path, enctype='multipart/form-data') }}
+{% endblock %}
+
+{% block breadcrumbs %}
+{% set pages = [(url_for('admin.home'), 'Początek'), (url_for('admin.page_list'), 'Lista stron'), (url_for('admin.page_detail', page_pk=page.pk), page.title), (request.path, 'Załączniki')] %}
+{{ breadcrumbs(pages) }}
 {% endblock %}
 
 {% block extrahead %}

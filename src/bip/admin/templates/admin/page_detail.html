@@ -1,6 +1,7 @@
 {% extends "admin/base.html" %}
 
 {% from "macros/forms.html" import render_form %}
+{% from "macros/navigation.html" import breadcrumbs %}
 {% import "macros/mde.html" as mde %}
 
 {% block headpagetitle %}Dane strony {{ object.title }}{% endblock %}
@@ -28,6 +29,11 @@
 <p>Nie ma żadnych załączników.</p>
 {% endif %}
 <p><a href="{{ url_for('admin.page_attachments', page_pk=object.pk) }}">Zarządzaj</a></p>
+{% endblock %}
+
+{% block breadcrumbs %}
+{% set pages = [(url_for('admin.home'), 'Początek'), (url_for('admin.page_list'), 'Lista stron'), (request.path, object.title)] %}
+{{ breadcrumbs(pages) }}
 {% endblock %}
 
 {% block extrahead %}

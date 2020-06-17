@@ -2,6 +2,7 @@
 
 {% from "macros/pagination.html" import render_pagination %}
 {% from "macros/forms.html" import render_form %}
+{% from "macros/navigation.html" import breadcrumbs %}
 {% import "macros/mde.html" as mde %}
 
 {% block headpagetitle %}Strony{% endblock %}
@@ -37,6 +38,11 @@
 {% endif %}
 <h2>Nowa strona</h2>
 {{ render_form(form, action=request.path) }}
+{% endblock %}
+
+{% block breadcrumbs %}
+{% set pages = [(url_for('admin.home'), 'Początek'), (request.path, 'Lista stron')] %}
+{{ breadcrumbs(pages) }}
 {% endblock %}
 
 {% block extrahead %}
