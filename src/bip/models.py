@@ -89,9 +89,12 @@ class Page(Model):
     updated = DateTimeField(default=datetime.utcnow)
 
     def labels(self, order=None):
-        q = PageLabel.select(
-            PageLabel, Label
-        ).join(Label).switch(PageLabel).where(PageLabel.page == self)
+        q = (
+            PageLabel.select(PageLabel, Label)
+            .join(Label)
+            .switch(PageLabel)
+            .where(PageLabel.page == self)
+        )
         if order is not None:
             q = q.order_by(order)
         return q

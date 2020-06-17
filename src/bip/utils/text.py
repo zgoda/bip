@@ -21,10 +21,7 @@ def yesno(value: bool, capitalize: bool = True) -> str:
     :return: textual representation of Boolean value
     :rtype: str
     """
-    if bool(value):
-        ret = VALUE_YES
-    else:
-        ret = VALUE_NO
+    ret = VALUE_YES if value else VALUE_NO
     if capitalize:
         return ret.capitalize()
     return ret

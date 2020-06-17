@@ -86,7 +86,7 @@ def paginate(
         ) -> Pagination:
     """Create pagination object using sane defaults.
 
-    :param query: [description]
+    :param query: query to paginate results
     :type query: peewee.Query
     :param page: page number, will be fetched from request if omitted, defaults to
                  None
