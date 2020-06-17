@@ -1,0 +1,9 @@
+{% macro breadcrumbs(pages) %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    {% for url, title in pages %}
+    <li class="breadcrumb-item{% if loop.last %} active{% endif %}"{% if loop.last %} aria-current="page"{% endif %}>{% if not loop.last %}<a href="{{ url }}">{% endif %}{{ title }}{% if not loop.last %}</a>{% endif %}</li>
+    {% endfor %}
+  </ol>
+</nav>
+{% endmacro %}

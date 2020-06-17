@@ -1,10 +1,16 @@
 {% extends "admin/base.html" %}
 
 {% from "macros/forms.html" import render_form %}
+{% from "macros/navigation.html" import breadcrumbs %}
 
 {% block headpagetitle %}Dane użytkownika {{ object.name }}{% endblock %}
 
 {% block content %}
 <h2>Dane użytkownika {{ object.name }}</h2>
 {{ render_form(form, action=request.path) }}
+{% endblock %}
+
+{% block breadcrumbs %}
+{% set pages = [(url_for('admin.home'), 'Początek'), (url_for('admin.user_list'), 'Lista kont'), (request.path, object.name)] %}
+{{ breadcrumbs(pages) }}
 {% endblock %}

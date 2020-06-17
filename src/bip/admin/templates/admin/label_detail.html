@@ -1,13 +1,19 @@
 {% extends "admin/base.html" %}
 
 {% from "macros/forms.html" import render_form %}
+{% from "macros/navigation.html" import breadcrumbs %}
 {% import "macros/mde.html" as mde %}
 
-{% block headpagetitle %}Dane etykiety {{ object.title }}{% endblock %}
+{% block headpagetitle %}Dane etykiety {{ object.name }}{% endblock %}
 
 {% block content %}
-<h2>Dane etykiety {{ object.title }}</h2>
+<h2>Dane etykiety {{ object.name }}</h2>
 {{ render_form(form, action=request.path) }}
+{% endblock %}
+
+{% block breadcrumbs %}
+{% set pages = [(url_for('admin.home'), 'Początek'), (url_for('admin.label_list'), 'Lista etykiet'), (request.path, object.name)] %}
+{{ breadcrumbs(pages) }}
 {% endblock %}
 
 {% block extrahead %}

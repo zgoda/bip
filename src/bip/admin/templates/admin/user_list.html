@@ -1,6 +1,7 @@
 {% extends "admin/base.html" %}
 
 {% from "macros/pagination.html" import render_pagination %}
+{% from "macros/navigation.html" import breadcrumbs %}
 
 {% block headpagetitle %}Konta użytkowników{% endblock %}
 
@@ -31,4 +32,9 @@
 </table>
 {{ render_pagination(pagination) }}
 {% endif %}
+{% endblock %}
+
+{% block breadcrumbs %}
+{% set pages = [(url_for('admin.home'), 'Początek'), (request.path, 'Lista kont')] %}
+{{ breadcrumbs(pages) }}
 {% endblock %}
