@@ -3,7 +3,8 @@
   background-position-x: left;
   background-repeat: no-repeat;
   height: 120px;
-  padding-left: 350px;
+  padding-left: 370px;
+  padding-top: 2rem;
 }
 
 .help-block, .help {
@@ -14,5 +15,9 @@
 }
 
 .required label {
+  font-weight: bold;
+}
+
+.nav-item a.active {
   font-weight: bold;
 }

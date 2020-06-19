@@ -14,24 +14,27 @@
   <body role="document">
     <div class="container">
       <div class="row my-2">
-        <div class="col-12" id="hdr_main">
+        <div class="col-md">
+          <img src="/static/img/logo_120.png" alt="Biuletyn Informacji Publicznej">
+        </div>
+        <div class="col">
           <h1>{{ site.name }}</h1>
         </div>
       </div>
       <div class="row my-2">
-        <div class="col-12">
+        <div class="col">
           <ul class="nav justify-content-end">
             <li class="nav-item">
-              <a class="nav-link {% if request.url_rule.endpoint == 'main.home' %}active{% endif %}" href="/">Strona główna</a>
+              <a class="nav-link{% if request.url_rule.endpoint == 'main.home' %} active{% endif %}" href="/">Strona główna</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link {% if request.url_rule.endpoint == 'main.basic_information' %}active{% endif %}" href="{{ url_for('main.basic_information') }}">Informacje podstawowe</a>
+              <a class="nav-link{% if request.url_rule.endpoint == 'main.basic_information' %} active{% endif %}" href="{{ url_for('main.basic_information') }}">Informacje podstawowe</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link {% if request.url_rule.endpoint == 'main.staff' %}active{% endif %}" href="{{ url_for('main.staff') }}">Pracownicy</a>
+              <a class="nav-link{% if request.url_rule.endpoint == 'main.staff' %} active{% endif %}" href="{{ url_for('main.staff') }}">Pracownicy</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link {% if request.url_rule.endpoint == 'main.contact' %}active{% endif %}" href="{{ url_for('main.contact') }}">Kontakt</a>
+              <a class="nav-link{% if request.url_rule.endpoint == 'main.contact' %} active{% endif %}" href="{{ url_for('main.contact') }}">Kontakt</a>
             </li>
             <li class="nav-item"><form method="GET" action="{{ url_for('main.search') }}"><input class="form-control form-control-sm" name="q" type="text" placeholder="szukaj..."><input type="submit" style="position: absolute; left: -9999px"/></form></li>
           </ul>
@@ -41,7 +44,7 @@
       {% with flashes = get_flashed_messages(with_categories=True) %}
       {% if flashes %}
       <div class="row my-2">
-        <div class="col-12">
+        <div class="col">
           {% for category, flash in flashes %}
           <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
             {{ flash }}
@@ -53,10 +56,18 @@
       {% endif %}
       {% endwith %}
 
-      <div class="row my-2">
+      <div class="row my-2 pt-4">
+
+        <!-- content area -->
+        <div class="col col-lg-9 order-last">
+          {% block breadcrumbs %}
+          {% endblock %}
+          {% block content %}
+          {% endblock %}
+        </div>
 
         <!-- sidebar -->
-        <div class="col col-md-3">
+        <div class="col col-lg-3">
           <h6>Strony</h6>
           <ul class="nav flex-column">
             {% for page in pages %}
@@ -95,14 +106,6 @@
             {% endfor %}
           </ul>
           {% endif %}
-        </div>
-
-        <!-- content area -->
-        <div class="col col-md-9">
-          {% block breadcrumbs %}
-          {% endblock %}
-          {% block content %}
-          {% endblock %}
         </div>
 
       </div>

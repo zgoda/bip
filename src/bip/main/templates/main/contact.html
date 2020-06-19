@@ -7,6 +7,6 @@
 {% block content %}
 <h2>Informacje kontaktowe</h2>
 {% for contact in site.contacts %}
-{{ render_dl(contact.basic_information) }}
+{{ render_dl(contact.basic_information, render_empty=False) }}
 {% endfor %}
 {% endblock %}
