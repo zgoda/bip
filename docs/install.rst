@@ -17,6 +17,15 @@ W nawiasie podane są wartości *zadowalające*. Wartości minimalne dotyczą se
 * RAM: 1 GB (2 GB)
 * wolna przestrzeń dyskowa: 2 GB
 
+Włączenie HTTPS/SSL
+-------------------
+
+Ze względów bezpieczeństwa oraz wizerunkowych polecam zabezpiecznie dostępu do aplikacji poprzez skierowanie całej komunikacji z serwerem WWW przez kanał bezpieczny. Konkretna konfiguracja powinna zostać przeprowadzona zgodnie z instrukcją dla wybranego serwera WWW otrzymaną od dostawcy certyfikatu. W przypadku nie posiadania dedykowanego certyfikatu najlepszym wyjściem będzie użycie darmowego (co bynajmniej nie oznacza gorszego) certyfikatu od `Let's Encrypt <https://letsencrypt.org/>`_. Instalacja certyfikatu i konfiguracja serwera WWW są przeprowadzane przy użyciu `programu Certbot <https://certbot.eff.org/>`_, którego dokumentacja przeprowadzi przez proces krok po kroku.
+
+.. image:: /_static/certbot_nginx_debian10.png
+
+Certbot dostarcza zautomatyzowane procedury instalacji i odnowienia certyfikatu SSL dla serwerów WWW Apache i Nginx uruchomionych na wielu popularnych dystrybucjach Linuksa.
+
 Instalacja aplikacji
 --------------------
 
@@ -99,14 +108,16 @@ W ten sposób zainstalowana aplikacja jest gotowa do uruchmonienia pod kontrolą
 Instalacja, konfiguracja i uruchomienie serwera aplikacji WSGI
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Najpopularniejszymi serwerami aplikacji WSGI są uWSGI i Gunicorn. Każdy z nich dostarcza różnych możliwości uruchomienia aplikacji:
+Najpopularniejszymi serwerami aplikacji WSGI są uWSGI i Gunicorn (ale oczywiście nie jedynymi). Każdy z nich dostarcza różnych możliwości uruchomienia aplikacji:
 
-* uWSGI: jako samodzielny proces i zintegrowany z serwerem WWW Nginx
+* uWSGI: jako samodzielny proces lub zintegrowany z serwerem WWW Nginx
 * Gunicorn jako samodzielny proces
 
-Uruchomienie jako samodzielny proces daje możliwość wykorzystania dowolnego serwera WWW jako *reverse proxy*, natomiast ścisła integracja z Nginx ułatwia konfigurację.
+Od strony praktycznej używając poniżej omówionych sposobów nie ma większych różnic w jaki sposób serwer aplikacji będzie się komunikował z serwerem WWW.
 
 W ramach przykładu pokazane zostanie uruchomienie aplikacji pod kontrolą uWSGI działającego w integracji z serwerem WWW Nginx oraz pod kontrolą Gunicorn z serwerem Nginx działającym jako *reverse proxy*. Przykładowe pliki konfiguracyjne można pobrać ze `źródłowego repozytorium Git projektu <https://github.com/zgoda/bip/tree/master/conf>`_.
+
+Ze względu na prostszą konfigurację osobom nieobeznanym proponuję użycie Gunicorn jako serwera WSGI i Nginx jako serwera WWW.
 
 uWSGI + Nginx
 ~~~~~~~~~~~~~
@@ -207,7 +218,7 @@ Ostatnim krokiem jest konfiguracja serwera WWW Nginx aby komunikował się z apl
 
     $ sudo vim /etc/nginx/sites-available/bip
 
-W pliku tym należy umieścić poniższą zawartość. ``bip.domena.pl`` oraz ``mojekonto`` należy zastąpić rzeczywistymi wartościami, tj. nazwą domenową serwera oraz prawdziwą nazwą konta użytkownika, na którym została zainstalowana aplikacja.
+W pliku tym należy umieścić poniższą zawartość. ``bip.domena.pl`` oraz ``mojekonto`` należy zastąpić rzeczywistymi wartościami, tj. nazwą domenową serwera skonfigurowaną w ustawieniach DNS oraz prawdziwą nazwą konta użytkownika, na którym została zainstalowana aplikacja.
 
 .. code-block:: nginx
 
@@ -290,6 +301,8 @@ Zawartość tego pliku bedzie podobna jak w przypadku uWSGI we wcześniejszym pr
     User=mojekonto
     # grupa www-data jest również używana przez Nginx
     Group=www-data
+    # ustawienie katalogu startowego uruchomionego procesu aplikacji
+    WorkingDirectory=/home/mojekonto/bip
     # ustawienie zmiennej ścieżki wyszukiwania programów
     Environment="PATH=/home/mojekonto/bip/venv/bin"
     # ustawienie zmiennej rodzaju instancji
@@ -300,7 +313,7 @@ Zawartość tego pliku bedzie podobna jak w przypadku uWSGI we wcześniejszym pr
     Environment="DB_DRIVER=sqlite"
     Environment="DB_NAME=/home/mojekonto/bip/db.sqlite3"
     # komenda uruchamiająca usługę
-    ExecStart=/home/mojekonto/bip/venv/bin/gunicorn --workers 2 --bind unix:/tmp/bip.sock -m 007 bip.wsgi:application
+    ExecStart=/home/mojekonto/bip/venv/bin/gunicorn --workers 2 --preload --bind unix:/tmp/bip.sock -m 007 bip.wsgi:application
 
     [Install]
     # w którym momencie włączyć usługę, multi-user to ostatni krok
@@ -326,7 +339,7 @@ Ostatnim krokiem jest konfiguracja serwera WWW Nginx aby komunikował się z apl
 
     $ sudo vim /etc/nginx/sites-available/bip
 
-W pliku tym należy umieścić poniższą zawartość. ``bip.domena.pl`` oraz ``mojekonto`` należy zastąpić rzeczywistymi wartościami, tj. nazwą domenową serwera oraz prawdziwą nazwą konta użytkownika, na którym została zainstalowana aplikacja.
+W pliku tym należy umieścić poniższą zawartość. ``bip.domena.pl`` oraz ``mojekonto`` należy zastąpić rzeczywistymi wartościami, tj. nazwą domenową serwera skonfigurowaną w ustawieniach DNS oraz prawdziwą nazwą konta użytkownika, na którym została zainstalowana aplikacja.
 
 .. code-block:: nginx
 
@@ -339,7 +352,7 @@ W pliku tym należy umieścić poniższą zawartość. ``bip.domena.pl`` oraz ``
             rewrite ^/files/(.*)$ /attachments/$1 last;
             # włączenie proxy
             include proxy_params;
-            proxy_pass http://unix:/tmp/bip.sock;
+            proxy_pass http://unix:/tmp/bip.sock:;
         }
 
         # reguła dla zasobów statycznych

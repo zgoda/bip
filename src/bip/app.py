@@ -1,6 +1,6 @@
+import logging
 import os
 import tempfile
-from logging.config import dictConfig
 from typing import Optional
 
 import keyring
@@ -42,6 +42,7 @@ def make_app(env: Optional[str] = None) -> Application:
     with app.app_context():
         if flask_environment == 'development' or app.testing:
             register_development_routes(app)
+        configure_logging_handler(app)
         configure_database(app)
         configure_extensions(app)
         configure_templating(app)
@@ -83,6 +84,19 @@ def configure_app(app: Application, env: Optional[str]):
             app.config.from_object(f'bip.config_{env}')
         except ImportStringError:
             app.logger.info(f'no environment config for {env}')
+
+
+def configure_logging_handler(app: Application):
+    """Bind application logging to Gunicorn handler.
+
+    :param app: application object
+    :type app: Application
+    """
+    if app.debug or app.testing:
+        return
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
 
 
 def configure_database(app: Application):
@@ -188,30 +202,6 @@ def configure_templating(app: Application):
     app.jinja_env.filters.update(extra_filters())
 
 
-def configure_logging():
-    """Configure application logging on prod.
-    """
-    dictConfig({
-        'version': 1,
-        'formatters': {
-            'default': {
-                'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s'
-            }
-        },
-        'handlers': {
-            'wsgi': {
-                'class': 'logging.StreamHandler',
-                'stream': 'ext://flask.logging.wsgi_errors_stream',
-                'formatter': 'default',
-            }
-        },
-        'root': {
-            'level': 'INFO',
-            'handlers': ['wsgi'],
-        },
-    })
-
-
 def configure_error_handlers(app: Application):
     """Configure global error handlers.
 
@@ -230,3 +220,28 @@ def configure_error_handlers(app: Application):
     @app.errorhandler(500)
     def server_error_page(error):  # pylint: disable=unused-variable
         return render_template('errors/500.html'), 500
+
+
+def configure_logging():
+    """Configure application logging on prod. This configuration is
+    overwritten if running under Gunicorn.
+    """
+    logging.dictConfig({
+        'version': 1,
+        'formatters': {
+            'default': {
+                'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s'
+            }
+        },
+        'handlers': {
+            'wsgi': {
+                'class': 'logging.StreamHandler',
+                'stream': 'ext://flask.logging.wsgi_errors_stream',
+                'formatter': 'default',
+            }
+        },
+        'root': {
+            'level': 'INFO',
+            'handlers': ['wsgi'],
+        },
+    })

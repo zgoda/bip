@@ -101,9 +101,6 @@ setup(
     ],
     install_requires=base_reqs,
     extras_require={
-        'prod': [
-            'uwsgi',
-        ],
         'dev': dev_reqs,
         'test': test_reqs,
         'docs': docs_reqs,
