@@ -87,7 +87,8 @@ def configure_app(app: Application, env: Optional[str]):
 
 
 def configure_logging_handler(app: Application):
-    """Bind application logging to Gunicorn handler.
+    """Bind application logging to Gunicorn handler. This is done only in
+    production and only if Gunicorn logger has any handlers defined.
 
     :param app: application object
     :type app: Application
@@ -95,8 +96,9 @@ def configure_logging_handler(app: Application):
     if app.debug or app.testing:
         return
     gunicorn_logger = logging.getLogger('gunicorn.error')
-    app.logger.handlers = gunicorn_logger.handlers
-    app.logger.setLevel(gunicorn_logger.level)
+    if gunicorn_logger.handlers:
+        app.logger.handlers = gunicorn_logger.handlers
+        app.logger.setLevel(gunicorn_logger.level)
 
 
 def configure_database(app: Application):
@@ -118,6 +120,7 @@ def configure_database(app: Application):
                 'cache_size': -1 * 64000,
                 'foreign_keys': 1,
                 'ignore_check_constraints': 0,
+                'synchronous': 0,
             }
         }
         if db_name is None:
@@ -226,7 +229,7 @@ def configure_logging():
     """Configure application logging on prod. This configuration is
     overwritten if running under Gunicorn.
     """
-    logging.dictConfig({
+    logging.config.dictConfig({
         'version': 1,
         'formatters': {
             'default': {
