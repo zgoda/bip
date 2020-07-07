@@ -119,6 +119,20 @@ W ramach przykładu pokazane zostanie uruchomienie aplikacji pod kontrolą uWSGI
 
 Ze względu na prostszą konfigurację osobom nieobeznanym proponuję użycie Gunicorn jako serwera WSGI i Nginx jako serwera WWW.
 
+Każdy z poniższych przykładów ładuje część ustawień ze zmiennych środowiskowych, które procesom aplikacji są dostarczane przez zarządcę, w naszym przypadku ``systemd``. Zmienne te są ładowane z pliku, którego zawartość powinna wyglądać tak jak poniżej (``mojekonto`` należy w nim zamienić na rzeczywistą nazwę konta użytkownika, na którym będzie uruchomiona aplikacja):
+
+.. code-block:: shell
+
+    FLASK_ENV="production"
+
+    NSTANCE_PATH="/home/mojekonto/bip/instance"
+
+    SITE_JSON="/home/mojekonto/bip/conf/site.json"
+    DB_NAME="/home/mojekonto/bip/db.sqlite3"
+    DB_DRIVER="sqlite"
+
+Plik ten należy umieścić w miejscu dostępnym dla zarządcy procesów, np w ``/home/mojekonto/bip``.
+
 uWSGI + Nginx
 ~~~~~~~~~~~~~
 
@@ -182,17 +196,12 @@ W pliku tym należy umieścić poniższą zawartość. Proszę zwrócić uwagę,
     User=mojekonto
     # grupa www-data jest również używana przez Nginx
     Group=www-data
-    # ustawienie zmiennej ścieżki wyszukiwania programów
-    Environment="PATH=/home/mojekonto/bip/venv/bin"
-    # ustawienie zmiennej rodzaju instancji
-    Environment="ENV=production"
-    # ustawienie zmiennej z katalogiem plików do pobrania
-    Environment="INSTANCE_PATH=/home/mojekonto/bip/instance"
-    # ustawienie zmiennych dot. bazy danych programu
-    Environment="DB_DRIVER=sqlite"
-    Environment="DB_NAME=/home/mojekonto/bip/db.sqlite3"
+    # załadowanie zmiennych środowiskowych z pliku
+    EnvironmentFile="/home/mojekonto/bip/environment"
     # komenda uruchamiająca usługę
     ExecStart=/home/mojekonto/bip/venv/bin/uwsgi --ini /home/mojekonto/bip/bip.ini
+    # warunek restartu usługi - zawsze
+    Restart=always
 
     [Install]
     # w którym momencie włączyć usługę, multi-user to ostatni krok
@@ -301,19 +310,14 @@ Zawartość tego pliku bedzie podobna jak w przypadku uWSGI we wcześniejszym pr
     User=mojekonto
     # grupa www-data jest również używana przez Nginx
     Group=www-data
-    # ustawienie katalogu startowego uruchomionego procesu aplikacji
-    WorkingDirectory=/home/mojekonto/bip
-    # ustawienie zmiennej ścieżki wyszukiwania programów
-    Environment="PATH=/home/mojekonto/bip/venv/bin"
+    # załadowanie zmiennych środowiskowych z pliku
+    EnvironmentFile="/home/mojekonto/bip/environment"
     # ustawienie zmiennej rodzaju instancji
     Environment="ENV=production"
-    # ustawienie zmiennej z katalogiem plików do pobrania
-    Environment="INSTANCE_PATH=/home/mojekonto/bip/instance"
-    # ustawienie zmiennych dot. bazy danych programu
-    Environment="DB_DRIVER=sqlite"
-    Environment="DB_NAME=/home/mojekonto/bip/db.sqlite3"
     # komenda uruchamiająca usługę
     ExecStart=/home/mojekonto/bip/venv/bin/gunicorn --workers 2 --preload --bind unix:/tmp/bip.sock -m 007 bip.wsgi:application
+    # warunek restartu usługi - zawsze
+    Restart=always
 
     [Install]
     # w którym momencie włączyć usługę, multi-user to ostatni krok
