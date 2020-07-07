@@ -5,9 +5,10 @@ After=network.target
 [Service]
 User=mojekonto
 Group=www-data
-Environment="PATH=/home/mojekonto/bip/venv/bin"
-Environment="ENV=production"
-ExecStart=/home/mojekonto/bip/venv/bin/gunicorn --workers 2 --bind unix:/tmp/bip.sock -m 007 bip.wsgi:application
+WorkingDirectory=/home/mojekonto/bip
+EnvironmentFile=/home/mojekonto/bip/environment
+ExecStart=/home/mojekonto/bip/venv/bin/gunicorn --preload --workers 2 --bind unix:/tmp/bip.sock -m 007 bip.wsgi:application
+Restart=always
 
 [Install]
 WantedBy=multi-user.target

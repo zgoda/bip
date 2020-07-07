@@ -5,9 +5,10 @@ After=network.target
 [Service]
 User=mojekonto
 Group=www-data
-Environment="PATH=/home/mojekonto/bip/venv/bin"
-Environment="ENV=production"
+WorkingDirectory=/home/mojekonto/bip
+EnvironmentFile=/home/mojekonto/bip/environment
 ExecStart=/home/mojekonto/bip/venv/bin/uwsgi --ini /home/mojekonto/bip/bip.ini
+Restart=always
 
 [Install]
 WantedBy=multi-user.target

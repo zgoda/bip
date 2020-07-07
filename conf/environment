@@ -1,0 +1,5 @@
+FLASK_ENV="production"
+
+SITE_JSON="/home/mojekonto/bip/conf/site.json"
+DB_NAME="/home/mojekonto/bip/db.sqlite3"
+DB_DRIVER="sqlite"
