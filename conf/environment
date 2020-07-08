@@ -1,7 +1,8 @@
 FLASK_ENV="production"
 
-NSTANCE_PATH="/home/mojekonto/bip/instance"
+INSTANCE_PATH="/home/mojekonto/bip/instance"
 
 SITE_JSON="/home/mojekonto/bip/conf/site.json"
+
 DB_NAME="/home/mojekonto/bip/db.sqlite3"
 DB_DRIVER="sqlite"

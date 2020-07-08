@@ -45,6 +45,8 @@ Oprogramowanie opcjonalne
 
 * serwer bazy danych (PostgreSQL lub MySQL)
 
+Jeszcze słówko na temat przechowywania danych przez aplikację. Decyzję o tym, czy używać bazy serwerowej jak PostgreSQL czy MySQL proszę podjąć po dokonaniu oceny zarówno docelowej wielkości serwisu, jak i tego jak będzie on obsługiwany od strony edytorskiej. W sytuacji gdy serwis będzie miał jednego lub dwóch edytorów, którzy dodatkowo rzadko będą prowadzić edycję zawartości jednocześnie, a ilość stron nie przekroczy 1000, serwerowa baza danych będzie wytaczaniem armaty na muchy. W tej sytuacji zupełnie dobrze poradzi sobie wbudowana baza SQLite, która ma ten wielki plus, że jest całkowicie bezobsługowa. Właściwie jedynym przypadkiem kiedy **konieczne** będzie użycie bazy serwerowej będzie przypadek uruchamiania aplikacji w kilku instancjach działających na oddzielnych maszynach (fizycznych lub wirtualnych). 
+
 Instalacja aplikacji krok po kroku
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
