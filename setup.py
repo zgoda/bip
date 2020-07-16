@@ -57,7 +57,7 @@ dev_reqs = [
     'ipython',
     'ipdb',
     'pip',
-    'setuptools',
+    'setuptools<49.2',
     'wheel',
     'flake8',
     'flake8-builtins',
