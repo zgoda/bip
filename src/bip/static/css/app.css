@@ -1,10 +1,7 @@
-#hdr_main {
-  background-image: url(/static/img/logo_120.png);
-  background-position-x: left;
-  background-repeat: no-repeat;
-  height: 120px;
-  padding-left: 370px;
-  padding-top: 2rem;
+#logo {
+  margin: 0 auto;
+  display: block;
+  width: 100%;
 }
 
 .help-block, .help {
