@@ -4,7 +4,7 @@ import tempfile
 from typing import Optional
 
 import keyring
-from flask import render_template, request, send_from_directory
+from flask import render_template, send_from_directory
 from keyrings.cryptfile.cryptfile import CryptFileKeyring
 from werkzeug.utils import ImportStringError
 
@@ -63,11 +63,7 @@ def register_development_routes(app: Application):
     @app.route('/files/<filename>', endpoint='attachment')
     def serve_attachment(filename):
         dir_name = os.path.join(app.instance_path, app.config['ATTACHMENTS_DIR'])
-        attachment_filename = request.args.get('save')
-        kw = {}
-        if attachment_filename:
-            kw['attachment_filename'] = attachment_filename
-        return send_from_directory(dir_name, filename, as_attachment=True, **kw)
+        return send_from_directory(dir_name, filename, as_attachment=True)
 
 
 def configure_app(app: Application, env: Optional[str]):
@@ -191,7 +187,7 @@ def configure_extensions(app: Application):
     login_manager.login_message = 'Musisz się zalogować by uzyskać dostęp do tej strony'
 
     @login_manager.user_loader
-    def get_user(userid: str) -> bool:  # pylint: disable=unused-variable
+    def get_user(userid: str) -> Optional[User]:  # pylint: disable=unused-variable
         return User.get_or_none(User.pk == userid)
 
 

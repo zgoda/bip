@@ -14,7 +14,7 @@
 <h3>Załączniki</h3>
 <ul>
   {% for attachment in page.attachments %}
-  <li><a href="{{ url_for('attachment', filename=attachment.filename, save=attachment.file_save_as) }}">{{ attachment.title }}</a> ({{ attachment.file_type }}, {{ attachment.file_size }} bajtów)</li>
+  <li><a href="/files/{{ attachment.filename }}">{{ attachment.title }}</a> ({{ attachment.file_type }}, {{ attachment.file_size }} bajtów)</li>
   {% endfor %}
 </ul>
 {% endif %}

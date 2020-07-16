@@ -46,7 +46,7 @@ class TestPageViews(BIPTests):
         )
         attachment = attachment_factory(page=page, title='Tytuł załącznika 1')
         rv = self.client.get(url_for('main.page', slug=page.slug))
-        assert f'?save={attachment.file_save_as}' in rv.text
+        assert f'href="/files/{attachment.filename}"' in rv.text
 
     def test_get_notfound(self):
         rv = self.client.get(url_for('main.page', slug='does-not-exist'))
