@@ -23,7 +23,9 @@ def find_version(*where):
 long_description = read('README.rst')
 
 base_reqs = [
-    'Flask',
+    'Flask<2',
+    'Jinja2<3',
+    'itsdangerous<2',
     'PeeWee',
     'Flask-Login',
     'Flask-WTF',
