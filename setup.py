@@ -25,7 +25,7 @@ long_description = read('README.rst')
 base_reqs = [
     'Flask<2',
     'Jinja2<3',
-    'itsdangerous<2',
+    'MarkupSafe<2',
     'PeeWee',
     'Flask-Login',
     'Flask-WTF',
