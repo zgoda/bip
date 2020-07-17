@@ -26,6 +26,7 @@ base_reqs = [
     'Flask<2',
     'Jinja2<3',
     'MarkupSafe<2',
+    'itsdangerous<2',
     'PeeWee',
     'Flask-Login',
     'Flask-WTF',
