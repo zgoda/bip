@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>{% block headpagetitle %}{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="{% block pagedescription %}{% endblock %}">
     <link rel="stylesheet" href="/static/vendor/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/vendor/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="/static/css/app.css">
@@ -66,6 +67,7 @@
       {% endif %}
       {% endwith %}
 
+      <!-- main page content -->
       <div class="row my-2 pt-4">
 
         <!-- content area -->

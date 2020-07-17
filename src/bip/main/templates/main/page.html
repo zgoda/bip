@@ -2,6 +2,8 @@
 
 {% block headpagetitle %}Strona: {{ page.title }}{% endblock %}
 
+{% block pagedescription %}{{ page.description }}{% endblock %}
+
 {% block content %}
 <h2>{{ page.title }}</h2>
 {{ page.text_html|safe }}
@@ -19,7 +21,7 @@
 </ul>
 {% endif %}
 <hr>
-<table class="table table-bordered">
+<table class="table table-bordered table-sm">
   <tr>
     <td>Utworzona</td>
     <td>{{ page.created|datetimeformat(format='short') }}, {{ page.created_by.name }}</td>

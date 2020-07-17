@@ -35,8 +35,12 @@ class PageForm(ObjectForm):
         'tekst', validators=[InputRequired()],
         description='treść strony zapisana przy użyciu Markdown',
     )
-    description = TextAreaField('opis')
-    active = BooleanField('aktywna')
+    description = TextAreaField(
+        'opis', description='opis strony indeksowany przez wyszukiwarki internetowe'
+    )
+    active = BooleanField(
+        'aktywna', description='strony nieaktywne są dostępne wyłącznie w archiwum'
+    )
     main = BooleanField(
         'główna', description='czy strona ma być widoczna na liście stron w menu'
     )

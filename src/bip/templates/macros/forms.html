@@ -1,33 +1,66 @@
-{% from 'bootstrap/form.html' import form_errors, render_field %}
+{% from 'bootstrap/form.html' import form_errors %}
 
-{% macro render_form_fields(form, form_type="horizontal", horizontal_columns=('sm', 2, 10)) %}
-  {% set hints = kwargs.pop('hints', None) %}
+{% macro field_description(field) %}
+{% if field.errors %}
+{% for error in field.errors %}
+<div class="invalid-feedback d-block">{{ error }}</div>
+{% endfor %}
+{% else %}
+{% if field.description %}
+<small class="form-text text-muted">{{ field.description|safe }}</small>
+{% endif %}
+{% endif %}
+{% endmacro %}
+
+{% macro render_field(field) %}
+{% set is_checkbox = field.widget.input_type == 'checkbox' %}
+{% set is_radio = field.widget.input_type == 'radio' %}
+{% set is_file = field.widget.input_type == 'file' %}
+{% set is_required = field.flags.required %}
+{% set has_errors = field.errors %}
+<div class="form-group row{% if is_required %} required{% endif %}">
+  {% if not (is_radio or is_checkbox) %}
+  <label for="{{ field.id }}" class="col-sm-2 col-form-label">{{ field.label.text|safe }}</label>
+  {% endif %}
+  {% if not is_radio %}
+  <div class="col-sm-10{% if is_checkbox %} offset-sm-2{% endif %}">
+    {% if is_checkbox %}
+    <div class="form-check">
+      {% if has_errors %}
+      {{ field(class_='form-check-input is-invalid') }}
+      {% else %}
+      {{ field(class_='form-check-input') }}
+      {% endif %}
+      <label class="form-check-label" for="{{ field.id }}">{{ field.label.text|safe }}</label>
+    </div>
+    {% else %}
+    {% if is_file %}
+    {% if has_errors %}
+    {{ field(class_='form-control-file is-invalid') }}
+    {% else %}
+    {{ field(class_='form-control-file is-valid') }}
+    {% endif %}
+    {% else %}
+    {% if has_errors %}
+    {{ field(class_='form-control is-invalid') }}
+    {% else %}
+    {{ field(class_='form-control') }}
+    {% endif %}
+    {% endif %}
+    {% endif %}
+    {{ field_description(field) }}
+  </div>
+  {% endif %}
+</div>
+{% endmacro %}
+
+{% macro render_form_fields(form) %}
   {{ form.hidden_tag() }}
   {{ form_errors(form, hiddens='only') }}
   {% for field in form %}
-    {% if not bootstrap_is_hidden_field(field) %}
-      {% if field.type == 'DecimalField' %}
-        {{ render_field(
-          field,
-          form_type=form_type,
-          horizontal_columns=horizontal_columns,
-          button_map=button_map,
-          step=pow(10, field.places * -1)) }}
-      {% elif field.type == 'TextAreaWithHintsField' and hints %}
-        {{ render_field(
-          field,
-          form_type=form_type,
-          horizontal_columns=horizontal_columns,
-          button_map=button_map,
-          hints=hints) }}
-      {% else %}
-        {{ render_field(
-          field,
-          form_type=form_type,
-          horizontal_columns=horizontal_columns,
-          button_map=button_map) }}
-        {% endif %}
-    {% endif %}
+  {% if not bootstrap_is_hidden_field(field) %}
+    {{ render_field(field) }}
+  {% endif %}
   {% endfor %}
 {% endmacro %}
 
@@ -42,11 +75,10 @@
 {% endmacro %}
 
 {% macro render_form(form, action) %}
-{% set hints = kwargs.pop('hints', None) %}
 {% set enctype = kwargs.pop('enctype', None) %}
 {% set method = kwargs.pop('method', 'POST') %}
 <form method="{{ method }}" action="{{ action }}" {% if enctype %}enctype="{{ enctype }}"{% endif %} class="form form-horizontal" role="form" novalidate>
-{{ render_form_fields(form, hints=hints) }}
+{{ render_form_fields(form) }}
 {{ render_form_buttons(form.buttons) }}
 </form>
 {% endmacro %}
