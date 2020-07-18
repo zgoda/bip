@@ -1,3 +1,5 @@
 graft src
 
+prune src/instance
+
 include LICENSE
