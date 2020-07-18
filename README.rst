@@ -20,4 +20,4 @@ This application is provided under the terms of GNU General Public License, vers
 
 Copyright: (c) 2019, Jarek Zgoda
 
-This application includes 3rd party code, see `documentation <docs/thirdparty.rst>`_ for more details (in Polish).
+This application includes 3rd party code, see `documentation <https://bip.readthedocs.io/pl/latest/thirdparty.html>`_ for more details (in Polish).

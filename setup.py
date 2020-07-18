@@ -91,7 +91,12 @@ setup(
     package_dir={'': 'src'},
     include_package_data=True,
     zip_safe=False,
-    url='http://github.com/zgoda/bip',
+    url='https://github.com/zgoda/bip',
+    project_urls={
+        'Documentation': 'https://bip.readthedocs.io/',
+        'Source': 'https://github.com/zgoda/bip',
+        'Issues': 'https://github.com/zgoda/bip/issues',
+    },
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
