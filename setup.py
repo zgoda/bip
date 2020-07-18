@@ -32,6 +32,7 @@ base_reqs = [
     'Flask-WTF',
     'Flask-Babel',
     'Bootstrap-Flask',
+    'sentry-sdk[flask]',
     'validators',
     'Werkzeug',
     'markdown',

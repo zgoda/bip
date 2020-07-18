@@ -4,10 +4,13 @@ import tempfile
 from typing import Optional
 
 import keyring
+import sentry_sdk
 from flask import render_template, send_from_directory
 from keyrings.cryptfile.cryptfile import CryptFileKeyring
+from sentry_sdk.integrations.flask import FlaskIntegration
 from werkzeug.utils import ImportStringError
 
+from .__version__ import get_version
 from .admin import admin_bp
 from .auth import auth_bp
 from .ext import babel, bootstrap, csrf, login_manager
@@ -29,7 +32,15 @@ def make_app(env: Optional[str] = None) -> Application:
     """
     flask_environment = os.environ.get('FLASK_ENV', '')
     if flask_environment == 'production':
-        configure_logging()
+        sentry_dsn = os.getenv('SENTRY_DSN')
+        if sentry_dsn:
+            version = get_version()
+            sentry_sdk.init(
+                dsn=sentry_dsn, release=f'bip@{version}',
+                integrations=[FlaskIntegration()],
+            )
+        else:
+            configure_logging()
     extra = {}
     instance_path = os.environ.get('INSTANCE_PATH')
     if instance_path:
