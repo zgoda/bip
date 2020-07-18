@@ -85,6 +85,7 @@ setup(
     description='Polish BIP (Biuletyn Informacji Publicznej) as Flask application',
     keywords='bip public information bulletin',
     long_description=long_description,
+    long_description_content_type='text/x-rst',
     license='GPLv3',
     packages=find_packages('src'),
     package_dir={'': 'src'},
