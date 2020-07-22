@@ -76,7 +76,7 @@ def configure_app(app: Application, env: Optional[str]):
         except ImportStringError:
             app.logger.info(f'no environment config for {env}')
 
-    @app.route('/files/<filename>', endpoint='attachment')
+    @app.route('/attachment/<filename>', endpoint='attachment')
     def serve_attachment(filename):
         dir_name = os.path.join(app.instance_path, app.config['ATTACHMENTS_DIR'])
         return send_from_directory(dir_name, filename, as_attachment=True)

@@ -6,7 +6,9 @@ Dokument ten opisuje sposób instalacji i konfiguracji aplikacji BIP w systemie 
 Zalecane systemy operacyjne
 ---------------------------
 
-Aplikacja BIP może działać w każdym systemie operacyjnym, w którym jest dostępny Python 3.7 lub nowszy, jednak została ona przetestowana wyłącznie w systemie Linux, do tego systemu również odnosi się ta instrukcja. Instrukcja została przygotowana w oparciu o systemy Debian 10 i Ubuntu 18.04, ponieważ są dla nich dostępne pakiety Pythona 3.7 (w Debianie 10 jest on dostępny w systemie, dla Ubuntu 18.04 możliwe jest zainstalowanie go używając PPA ``deadsnakes``). Z pewnością jest możliwe uruchomienie aplikacji na innych dystrybucjach Linuksa, jednak nie zostało to przetestowane przez autora.
+Aplikacja BIP może działać w każdym systemie operacyjnym, w którym jest dostępny Python 3.7 lub nowszy, jednak została ona przetestowana wyłącznie w systemie Linux, do tego systemu również odnosi się ta instrukcja. Instrukcja została przygotowana w oparciu o systemy Debian 10 i Ubuntu 20.04, ponieważ są dla nich dostępne pakiety Pythona 3.7 (Debiani 10) lub 3.8 (Ubuntu 20.04). Dla Ubuntu 18.04 możliwe jest pobranie wymaganych wersji Pythona z repozytorium PPA `Deadsnakes <https://launchpad.net/~deadsnakes/+archive/ubuntu/ppa?field.series_filter=bionic>`_.
+
+Z pewnością jest możliwe uruchomienie aplikacji na innych dystrybucjach Linuksa, jednak nie zostało to przetestowane przez autora.
 
 Minimalne wymagania sprzętowe
 -----------------------------
@@ -126,9 +128,7 @@ Każdy z poniższych przykładów ładuje część ustawień ze zmiennych środo
 .. code-block:: shell
 
     FLASK_ENV="production"
-
-    NSTANCE_PATH="/home/mojekonto/bip/instance"
-
+    INSTANCE_PATH="/home/mojekonto/bip/instance"
     SITE_JSON="/home/mojekonto/bip/conf/site.json"
     DB_NAME="/home/mojekonto/bip/db.sqlite3"
     DB_DRIVER="sqlite"
@@ -229,41 +229,45 @@ Ostatnim krokiem jest konfiguracja serwera WWW Nginx aby komunikował się z apl
 
     $ sudo vim /etc/nginx/sites-available/bip
 
-W pliku tym należy umieścić poniższą zawartość. ``bip.domena.pl`` oraz ``mojekonto`` należy zastąpić rzeczywistymi wartościami, tj. nazwą domenową serwera skonfigurowaną w ustawieniach DNS oraz prawdziwą nazwą konta użytkownika, na którym została zainstalowana aplikacja.
+W pliku tym należy umieścić poniższą zawartość. ``bip.domena.pl`` oraz ``mojekonto`` należy zastąpić rzeczywistymi wartościami, tj. nazwą domenową serwera skonfigurowaną w ustawieniach DNS oraz prawdziwą nazwą konta użytkownika, na którym została zainstalowana aplikacja. Poniższy plik konfiguracyjny Nginxa jest kompletny, tj. nie zawiera wszystko co potrzeba do uruchomienia aplikacji. W szczególnych przypadkach może być konieczne dostrojenie konfiguracji, ale to wykracza poza zakres podręcznika instalacji.
 
 .. code-block:: nginx
 
     server {
         listen 80;
+        listen [::]:80;
         server_name bip.domena.pl;
+        access_log /var/log/nginx/bip.access.log;
+        error_log /var/log/nginx/bip.error.log;
 
         location / {
-            # zmiana początku ścieżki do plików do pobrania
-            rewrite ^/files/(.*)$ /attachments/$1 last;
             # włączenie obsługi uWSGI
             include uwsgi_params;
             uwsgi_pass unix:/tmp/bip.sock;
-            uwsgi_param UWSGI_SCHEME $scheme;
-            uwsgi_param SERVER_SOFTWARE nginx/$nginx_version;
         }
 
         # reguła dla zasobów statycznych
         location /static {
             root /home/mojekonto/bip;
-            sendfile on;
-            sendfile_max_chunk 1m;
         }
 
         # reguła dla plików do pobrania
-        location /attachments {
+        location /attachment {
             root /home/mojekonto/instance;
-            sendfile on;
-            sendfile_max_chunk 1m;
-            # pliki mają zawsze być pobierane, a nie wyświetlane
-            if ($arg_f) {
-                add_header Content-Disposition "attachment; filename=$arg_f";
+            # pliki mają być pobierane, a nie wyświetlane
+            if ($arg_save) {
+                add_header Content-Disposition "attachment; filename=$arg_save";
             }
         }
+
+        location /robots.txt {
+            root /home/mojekonto/bip/static;
+        }
+
+        location /sitemap.xml {
+            root /home/mojekonto/bip/static;
+        }
+
     }
 
 Plik ten należy ostatecznie zlinkować do katalogu z konfiguracjami włączonych aplikacji.
@@ -314,8 +318,6 @@ Zawartość tego pliku bedzie podobna jak w przypadku uWSGI we wcześniejszym pr
     Group=www-data
     # załadowanie zmiennych środowiskowych z pliku
     EnvironmentFile="/home/mojekonto/bip/environment"
-    # ustawienie zmiennej rodzaju instancji
-    Environment="ENV=production"
     # komenda uruchamiająca usługę
     ExecStart=/home/mojekonto/bip/venv/bin/gunicorn --workers 2 --preload --bind unix:/tmp/bip.sock -m 007 bip.wsgi:application
     # warunek restartu usługi - zawsze
@@ -345,17 +347,18 @@ Ostatnim krokiem jest konfiguracja serwera WWW Nginx aby komunikował się z apl
 
     $ sudo vim /etc/nginx/sites-available/bip
 
-W pliku tym należy umieścić poniższą zawartość. ``bip.domena.pl`` oraz ``mojekonto`` należy zastąpić rzeczywistymi wartościami, tj. nazwą domenową serwera skonfigurowaną w ustawieniach DNS oraz prawdziwą nazwą konta użytkownika, na którym została zainstalowana aplikacja.
+W pliku tym należy umieścić poniższą zawartość. ``bip.domena.pl`` oraz ``mojekonto`` należy zastąpić rzeczywistymi wartościami, tj. nazwą domenową serwera skonfigurowaną w ustawieniach DNS oraz prawdziwą nazwą konta użytkownika, na którym została zainstalowana aplikacja. Poniższy plik konfiguracyjny Nginxa jest kompletny, tj. nie zawiera wszystko co potrzeba do uruchomienia aplikacji. W szczególnych przypadkach może być konieczne dostrojenie konfiguracji, ale to wykracza poza zakres podręcznika instalacji.
 
 .. code-block:: nginx
 
     server {
         listen 80;
+        listen [::]:80;
         server_name bip.domena.pl;
+        access_log /var/log/nginx/bip.access.log;
+        error_log /var/log/nginx/bip.error.log;
 
         location / {
-            # zmiana początku ścieżki do plików do pobrania
-            rewrite ^/files/(.*)$ /attachments/$1 last;
             # włączenie proxy
             include proxy_params;
             proxy_pass http://unix:/tmp/bip.sock:;
@@ -364,19 +367,23 @@ W pliku tym należy umieścić poniższą zawartość. ``bip.domena.pl`` oraz ``
         # reguła dla zasobów statycznych
         location /static {
             root /home/mojekonto/bip;
-            sendfile on;
-            sendfile_max_chunk 1m;
         }
 
         # reguła dla plików do pobrania
-        location /attachments {
+        location /attachment {
             root /home/mojekonto/instance;
-            sendfile on;
-            sendfile_max_chunk 1m;
-            # pliki mają zawsze być pobierane, a nie wyświetlane
-            if ($arg_f) {
-                add_header Content-Disposition "attachment; filename=$arg_f";
+            # pliki mają być pobierane, a nie wyświetlane
+            if ($arg_save) {
+                add_header Content-Disposition "attachment; filename=$arg_save";
             }
+        }
+
+        location /robots.txt {
+            root /home/mojekonto/bip/static;
+        }
+
+        location /sitemap.xml {
+            root /home/mojekonto/bip/static;
         }
 
     }
