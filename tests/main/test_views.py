@@ -1,3 +1,5 @@
+from urllib.parse import quote
+
 import pytest
 from flask import url_for
 
@@ -46,7 +48,8 @@ class TestPageViews(BIPTests):
         )
         attachment = attachment_factory(page=page, title='Tytuł załącznika 1')
         rv = self.client.get(url_for('main.page', slug=page.slug))
-        assert f'href="/files/{attachment.filename}"' in rv.text
+        file_name = quote(attachment.filename)
+        assert f'href="/files/{file_name}' in rv.text
 
     def test_get_notfound(self):
         rv = self.client.get(url_for('main.page', slug='does-not-exist'))

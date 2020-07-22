@@ -51,8 +51,6 @@ def make_app(env: Optional[str] = None) -> Application:
     if flask_environment == 'production' or app.testing:
         keyring.set_keyring(CryptFileKeyring())
     with app.app_context():
-        if flask_environment == 'development' or app.testing:
-            register_development_routes(app)
         configure_logging_handler(app)
         configure_database(app)
         configure_extensions(app)
@@ -61,20 +59,6 @@ def make_app(env: Optional[str] = None) -> Application:
         configure_blueprints(app)
         configure_error_handlers(app)
     return app
-
-
-def register_development_routes(app: Application):
-    """Register routes that are served only by dev server. On production this
-    will be serviced directly by web server.
-
-    :param app: application object
-    :type app: Application
-    """
-
-    @app.route('/files/<filename>', endpoint='attachment')
-    def serve_attachment(filename):
-        dir_name = os.path.join(app.instance_path, app.config['ATTACHMENTS_DIR'])
-        return send_from_directory(dir_name, filename, as_attachment=True)
 
 
 def configure_app(app: Application, env: Optional[str]):
@@ -91,6 +75,11 @@ def configure_app(app: Application, env: Optional[str]):
             app.config.from_object(f'bip.config_{env}')
         except ImportStringError:
             app.logger.info(f'no environment config for {env}')
+
+    @app.route('/files/<filename>', endpoint='attachment')
+    def serve_attachment(filename):
+        dir_name = os.path.join(app.instance_path, app.config['ATTACHMENTS_DIR'])
+        return send_from_directory(dir_name, filename, as_attachment=True)
 
 
 def configure_logging_handler(app: Application):

@@ -1,13 +1,13 @@
 from typing import List, Mapping, Optional
 
-from peewee import BaseQuery
+from peewee import ModelSelect
 
 from .models import Attachment, Label, Page
 
 
 def search_results(
             query: str, sections: Optional[List[str]] = None
-        ) -> Mapping[str, BaseQuery]:
+        ) -> Mapping[str, ModelSelect]:
     """Extremely simple content search entrypoint. Search is performed against
     provided sections or all sections if not provided (Pages, Labels,
     Attachments). Returned results are partitioned by data type. Pages are
@@ -25,7 +25,7 @@ def search_results(
     :param sections: where to search, defaults to None
     :type sections: Optional[List[str]], optional
     :return: search result partitioned by data type
-    :rtype: Mapping[str, BaseQuery]
+    :rtype: Mapping[str, ModelSelect]
     """
     if not sections:
         sections = ['pages', 'labels', 'attachments']

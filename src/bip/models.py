@@ -14,13 +14,15 @@ from werkzeug.security import check_password_hash, generate_password_hash
 DB_DRIVER_MAP = {
     'postgres': peewee.PostgresqlDatabase,
     'mysql': peewee.MySQLDatabase,
+    'sqlite': peewee.SqliteDatabase,
 }
 
 
 def _get_db_driver_class():  # pragma: nocover
     name = os.getenv('DB_DRIVER')
     if name is None:
-        return peewee.SqliteDatabase
+        name = 'sqlite'
+    name = name.lower()
     return DB_DRIVER_MAP[name]
 
 
