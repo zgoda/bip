@@ -100,7 +100,9 @@ class LabelFactory(PeeweeModelFactory):
 
     @factory.lazy_attribute
     def description_html(self):
-        return markdown(self.description)
+        if self.description:
+            return markdown(self.description)
+        return self.description
 
 
 class PageLabelFactory(PeeweeModelFactory):
@@ -124,4 +126,6 @@ class AttachmentFactory(PeeweeModelFactory):
 
     @factory.lazy_attribute
     def description_html(self):
-        return markdown(self.description)
+        if self.description:
+            return markdown(self.description)
+        return self.description
