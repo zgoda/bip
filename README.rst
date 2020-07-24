@@ -8,7 +8,7 @@ Aplikacja Flask implementująca podstawowy Biuletyn Informacji Publicznej (BIP) 
 Links / łącza
 -------------
 
-* `Tests / testy <https://github.com/zgoda/bip/actions?query=workflow%3ACI>`_
+* `Tests / testy <https://github.com/zgoda/bip/actions?query=workflow%3ATests>`_
 * `Coverage / pokrycie testami <https://codecov.io/gh/zgoda/bip>`_
 * `Docs / dokumentacja <https://bip.readthedocs.io/pl/latest>`_
 * `Code quality report / raport z jakości kodu <https://deepsource.io/gh/zgoda/bip>`_ 
