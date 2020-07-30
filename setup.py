@@ -29,7 +29,7 @@ base_reqs = [
     'itsdangerous<2',
     'PeeWee',
     'Flask-Login',
-    'WTForms!=2.3.2',
+    'WTForms>2.3.2',
     'Flask-WTF',
     'Flask-Babel',
     'Bootstrap-Flask',
