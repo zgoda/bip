@@ -9,7 +9,7 @@ Usługi dodatkowe
 Integracja z usługą zdalnego logowania Sentry
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Aplikacja BIP może być opcjonalnie zintegrowana z usługą zdalnego logowania błędów Sentry. Do zintegrowania aplikacji z Sentry konieczne jest dostarczenie poprzez zmienną środowiskową parametrów połączenia do serwera Sentry. Poniższy przykład pokazuje jak to zrobić przy użyciu pliku ze zmiennymi środowiskowymi używanego przez ``systemd`` w definicji usługi aplikacji.
+Aplikacja BIP może być opcjonalnie zintegrowana z usługą zdalnego logowania błędów Sentry. Do zintegrowania aplikacji z Sentry konieczne jest dostarczenie poprzez zmienną środowiskową parametrów połączenia do serwera Sentry. Poniższy przykład pokazuje jak to zrobić przy użyciu pliku ze zmiennymi środowiskowymi używanego przez ``systemd`` w definicji usługi aplikacji. W pliku tym należy umieścić poniższą linię, zastępując ``klucz``, ``konto`` i ``projekt`` odpowiednimi wartościami z panelu administracji projektu.
 
 .. code-block:: shell
 
@@ -18,3 +18,5 @@ Aplikacja BIP może być opcjonalnie zintegrowana z usługą zdalnego logowania 
 Zawartość tej zmiennej można znaleźć w ustawieniach projektu na stronie administracji w Sentry.
 
 .. image:: /_static/sentry_config.png
+
+Usługa Sentry przesyła na bieżąco informacje o napotkanych nieprawidłowościach w działaniu aplikacji, które nie zostały obsłużone w jej kodzie.
