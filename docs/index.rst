@@ -5,7 +5,17 @@ Aplikacja BIP implementuje Biuletyn Informacji Publicznej w języku Python przy 
 
 Aplikacja jest przeznaczona dla serwisów małych i bardzo małych, zawierających do 1000 stron i obsługujących do 100 odsłon na minutę. Oczywiście, możliwe jest poziome przeskalowanie aplikacji tak, by mogła obsłużyć zarówno więcej dokumentów, jak i większy ruch, ale nie taki przyświecał cel podczas jej pisania.
 
-Aplikacja jest rozwijana w modelu Open Source i jest dostępna nieodpłatnie na warunkach licencji GNU General Public License, wersja 3. Oznacza to, że nie ma żadnych ograniczeń w użytkowaniu tego oprogramowania (w tym zarobkowego), ale w przypadku jego dystrybucji wymagane jest udostępnienie nabywcy pełnej wersji źródłowej programu ze wszystkimi zmianami, niezależnie od tego czy jest on rozprowadzany za darmo czy za opłatą.
+Licencja
+--------
+
+Aplikacja jest rozwijana w modelu Open Source i jest dostępna nieodpłatnie na warunkach licencji GNU General Public License, wersja 3. Oznacza to, że nie ma żadnych ograniczeń w użytkowaniu tego oprogramowania (w tym za opłatą), ale w przypadku jego dystrybucji wymagane jest udostępnienie nabywcy pełnej wersji źródłowej programu ze wszystkimi zmianami, niezależnie od tego czy jest on udostępniany za darmo czy za opłatą. W szczególności oznacza to, że:
+
+* można program zainstalować i użytkować bez opłat
+* można w kodzie programu wprowadzać zmiany na własny użytek bez konieczności ich udostępniania
+* można pobierać opłaty za zainstalowanie i utrzymanie serwisu
+* będąc właścicielem usługi hostingu można oferować preinstalację programu dla użytkowników, zarówno bezpłatnie jak i za opłatą
+
+Licencja dotyczy wyłącznie kodu aplikacji i nie obejmuje treści wprowadzonych przez jej użytkowników.
 
 Dokumentacja użytkownika
 ------------------------
