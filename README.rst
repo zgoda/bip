@@ -9,9 +9,9 @@ Links / łącza
 -------------
 
 * `Tests / testy <https://github.com/zgoda/bip/actions?query=workflow%3ATests>`_
-* `Coverage / pokrycie testami <https://codecov.io/gh/zgoda/bip>`_
+* `Coverage / pokrycie testami <https://coveralls.io/github/zgoda/bip?branch=master>`_
 * `Docs / dokumentacja <https://bip.readthedocs.io/pl/latest>`_
-* `Code quality report / raport z jakości kodu <https://deepsource.io/gh/zgoda/bip>`_ 
+* `Code quality report / raport z jakości kodu <https://deepsource.io/gh/zgoda/bip>`_
 
 License
 -------
