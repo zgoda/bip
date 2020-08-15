@@ -6,5 +6,5 @@
 
 {% block content %}
 <h1>Logowanie redaktora BIP</h1>
-{{ render_form(form, url_for('auth.login')) }}
+{{ render_form(form, request.full_path) }}
 {% endblock %}
