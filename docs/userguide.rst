@@ -18,5 +18,16 @@ Po podaniu prawidłowych danych użytkownik zostanie przeniesiony z powrotem do 
 
 .. image:: /_static/login_confirmed.png
 
+Wylogowywanie
+-------------
+
+Po zalogowaniu użytkownika odnośnik do strony logowania zostaje zastąpiony odnośnikiem do wylogowania.
+
+.. image:: /_static/logout_link.png
+
+Po jego wybraniu użytkownik zostaje wylogowany z aplikacji i przeniesiony na główną stronę serwisu. U góry strony zostanie wyświetlona winieta potwierdzająca, że użytkownik został wylogowany.
+
+.. image:: /_static/logout_confirmed.png
+
 Zarządzanie danymi użytkownika
 ------------------------------
