@@ -1,7 +1,7 @@
 Przewodnik użytkownika
 ======================
 
-Jako "użytkownika serwisu" rozumiemy redaktora Biuletynu, który będzie tworzył i modyfikował zawartość. Ta część podręcznika opisuje wykonywanie w serwisie BIP czynności redakcyjnych, tj. dodawania i modyfikowania treści.
+Jako "użytkownika serwisu" rozumiemy redaktora Biuletynu, który będzie tworzył i modyfikował zawartość. Ta część podręcznika opisuje wykonywanie w serwisie BIP czynności redakcyjnych, tj. dodawania i modyfikowania treści, jak tównież zarządzania własnymi danymi w serwisie.
 
 Logowanie do konta
 ------------------
