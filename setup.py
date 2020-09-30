@@ -70,7 +70,6 @@ dev_reqs = [
     'dlint',
     'rstcheck',
     'rope',
-    'isort',
     'flask-shell-ipython',
     'watchdog',
 ] + test_reqs + docs_reqs

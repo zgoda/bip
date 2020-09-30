@@ -5,7 +5,7 @@ from typing import Optional
 
 import keyring
 import sentry_sdk
-from flask import render_template, send_from_directory
+from flask import render_template, request, send_from_directory
 from keyrings.cryptfile.cryptfile import CryptFileKeyring
 from sentry_sdk.integrations.flask import FlaskIntegration
 from werkzeug.utils import ImportStringError
@@ -78,8 +78,14 @@ def configure_app(app: Application, env: Optional[str]):
 
     @app.route('/attachment/<filename>', endpoint='attachment')
     def serve_attachment(filename):
+        kw = {
+            'as_attachment': True,
+        }
+        attachment_filename = request.args.get('save')
+        if attachment_filename:
+            kw['attachment_filename'] = attachment_filename
         dir_name = os.path.join(app.instance_path, app.config['ATTACHMENTS_DIR'])
-        return send_from_directory(dir_name, filename, as_attachment=True)
+        return send_from_directory(dir_name, filename, **kw)
 
 
 def configure_logging_handler(app: Application):

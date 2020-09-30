@@ -45,7 +45,7 @@ def changes() -> str:
     return render_template('main/changes.html', **ctx)
 
 
-@main_bp.route('/<slug>', endpoint='page')
+@main_bp.route('/strona/<slug>', endpoint='page')
 def page_view(slug: str) -> Union[str, Response]:
     Author = User.alias()  # noqa: N806
     Editor = User.alias()  # noqa: N806
