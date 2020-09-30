@@ -8,7 +8,7 @@ from .. import BIPTests
 class TestPageLabelAdminViews(BIPTests):
 
     @pytest.fixture(autouse=True)
-    def set_up(self, page_factory, user_factory, label_factory):
+    def _set_up(self, page_factory, user_factory, label_factory):
         self.admin = user_factory(name='admin', admin=True, active=True)
         self.page = page_factory(
             title='Tytuł strony 1', text='Treść strony 1', created_by=self.admin

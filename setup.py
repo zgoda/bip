@@ -42,8 +42,7 @@ base_reqs = [
     'keyrings.cryptfile',
     'texttable',
     'python-magic',
-    'bcrypt',
-    'passlib',
+    'passlib[bcrypt]',
 ]
 
 test_reqs = [
@@ -68,6 +67,7 @@ dev_reqs = [
     'flake8-builtins',
     'flake8-bugbear',
     'flake8-comprehensions',
+    'flake8-pytest-style',
     'pep8-naming',
     'dlint',
     'rstcheck',

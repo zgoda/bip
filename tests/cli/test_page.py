@@ -13,7 +13,7 @@ from . import BIPCLITests
 class TestPageOps(BIPCLITests):
 
     @pytest.fixture(autouse=True)
-    def set_up2(self, user_factory):
+    def _set_up2(self, user_factory):
         self.user = user_factory(name=self.username, password=self.password)
 
     def test_list_no_pages(self):

@@ -97,7 +97,7 @@ class TestLabelPagesView(BIPTests):
 class TestChangesView(BIPTests):
 
     @pytest.fixture(autouse=True)
-    def set_up(self):
+    def _set_up(self):
         self.url = url_for('main.changes')
 
     def test_no_changes(self):

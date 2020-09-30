@@ -8,7 +8,7 @@ from .. import BIPTests
 class TestPageAdminViews(BIPTests):
 
     @pytest.fixture(autouse=True)
-    def set_up(self, user_factory):
+    def _set_up(self, user_factory):
         self.list_url = url_for('admin.page_list')
         self.admin_name = 'admin'
         self.admin = user_factory(name=self.admin_name, admin=True, active=True)

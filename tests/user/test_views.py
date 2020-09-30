@@ -10,7 +10,7 @@ from .. import BIPTests
 class TestUserProfileView(BIPTests):
 
     @pytest.fixture(autouse=True)
-    def set_up(self):
+    def _set_up(self):
         self.url = url_for('user.profile')
 
     def test_get(self, user_factory):
@@ -59,7 +59,7 @@ class TestUserProfileView(BIPTests):
 class TestChangePasswordView(BIPTests):
 
     @pytest.fixture(autouse=True)
-    def set_up(self):
+    def _set_up(self):
         self.url = url_for('user.password_change')
         self.name = self.password = 'Ivory Tower'
 

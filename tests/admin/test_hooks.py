@@ -8,7 +8,7 @@ from .. import BIPTests
 class TestAdminViewHooks(BIPTests):
 
     @pytest.fixture(autouse=True)
-    def set_up(self):
+    def _set_up(self):
         self.admin_url = url_for('admin.home')
 
     def test_admin_access(self, user_factory):

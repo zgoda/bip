@@ -51,7 +51,7 @@ class TestStaffMember:
 
     def test_invalid_role_type(self):
         data = {'role_name': 'X', 'role_type': 'invalid', 'person_name': 'A'}
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError, match='role type'):
             site.StaffMember(**data)
 
     def test_basic_information(self):

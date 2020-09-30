@@ -10,7 +10,7 @@ from .. import BIPTests
 class TestUserAdminViews(BIPTests):
 
     @pytest.fixture(autouse=True)
-    def set_up(self, user_factory):
+    def _set_up(self, user_factory):
         self.list_url = url_for('admin.user_list')
         self.admin_name = 'admin'
         self.admin = user_factory(

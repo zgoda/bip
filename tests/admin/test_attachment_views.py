@@ -11,7 +11,7 @@ from .. import BIPTests
 class TestAttachmentAdminViews(BIPTests):
 
     @pytest.fixture(autouse=True)
-    def set_up(self, user_factory, page_factory):
+    def _set_up(self, user_factory, page_factory):
         self.list_url = url_for('admin.attachment_list')
         self.admin_name = 'admin'
         self.admin = user_factory(name=self.admin_name, admin=True, active=True)

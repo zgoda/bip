@@ -44,7 +44,7 @@ class TestLogin(BIPTests):
 class TestLoginView(BIPTests):
 
     @pytest.fixture(autouse=True)
-    def set_up(self):
+    def _set_up(self):
         self.url = url_for('auth.login')
 
     def test_get(self):
