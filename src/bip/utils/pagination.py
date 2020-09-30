@@ -12,8 +12,7 @@ class Pagination:
     Copyright 2010 Pallets
     """
 
-    def __init__(self, query, page, per_page, total, items):
-        self.query = query
+    def __init__(self, page, per_page, total, items):
         self.page = page
         self.per_page = per_page
         self.total = total
@@ -101,4 +100,4 @@ def paginate(
     if size is None:
         size = current_app.config.get('LIST_SIZE', 20)
     q = query.paginate(page, size)
-    return Pagination(query, page, size, query.count(), q)
+    return Pagination(page, size, query.count(), q)

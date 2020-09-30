@@ -96,5 +96,5 @@ class TestPagination:
     def test_init_empty(self, per_page, total, user_factory):
         user_factory.create_batch(7, password='pass')
         query = User.select()
-        pagination = Pagination(query, 1, per_page, total, query[:2])
+        pagination = Pagination(1, per_page, total, query[:2])
         assert pagination.pages == 0
