@@ -5,13 +5,24 @@ from datetime import datetime
 
 import peewee
 from flask_login import UserMixin
+from passlib.context import CryptContext
 from peewee import (
     AutoField, BooleanField, CharField, DateTimeField, ForeignKeyField, IntegerField,
     TextField,
 )
-from werkzeug.security import check_password_hash, generate_password_hash
 
 from .utils.text import slugify
+
+passwd_ctx = CryptContext(schemes=['bcrypt'])
+
+
+def generate_password_hash(password: str) -> str:  # pragma: nocover
+    return passwd_ctx.hash(password)
+
+
+def check_password_hash(stored: str, password: str) -> bool:  # pragma: nocover
+    return passwd_ctx.verify(password, stored)
+
 
 DB_DRIVER_MAP = {
     'postgres': peewee.PostgresqlDatabase,
@@ -51,19 +62,19 @@ class User(Model, UserMixin):
     created = DateTimeField(default=datetime.utcnow)
     admin = BooleanField(default=False)
 
-    def __int__(self):
+    def __int__(self) -> int:
         return self.pk
 
-    def get_id(self):
+    def get_id(self) -> str:
         return str(self.pk)
 
-    def is_active(self):  # pragma: nocover
+    def is_active(self) -> bool:  # pragma: nocover
         return self.active
 
-    def set_password(self, password):
+    def set_password(self, password: str):
         self.password = generate_password_hash(password)
 
-    def check_password(self, password):
+    def check_password(self, password: str) -> bool:
         return check_password_hash(self.password, password)
 
 
@@ -143,6 +154,6 @@ class Attachment(Model):
     description_html = TextField(null=True)
 
     @property
-    def file_save_as(self):
+    def file_save_as(self) -> str:
         _, ext = os.path.splitext(self.filename)
         return f'{slugify(self.title)}{ext}'

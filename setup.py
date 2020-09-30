@@ -42,6 +42,8 @@ base_reqs = [
     'keyrings.cryptfile',
     'texttable',
     'python-magic',
+    'bcrypt',
+    'passlib',
 ]
 
 test_reqs = [
