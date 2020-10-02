@@ -41,7 +41,7 @@ def faker_session_locale():
     return ['pl_PL']
 
 
-@pytest.fixture
+@pytest.fixture()
 def app(mocker, tmp_path):
     """Pytest fixture that builds app object for testing purposes. This may be
     used separately as lighter weight alternative to `client` or
