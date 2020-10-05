@@ -55,7 +55,7 @@ class PageFactory(PeeweeModelFactory):
         database = db
 
     title = factory.Sequence(
-        lambda n: '{0} {1}'.format(n, factory.Faker('sentence', nb_words=4).generate())
+        lambda n: '{0} {1}'.format(n, factory.Faker('sentence', nb_words=4))
     )
     active = True
     text = factory.Faker('paragraph')
@@ -90,7 +90,7 @@ class LabelFactory(PeeweeModelFactory):
         database = db
 
     name = factory.Sequence(
-        lambda n: '{0} {1}'.format(n, factory.Faker('sentence', nb_words=2).generate())
+        lambda n: '{0} {1}'.format(n, factory.Faker('sentence', nb_words=2))
     )
     description = factory.Faker('paragraph')
 
