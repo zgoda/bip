@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from datetime import datetime
 
+import icu
 import peewee
 from flask_login import UserMixin
 from passlib.context import CryptContext
@@ -39,7 +40,26 @@ def _get_db_driver_class():  # pragma: nocover
     return DB_DRIVER_MAP[name]
 
 
+collate_kw = {}
+
+
+def setup_db_collation(database):  # pragma: nocover
+    driver = os.getenv('DB_DRIVER')
+    if driver is None:
+        driver = 'sqlite'
+    if driver == 'sqlite':
+        pl_coll = icu.Collator.createInstance(icu.Locale('pl_PL.utf-8'))
+
+        @database.collation('PL')
+        def collate_pl(s1, s2):
+            return pl_coll.compare(s1, s2)
+
+        collate_kw['collation'] = 'PL'
+
+
 db = _get_db_driver_class()(None)
+
+setup_db_collation(db)
 
 
 class Change:
@@ -55,7 +75,7 @@ class Model(peewee.Model):
 
 class User(Model, UserMixin):
     pk = AutoField(primary_key=True)
-    name = CharField(max_length=200, unique=True)
+    name = CharField(max_length=200, unique=True, **collate_kw)
     email = CharField(max_length=200, null=True)
     password = TextField(null=False)
     active = BooleanField(default=True, index=True)
@@ -80,7 +100,7 @@ class User(Model, UserMixin):
 
 class Label(Model):
     pk = AutoField(primary_key=True)
-    name = CharField(max_length=200, unique=True)
+    name = CharField(max_length=200, unique=True, **collate_kw)
     slug = CharField(max_length=200, index=True)
     description = TextField(null=True)
     description_html = TextField(null=True)
@@ -88,7 +108,7 @@ class Label(Model):
 
 class Page(Model):
     pk = AutoField(primary_key=True)
-    title = CharField(max_length=200, unique=True)
+    title = CharField(max_length=200, unique=True, **collate_kw)
     slug = CharField(max_length=200, index=True)
     text = TextField()
     text_html = TextField()
@@ -149,7 +169,7 @@ class Attachment(Model):
     file_type = CharField(max_length=100)
     file_size = IntegerField()
     created = DateTimeField(default=datetime.utcnow, index=True)
-    title = CharField(max_length=200, index=True)
+    title = CharField(max_length=200, index=True, **collate_kw)
     description = TextField(null=True)
     description_html = TextField(null=True)
 

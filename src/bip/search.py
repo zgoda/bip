@@ -40,7 +40,9 @@ def search_results(
         )
     if 'labels' in sections:
         results['labels'] = (
-            Label.select().where(Label.name ** query).order_by(Label.name)
+            Label.select()
+            .where(Label.name ** query)
+            .order_by(Label.name)
         )
     if 'attachments' in sections:
         results['attachments'] = (

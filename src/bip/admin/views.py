@@ -10,7 +10,7 @@ from werkzeug.exceptions import BadRequest
 from ..models import Attachment, Label, Page, PageLabel, User, db
 from ..utils.http import or_404
 from . import admin_bp
-from .forms import AttachmentCreateForm, LabelForm, PageForm, UserForm, AttachmentForm
+from .forms import AttachmentCreateForm, AttachmentForm, LabelForm, PageForm, UserForm
 from .utils import (
     ItemCollectionMeta, ItemMeta, default_admin_item_view, default_admin_list_view,
 )

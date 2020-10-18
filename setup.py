@@ -43,6 +43,7 @@ base_reqs = [
     'texttable',
     'python-magic',
     'passlib[bcrypt]',
+    'PyICU',
 ]
 
 test_reqs = [
