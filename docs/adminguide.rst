@@ -3,6 +3,26 @@ Dokumentacja administratora
 
 Jako "administratora systemu" rozumiem osobę odpowiedzialną za instalację, uruchomienie i utrzymanie serwisu Biuletynu w stanie sprawnym i działającym. Zakładam że instalacja i uruchmienie aplikacji zostaną wykonane w systemie Linux. Dla mniej wprawnych użytkowników proponuję wykonanie próbnej instalacji na maszynie wirtualnej Debiana 10 uruchomionej pod Virtualbox albo VMWare. Ogólnie instalacja **nie wymaga** niczego poza instalowaniem pakietów systemowych, instalowaniem pakietów bibliotek Pythona w środowisku wirtualnym oraz edytowania plików tekstowych z konfiguracją serwisów takich jak serwer aplikacji czy WWW.
 
+Instalacja aplikacji została szczegółowo opisana w :doc:`podręczniku instalacji <install>`.
+
+Aktualizacja aplikacji
+----------------------
+
+Aby zaktualizować zainstalowaną aplikację należy aktywować środowisko wirtualne Pythona w którym jest ona zainstalowana oraz uruchomić aktualizację z PyPI. Po zakończeniu instalacji należy ponownie uruchomić usługę.
+
+.. code-block:: shell-session
+
+    $ pip install -U biuletyn-bip
+    $ sudo systemctl restart bip
+
+Gdyby doszło do jakiejś katastrofy i program się nie uruchomił poprawnie to w łatwy sposób można kod przywrócić do wcześniejszej wersji instalując aktualizację ze wskazaniem konkretnego numeru wersji.
+
+.. code-block:: shell-session
+
+    $ pip install -U "biuletyn-bip==1.0.1"
+
+Proszę zwrócić uwagę na konieczność użycia cudzysłowów w linii tego polecenia.
+
 Usługi dodatkowe
 ----------------
 
@@ -22,3 +42,13 @@ Zawartość tej zmiennej można znaleźć w ustawieniach projektu na stronie adm
 Usługa Sentry przesyła na bieżąco informacje o napotkanych nieprawidłowościach w działaniu aplikacji, które nie zostały obsłużone w jej kodzie.
 
 Integracja działa zarówno z darmową, jak i płatną wersją usługi Sentry.
+
+Jeżeli aplikacja jest uruchomiona za pośrednictwem uWSGI, wtedy by bezproblemowo korzystać z Sentry należy również włączyć w ustawieniach serwera uWSGI obsługę wielowątkowości. W pliku, który podczas instalacji sugerowałem zapisać jako ``bip.ini`` należy dodać poniższą linię.
+
+.. code-block:: ini
+
+    enable-threads = true
+
+W przeciwnym wypadku aplikacja będzie się zatrzymywać podczas wysyłania każdego raportu do serwera Sentry.
+
+Po tej zmianie należy ponownie uruchomić usługę.

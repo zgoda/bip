@@ -6,9 +6,9 @@ Dokument ten opisuje sposób instalacji i konfiguracji aplikacji BIP w systemie 
 Zalecane systemy operacyjne
 ---------------------------
 
-Aplikacja BIP może działać w każdym systemie operacyjnym, w którym jest dostępny Python 3.7 lub nowszy, jednak została ona przetestowana wyłącznie w systemie Linux, do tego systemu również odnosi się ta instrukcja. Instrukcja została przygotowana w oparciu o systemy Debian 10 i Ubuntu 20.04, ponieważ są dla nich dostępne pakiety Pythona 3.7 (Debian 10) lub 3.8 (Ubuntu 20.04). Dla Ubuntu 18.04 możliwe jest pobranie wymaganych wersji Pythona z repozytorium PPA `Deadsnakes <https://launchpad.net/~deadsnakes/+archive/ubuntu/ppa?field.series_filter=bionic>`_.
+Aplikacja BIP może działać w każdej dystrybucji Linuksa, w której jest dostępny Python 3.7 lub nowszy, jednak została ona przetestowana wyłącznie w systemach opartych na Debianie, do takich systemów również odnosi się ta instrukcja. Instrukcja została przygotowana w oparciu o systemy Debian 10 i Ubuntu 20.04, ponieważ są dla nich dostępne pakiety Pythona 3.7 (Debian 10) lub 3.8 (Ubuntu 20.04). Dla Ubuntu 18.04 możliwe jest pobranie wymaganych wersji Pythona z repozytorium PPA `Deadsnakes <https://launchpad.net/~deadsnakes/+archive/ubuntu/ppa?field.series_filter=bionic>`_.
 
-Z pewnością jest możliwe uruchomienie aplikacji na innych dystrybucjach Linuksa, jednak nie zostało to przeze mnie przetestowane.
+Z pewnością jest możliwe uruchomienie aplikacji na innych dystrybucjach Linuksa, jednak nie zostało to przeze mnie przetestowane. Instalacja w systemie Windows, jakkolwiek teoretycznie możliwa, raczej nie wchodzi w grę z powodu użycia kilku bibliotek, które wymagają kompilacji rozszerzenia w C lub C++.
 
 Minimalne wymagania sprzętowe
 -----------------------------
@@ -26,7 +26,7 @@ Ze względów bezpieczeństwa oraz wizerunkowych polecam zabezpiecznie dostępu 
 
 .. image:: /_static/certbot_nginx_debian10.png
 
-Certbot dostarcza zautomatyzowane procedury instalacji i odnowienia certyfikatu SSL dla serwerów WWW Apache i Nginx uruchomionych na wielu popularnych dystrybucjach Linuksa.
+Certbot dostarcza zautomatyzowane procedury instalacji i odnowienia certyfikatu SSL dla serwerów WWW Apache i Nginx uruchomionych na wielu popularnych dystrybucjach Linuksa, w tym również dla Debiana i Ubuntu.
 
 Instalacja aplikacji
 --------------------
@@ -59,7 +59,7 @@ Zainstaluj wszystkie niezbędne narzędzia programistyczne oraz wymagane dodatko
 
 .. code-block:: shell-session
 
-    $ sudo apt install build-essential libffi-dev libicu-dev python3-venv python3-dev
+    $ sudo apt install build-essential libffi-dev libicu-dev python3-venv python3-dev wget
 
 Utwórz katalog na instalację aplikacji.
 
