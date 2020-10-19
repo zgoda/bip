@@ -23,6 +23,13 @@ Gdyby doszło do jakiejś katastrofy i program się nie uruchomił poprawnie to 
 
 Proszę zwrócić uwagę na konieczność użycia cudzysłowów w linii tego polecenia.
 
+Śledzenie błędów wykonania
+--------------------------
+
+Aby śledzić nieobsłużone błędy wykonania aplikacji w najprostszym przypadku można polegać na logach serwera aplikacji (uWSGI lub Gunicorn) - przykładowa konfiguracja logowania błędów jest umieszczona w podręczniku instalacji. Lepszym rozwiązaniem jest skorzystanie z usługi agregacji błędów jaką daje np opisane poniżej Sentry. W przypadku `zgłaszania błędów <https://github.com/zgoda/bip/issues>`_ wskazane jest dołączanie fragmentów logów, ponieważ w inny sposób trudno będzie mi prześledzić co się tak naprawdę wydarzyło.
+
+Logi błędów odkładane są do jednego pliku, dlatego wskazanym jest skonfigurowanie zewnętrznego narzędzia do rotacji logów, np ``logrotate``.
+
 Usługi dodatkowe
 ----------------
 

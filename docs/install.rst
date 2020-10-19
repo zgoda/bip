@@ -179,6 +179,9 @@ W pliku należy umieścić poniższą zawartość (linie zaczynające się od ``
     # obsługa sygnału zakończenia
     die-on-term = true
 
+    # logowanie
+    logto = /home/mojekonto/bip/uwsgi.log
+
 Za nadzór nad uruchomieniem całości będzie odpowiadał ``systemd``, dla którego potrzebny będzie również plik sterujący, tzw. *unit*.
 
 .. code-block:: shell-session
@@ -320,7 +323,7 @@ Zawartość tego pliku bedzie podobna jak w przypadku uWSGI we wcześniejszym pr
     # załadowanie zmiennych środowiskowych z pliku
     EnvironmentFile="/home/mojekonto/bip/environment"
     # komenda uruchamiająca usługę
-    ExecStart=/home/mojekonto/bip/venv/bin/gunicorn --workers 2 --preload --bind unix:/tmp/bip.sock -m 007 bip.wsgi:application
+    ExecStart=/home/mojekonto/bip/venv/bin/gunicorn --workers 2 --preload --bind unix:/tmp/bip.sock -m 007 --error-logfile /home/mojekonto/bip/gunicorn.error.log bip.wsgi:application
     # warunek restartu usługi - zawsze
     Restart=always
 
