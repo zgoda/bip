@@ -8,7 +8,7 @@ Zalecane systemy operacyjne
 
 Aplikacja BIP może działać w każdym systemie operacyjnym, w którym jest dostępny Python 3.7 lub nowszy, jednak została ona przetestowana wyłącznie w systemie Linux, do tego systemu również odnosi się ta instrukcja. Instrukcja została przygotowana w oparciu o systemy Debian 10 i Ubuntu 20.04, ponieważ są dla nich dostępne pakiety Pythona 3.7 (Debian 10) lub 3.8 (Ubuntu 20.04). Dla Ubuntu 18.04 możliwe jest pobranie wymaganych wersji Pythona z repozytorium PPA `Deadsnakes <https://launchpad.net/~deadsnakes/+archive/ubuntu/ppa?field.series_filter=bionic>`_.
 
-Z pewnością jest możliwe uruchomienie aplikacji na innych dystrybucjach Linuksa, jednak nie zostało to przetestowane przez autora.
+Z pewnością jest możliwe uruchomienie aplikacji na innych dystrybucjach Linuksa, jednak nie zostało to przeze mnie przetestowane.
 
 Minimalne wymagania sprzętowe
 -----------------------------
@@ -38,7 +38,8 @@ Wymagane oprogramowanie
 
 * Python 3.7 lub nowszy
 * narzędzia do budowania kodu
-* biblioteka ``ffi``
+* biblioteka ``ffi`` (pakiet binarny i nagłówkowy)
+* biblioteka ``icu`` (pakiet binarny i nagłówkowy)
 * serwer HTTP (np. Nginx, Apache, Lighttpd)
 * serwer aplikacji WSGI (np. uWSGI, Gunicorn)
 
@@ -47,7 +48,7 @@ Oprogramowanie opcjonalne
 
 * serwer bazy danych (PostgreSQL lub MySQL)
 
-Jeszcze słówko na temat przechowywania danych przez aplikację. Decyzję o tym, czy używać bazy serwerowej jak PostgreSQL czy MySQL proszę podjąć po dokonaniu oceny zarówno docelowej wielkości serwisu, jak i tego jak będzie on obsługiwany od strony edytorskiej. W sytuacji gdy serwis będzie miał jednego lub dwóch edytorów, którzy dodatkowo rzadko będą prowadzić edycję zawartości jednocześnie, a ilość stron nie przekroczy 1000, serwerowa baza danych będzie wytaczaniem armaty na muchy. W tej sytuacji zupełnie dobrze poradzi sobie wbudowana baza SQLite, która ma ten wielki plus, że jest całkowicie bezobsługowa. Właściwie jedynym przypadkiem kiedy **konieczne** będzie użycie bazy serwerowej będzie przypadek uruchamiania aplikacji w kilku instancjach działających na oddzielnych maszynach (fizycznych lub wirtualnych). 
+Jeszcze słówko na temat przechowywania danych przez aplikację. Decyzję o tym, czy używać bazy serwerowej jak PostgreSQL czy MySQL proszę podjąć po dokonaniu oceny zarówno docelowej wielkości serwisu, jak i tego jak będzie on obsługiwany od strony edytorskiej. W sytuacji gdy serwis będzie miał jednego lub dwóch edytorów, którzy dodatkowo rzadko będą prowadzić edycję zawartości jednocześnie, a ilość stron nie przekroczy 1000, serwerowa baza danych będzie wytaczaniem armaty na muchy. W tej sytuacji zupełnie dobrze poradzi sobie wbudowana baza SQLite, która ma ten wielki plus, że jest całkowicie bezobsługowa. Właściwie jedynym przypadkiem kiedy **konieczne** będzie użycie bazy serwerowej będzie przypadek uruchamiania aplikacji w kilku instancjach działających na oddzielnych maszynach (fizycznych lub wirtualnych).
 
 Instalacja aplikacji krok po kroku
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -58,7 +59,7 @@ Zainstaluj wszystkie niezbędne narzędzia programistyczne oraz wymagane dodatko
 
 .. code-block:: shell-session
 
-    $ sudo apt install build-essential libffi-dev python3-venv python3-dev
+    $ sudo apt install build-essential libffi-dev libicu-dev python3-venv python3-dev
 
 Utwórz katalog na instalację aplikacji.
 

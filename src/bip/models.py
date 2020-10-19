@@ -3,7 +3,6 @@ from __future__ import annotations
 import os
 from datetime import datetime
 
-import icu
 import peewee
 from flask_login import UserMixin
 from passlib.context import CryptContext
@@ -32,11 +31,18 @@ DB_DRIVER_MAP = {
 }
 
 
-def _get_db_driver_class():  # pragma: nocover
+def get_db_driver():
     name = os.getenv('DB_DRIVER')
-    if name is None:
+    if name:
+        name = name.strip()
+    if not name:
         name = 'sqlite'
     name = name.lower()
+    return name
+
+
+def _get_db_driver_class():
+    name = get_db_driver()
     return DB_DRIVER_MAP[name]
 
 
@@ -44,10 +50,9 @@ collate_kw = {}
 
 
 def setup_db_collation(database):  # pragma: nocover
-    driver = os.getenv('DB_DRIVER')
-    if driver is None:
-        driver = 'sqlite'
+    driver = get_db_driver()
     if driver == 'sqlite':
+        import icu
         pl_coll = icu.Collator.createInstance(icu.Locale('pl_PL.utf-8'))
 
         @database.collation('PL')

@@ -15,7 +15,7 @@ from .admin import admin_bp
 from .auth import auth_bp
 from .ext import babel, bootstrap, csrf, login_manager
 from .main import main_bp
-from .models import User, db
+from .models import User, db, get_db_driver
 from .user import user_bp
 from .utils.app import Application
 from .utils.site import Site, test_site
@@ -109,7 +109,7 @@ def configure_database(app: Application):
     :param app: application object
     :type app: Application
     """
-    driver = os.getenv('DB_DRIVER', 'sqlite')
+    driver = get_db_driver()
     if app.testing:
         tmp_dir = tempfile.mkdtemp()
         db_name = os.path.join(tmp_dir, 'bip.db')
