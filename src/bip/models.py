@@ -13,7 +13,7 @@ from peewee import (
 
 from .utils.text import slugify
 
-passwd_ctx = CryptContext(schemes=['bcrypt'])
+passwd_ctx = CryptContext(schemes=['argon2'])
 
 
 def generate_password_hash(password: str) -> str:  # pragma: nocover

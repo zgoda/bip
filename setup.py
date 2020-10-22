@@ -42,7 +42,7 @@ base_reqs = [
     'keyrings.cryptfile',
     'texttable',
     'python-magic',
-    'passlib[bcrypt]',
+    'passlib[argon2]',
     'PyICU',
 ]
 
