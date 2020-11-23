@@ -4,10 +4,11 @@ set -euo pipefail
 
 export DEBIAN_FRONTEND=noninteractive
 
-apt update
+apt-get update
 
-apt -y install --no-install-recommends build-essential libffi-dev libicu-dev
+apt-get -y install --no-install-recommends \
+	build-essential libffi-dev libicu-dev
 
-apt clean
+apt-get clean
 
 rm -rf /var/lib/apt/lists/*
