@@ -47,6 +47,8 @@ COPY --chown=bip conf/site.json.example data/config/site.json
 
 VOLUME [ "/home/bip/data" ]
 
+COPY --chown=bip scripts/docker_entrypoint.sh .
+
 ENV \
     FLASK_ENV=production \
     ENV=production \
@@ -55,7 +57,5 @@ ENV \
     DB_DRIVER=sqlite \
     DB_NAME=/home/bip/data/db.sqlite \
     PATH="/home/bip/.local/bin:$PATH"
-
-COPY --chown=bip scripts/docker_entrypoint.sh .
 
 CMD [ "./docker_entrypoint.sh" ]
