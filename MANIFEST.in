@@ -3,3 +3,5 @@ graft src
 prune src/instance
 
 include LICENSE
+
+global-exclude *.pyc

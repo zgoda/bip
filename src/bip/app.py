@@ -91,8 +91,10 @@ def configure_app(app: Application):
 
 
 def configure_logging_handler(app: Application):
-    """Bind application logging to Gunicorn handler. This is done only in
-    production and only if Gunicorn logger has any handlers defined.
+    """Bind application logging to Gunicorn handler.
+
+    This is done only in production and only if Gunicorn logger has any
+    handlers defined.
 
     :param app: application object
     :type app: Application
@@ -105,7 +107,7 @@ def configure_logging_handler(app: Application):
         app.logger.setLevel(gunicorn_logger.level)
 
 
-def configure_database(app: Application):
+def configure_database(_app: Application):
     """Configure application database connectivity.
 
     :param app: application object
@@ -141,7 +143,7 @@ def configure_database(app: Application):
 
 
 def configure_hooks(app: Application):
-    """Setup application lifetime hooks.
+    """Set up application lifetime hooks.
 
     :param app: application object
     :type app: Application
@@ -230,8 +232,9 @@ def configure_error_handlers(app: Application):
 
 
 def configure_logging():
-    """Configure application logging on prod. This configuration is
-    overwritten if running under Gunicorn.
+    """Configure application logging on prod.
+
+    This configuration is overwritten if running under Gunicorn.
     """
     logging.config.dictConfig({
         'version': 1,
