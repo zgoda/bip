@@ -23,7 +23,7 @@ from .utils.site import Site, test_site
 from .utils.templates import extra_context, extra_filters
 
 
-def make_app(env: Optional[str] = None) -> Application:
+def make_app() -> Application:
     """Application object factory.
 
     :param env: environment name, defaults to None
@@ -47,9 +47,9 @@ def make_app(env: Optional[str] = None) -> Application:
     if instance_path:
         extra['instance_path'] = instance_path
     app = Application(__name__.split('.')[0], **extra)
-    configure_app(app, env)
+    configure_app(app)
     # setup keyring for headless environments
-    if flask_environment == 'production' or app.testing:
+    if flask_environment in ('production', 'test'):
         keyring.set_keyring(CryptFileKeyring())
     with app.app_context():
         configure_logging_handler(app)
@@ -62,7 +62,7 @@ def make_app(env: Optional[str] = None) -> Application:
     return app
 
 
-def configure_app(app: Application, env: Optional[str]):
+def configure_app(app: Application):
     """Load application configuration.
 
     :param app: application object
@@ -71,11 +71,12 @@ def configure_app(app: Application, env: Optional[str]):
     :type env: Optional[str]
     """
     app.config.from_object('bip.config')
-    if env is not None:
+    if os.getenv('FLASK_ENV') == 'test':
         try:
-            app.config.from_object(f'bip.config_{env}')
+            app.config.from_object('bip.config_test')
         except ImportStringError:
-            app.logger.info(f'no environment config for {env}')
+            app.logger.info('no environment config for testing')
+        app.config['TESTING'] = True
 
     @app.route('/attachment/<filename>', endpoint='attachment')
     def serve_attachment(filename):
@@ -96,7 +97,7 @@ def configure_logging_handler(app: Application):
     :param app: application object
     :type app: Application
     """
-    if app.debug or app.testing:
+    if app.debug or os.getenv('FLASK_ENV') == 'test':
         return
     gunicorn_logger = logging.getLogger('gunicorn.error')
     if gunicorn_logger.handlers:
@@ -111,7 +112,7 @@ def configure_database(app: Application):
     :type app: Application
     """
     driver = get_db_driver()
-    if app.testing:
+    if os.getenv('FLASK_ENV') == 'test':
         tmp_dir = tempfile.mkdtemp()
         db_name = os.path.join(tmp_dir, 'bip.db')
     else:
@@ -148,7 +149,7 @@ def configure_hooks(app: Application):
 
     @app.before_first_request
     def load_site_objects():
-        if app.testing and not os.getenv('SITE_JSON'):
+        if os.getenv('FLASK_ENV') == 'test' and not os.getenv('SITE_JSON'):
             site = test_site()
         else:
             site_object_path = os.path.abspath(os.environ['SITE_JSON'])

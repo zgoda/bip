@@ -53,7 +53,7 @@ def app(mocker, tmp_path):
     mocker.patch('bip.models.generate_password_hash', fake_gen_password_hash)
     mocker.patch('bip.models.check_password_hash', fake_check_password_hash)
     os.environ['FLASK_ENV'] = 'test'
-    app = make_app(env='test')
+    app = make_app()
     app.instance_path = tmp_path
     app.response_class = TestResponse
     models = [Attachment, ChangeRecord, Label, Page, PageLabel, User]

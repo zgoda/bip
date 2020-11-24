@@ -1,3 +1,5 @@
+import os
+
 from dotenv import find_dotenv, load_dotenv
 from flask.cli import FlaskGroup
 
@@ -9,7 +11,8 @@ from .users import commands as user_commands
 
 
 def create_app(_unused):  # pragma: no cover
-    return make_app('dev')
+    os.environ['FLASK_ENV'] = 'dev'
+    return make_app()
 
 
 cli = FlaskGroup(create_app=create_app, help='Zarządzanie aplikacją BIP')
