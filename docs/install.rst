@@ -40,6 +40,7 @@ Wymagane oprogramowanie
 * narzędzia do budowania kodu
 * biblioteka ``ffi`` (pakiet binarny i nagłówkowy)
 * biblioteka ``icu`` (pakiet binarny i nagłówkowy)
+* biblioteka ``magic`` (pakiet binarny i nagłówkowy)
 * serwer HTTP (np. Nginx, Apache, Lighttpd)
 * serwer aplikacji WSGI (np. uWSGI, Gunicorn)
 
@@ -59,7 +60,7 @@ Zainstaluj wszystkie niezbędne narzędzia programistyczne oraz wymagane dodatko
 
 .. code-block:: shell-session
 
-    $ sudo apt install build-essential libffi-dev libicu-dev python3-venv python3-dev wget
+    $ sudo apt install build-essential libffi-dev libicu-dev libmagic-dev python3-venv python3-dev wget
 
 Utwórz katalog na instalację aplikacji.
 

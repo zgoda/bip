@@ -72,8 +72,9 @@ class Department:
 
     @classmethod
     def from_dict(cls, d: dict) -> Department:
+        name = d.pop('name', '')
         staff = [StaffMember(**s) for s in d.pop('staff', [])]
-        return cls(staff=staff, **d)
+        return cls(name, staff=staff, **d)
 
     @cached_property
     def basic_information(self) -> List[Tuple]:
