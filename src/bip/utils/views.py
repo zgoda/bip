@@ -16,7 +16,6 @@ def next_redirect(fallback_endpoint: str, *args, **kwargs) -> str:
     :return: HTTP path to redirect to
     :rtype: str
     """
-
     for c in [request.args.get('next'), session.pop('next', None)]:
         if is_redirect_safe(c):
             return c
@@ -34,7 +33,6 @@ def is_redirect_safe(target: Optional[str]) -> bool:
     :return: flag signalling whether redirect is safe
     :rtype: bool
     """
-
     if not target:
         return False
     ref_url = urlparse(request.host_url)

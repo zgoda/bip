@@ -49,7 +49,6 @@ def login_user(username: str, admin: bool = True) -> User:
     :return: logged in user object
     :rtype: :class:`~bip.models.User`
     """
-
     password = keyring.get_password(SYS_NAME, username)
     if not password:  # pragma: no cover
         click.echo(f'użytkownik {username} nie ma zapisanego hasła w pęku kluczy')
@@ -105,7 +104,6 @@ def print_table(table: Texttable):
     :param table: table to be printed
     :type table: :class:`~texttable.Texttable`
     """
-
     text = table.draw()
     num_rows = len(text.splitlines())
     if num_rows + 1 > shutil.get_terminal_size().lines:  # pragma: no cover
