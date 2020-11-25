@@ -40,13 +40,13 @@ def make_app() -> Application:
                 dsn=sentry_dsn, release=f'bip@{version}',
                 integrations=[FlaskIntegration()],
             )
-        else:
-            configure_logging()
+        configure_logging()
     extra = {}
     instance_path = os.environ.get('INSTANCE_PATH')
     if instance_path:
         extra['instance_path'] = instance_path
     app = Application(__name__.split('.')[0], **extra)
+    app.logger.info(f'BIP application running in mode {flask_environment}')
     configure_app(app)
     # setup keyring for headless environments
     if flask_environment in ('production', 'test'):
@@ -99,7 +99,7 @@ def configure_logging_handler(app: Application):
     :param app: application object
     :type app: Application
     """
-    if app.debug or os.getenv('FLASK_ENV') == 'test':
+    if os.getenv('FLASK_ENV') != 'production':
         return
     gunicorn_logger = logging.getLogger('gunicorn.error')
     if gunicorn_logger.handlers:
