@@ -27,8 +27,8 @@ _DATATYPE_TO_COLTYPE = {
 
 @dataclass
 class DisplayMeta:
-    """Tabular object display metadata.
-    """
+    """Tabular object display metadata."""
+
     klass: Model
     columns: List[str]
     overrides: Mapping[str, ColumnOverride] = field(default_factory=dict)
