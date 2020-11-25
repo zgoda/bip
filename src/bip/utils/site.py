@@ -19,7 +19,12 @@ class Address:
     town: str
 
     @cached_property
-    def display_value(self):
+    def display_value(self) -> str:
+        """Formatted address line
+
+        :return: address line
+        :rtype: str
+        """
         return f'{self.street}, {self.zip_code} {self.town}'
 
 
@@ -31,6 +36,11 @@ class Contact:
 
     @cached_property
     def basic_information(self) -> List[Tuple]:
+        """Contact basic information.
+
+        :return: key/value pairs of basic information
+        :rtype: List[Tuple]
+        """
         return [
             ('nazwa', self.name),
             ('telefon', self.phone),
@@ -53,12 +63,17 @@ class StaffMember:
 
     @cached_property
     def basic_information(self) -> List[Tuple]:
-        return (
+        """Person basic information.
+
+        :return: key/value pairs of basic information
+        :rtype: List[Tuple]
+        """
+        return [
             ('nazwisko', self.person_name),
             ('stanowisko', self.role_name),
             ('telefon', self.phone),
             ('email', self.email),
-        )
+        ]
 
 
 @dataclass
@@ -72,19 +87,31 @@ class Department:
 
     @classmethod
     def from_dict(cls, d: dict) -> Department:
+        """Initialise Department instance from dictionary data.
+
+        :param d: input data
+        :type d: dict
+        :return: Department instance
+        :rtype: Department
+        """
         name = d.pop('name', '')
         staff = [StaffMember(**s) for s in d.pop('staff', [])]
         return cls(name, staff=staff, **d)
 
     @cached_property
     def basic_information(self) -> List[Tuple]:
-        return (
+        """Department basic information.
+
+        :return: key/value pairs of basic information
+        :rtype: List[Tuple]
+        """
+        return [
             ('nazwa', self.name),
             ('zakres działalności', self.domain),
             ('lokalizacja', self.location),
             ('telefon', self.phone),
             ('email', self.email),
-        )
+        ]
 
 
 @dataclass
@@ -101,10 +128,24 @@ class Site:
 
     @classmethod
     def from_json(cls, s: str) -> Site:
+        """Load site data from JSON string.
+
+        :param s: input string
+        :type s: str
+        :return: Site instance
+        :rtype: Site
+        """
         return cls.from_dict(json.loads(s))
 
     @classmethod
     def from_dict(cls, d: dict) -> Site:
+        """Load site data from dictionary.
+
+        :param d: dictionary of site data
+        :type d: dict
+        :return: Site instance
+        :rtype: Site
+        """
         d.pop('$schema', None)
         address = Address(**d.pop('address'))
         contacts = [Contact(**c) for c in d.pop('contacts')]
@@ -113,6 +154,11 @@ class Site:
 
     @cached_property
     def basic_information(self) -> List[Tuple]:
+        """Site basic information
+
+        :return: key/value pairs of basic information
+        :rtype: List[Tuple]
+        """
         data = [
             ('nazwa', self.name),
             ('NIP', self.nip),
