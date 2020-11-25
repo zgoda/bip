@@ -18,16 +18,16 @@ ACTIVITY_NAME_MAP = {
 
 
 class ColAlign:
-    """Column alignment enum
-    """
+    """Column alignment enum."""
+
     right = 'r'
     center = 'c'
     left = 'l'
 
 
 class ColDataType:
-    """Column data type enum
-    """
+    """Column data type enum."""
+
     auto = 'a'
     text = 't'
     float = 'f'  # noqa: A003
@@ -70,8 +70,10 @@ def login_user(username: str, admin: bool = True) -> User:
 
 
 def create_table(is_testing: bool, cols: List[ColSpec]) -> Texttable:
-    """Create table for term display. The table has unlimited size if
-    application is in testing state, otherwise term size.
+    """Create table for terminal display.
+
+    The table has unlimited size if application is in testing state, otherwise
+    term size.
 
     :param is_testing: flag whether application is in testing state
     :type is_testing: bool

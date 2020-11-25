@@ -20,7 +20,7 @@ class Address:
 
     @cached_property
     def display_value(self) -> str:
-        """Formatted address line
+        """Formatted address line.
 
         :return: address line
         :rtype: str
@@ -154,7 +154,7 @@ class Site:
 
     @cached_property
     def basic_information(self) -> List[Tuple]:
-        """Site basic information
+        """Site basic information.
 
         :return: key/value pairs of basic information
         :rtype: List[Tuple]

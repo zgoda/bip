@@ -54,8 +54,9 @@ def page_links() -> Generator[MenuItem, None, None]:
 
 
 def labels() -> ModelSelect:
-    """Function returns query over labels annotated with count of pages. Only
-    labels that have any page are returned.
+    """Function returns query over labels annotated with count of pages.
+
+    Only labels that have any page are returned.
 
     :return: Label query object
     :rtype: peewee.ModelSelect

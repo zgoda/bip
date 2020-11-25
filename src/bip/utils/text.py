@@ -11,8 +11,9 @@ _punctuation_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
 
 
 def yesno(value: bool, capitalize: bool = True) -> str:
-    """Return "yes" or "no" as textual representation of Boolean value in
-    Polish. Returned string is capitalized by default.
+    """Return "yes" or "no" in Polish.
+
+    Returned string is capitalized by default.
 
     :param value: value to be represented
     :type value: bool

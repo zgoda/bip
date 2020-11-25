@@ -8,11 +8,12 @@ from .models import Attachment, Label, Page
 def search_results(
             query: str, sections: Optional[List[str]] = None
         ) -> Mapping[str, ModelSelect]:
-    """Extremely simple content search entrypoint. Search is performed against
-    provided sections or all sections if not provided (Pages, Labels,
-    Attachments). Returned results are partitioned by data type. Pages are
-    returned ordered by modification date, labels by name, attachments by
-    creation date.
+    """Extremely simple content search entrypoint.
+
+    Search is performed against provided sections or all sections if not
+    provided (Pages, Labels, Attachments). Returned results are partitioned by
+    data type. Pages are returned ordered by modification date, labels by
+    name, attachments by creation date.
 
     Search fields:
 

@@ -5,7 +5,9 @@ from flask import request, session, url_for
 
 
 def next_redirect(fallback_endpoint: str, *args, **kwargs) -> str:
-    """Find redirect url. The order of search is request params, session and
+    """Find redirect url.
+
+    The order of search is request params, session and
     finally url for fallback endpoint is returned if none found. Args and
     kwargs are passed intact to endpoint.
 
@@ -22,7 +24,9 @@ def next_redirect(fallback_endpoint: str, *args, **kwargs) -> str:
 
 
 def is_redirect_safe(target: Optional[str]) -> bool:
-    """Check if redirect is safe, that is using HTTP protocol and is pointing
+    """Check if redirect is safe.
+
+    This is determined by checking if it's is using HTTP protocol and is pointing
     to the same site.
 
     :param target: redirect target url

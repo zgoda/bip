@@ -6,8 +6,9 @@ from peewee import Query
 
 
 class Pagination:
-    """Copied almost verbatim from Flask-SQLAlchemy. Minor changes made to
-    work with Peewee query object. Removed unused code.
+    """Copied almost verbatim from Flask-SQLAlchemy.
+
+    Minor changes made to work with Peewee query object. Removed unused code.
 
     Copyright 2010 Pallets
     """
@@ -20,7 +21,7 @@ class Pagination:
 
     @property
     def pages(self):
-        """The total number of pages"""
+        """The total number of pages."""
         if self.per_page == 0 or self.total is None:
             pages = 0
         else:
@@ -29,7 +30,7 @@ class Pagination:
 
     @property
     def has_prev(self):
-        """True if a previous page exists"""
+        """True if a previous page exists."""
         return self.page > 1
 
     @property
@@ -52,8 +53,9 @@ class Pagination:
 
 
 def url_for_other_page(page: Union[int, str]) -> str:
-    """Generate (internal) URL to another page of the same document. This
-    works only within the context of particular request.
+    """Generate (internal) URL to another page of the same document.
+
+    This works only within the context of particular request.
 
     :param page: desired page
     :type page: Union[int, str]
@@ -66,8 +68,9 @@ def url_for_other_page(page: Union[int, str]) -> str:
 
 
 def get_page(arg_name: str = 'p') -> int:
-    """Get page number for current request. Page number is searched in request
-    args.
+    """Get page number for current request.
+
+    Page number is searched in request args.
 
     :param arg_name: name of URL argument, defaults to 'p'
     :type arg_name: str, optional

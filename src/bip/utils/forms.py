@@ -10,8 +10,7 @@ from wtforms.validators import ValidationError
 
 
 class Renderable:
-    """An object that can be rendered
-    """
+    """An object that can be rendered."""
 
     def render(self) -> Markup:
         """Render template into :class:`Markup` object.
