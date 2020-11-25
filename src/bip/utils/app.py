@@ -2,8 +2,7 @@ from flask import Flask
 
 
 class Application(Flask):
-    """Overriden application class.
-    """
+    """Overriden application class."""
 
     @property
     def jinja_options(self) -> dict:
