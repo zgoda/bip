@@ -12,14 +12,26 @@ from wtforms.fields import BooleanField, StringField, TextAreaField, HiddenField
 from wtforms.fields.html5 import EmailField, IntegerField
 from wtforms.validators import InputRequired, Optional as ValueOptional
 
-from ..models import Attachment, Change, ChangeRecord, Label, Page, db
+from ..models import Attachment, Change, ChangeRecord, Label, Page, User, db
 from ..utils.files import process_incoming_file
 from ..utils.forms import BaseForm, EmailValidator, ObjectForm
 from ..utils.text import slugify
 
 
 class UserForm(ObjectForm):
-    email = EmailField('email', validators=[EmailValidator()])
+    name = StringField('nazwa', validators=[InputRequired()])
+    email = EmailField('email', validators=[EmailValidator(), ValueOptional()])
+    active = BooleanField('aktywny')
+    admin = BooleanField('administrator')
+
+    def save(self, obj: Optional[User] = None) -> User:
+        if obj is None:
+            obj = User()
+        return super().save(obj)
+
+
+class UserEditForm(ObjectForm):
+    email = EmailField('email', validators=[EmailValidator(), ValueOptional()])
     active = BooleanField('aktywny')
     admin = BooleanField('administrator')
 

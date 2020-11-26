@@ -10,7 +10,9 @@ from werkzeug.exceptions import BadRequest
 from ..models import Attachment, Label, Page, PageLabel, User, db
 from ..utils.http import or_404
 from . import admin_bp
-from .forms import AttachmentCreateForm, AttachmentForm, LabelForm, PageForm, UserForm
+from .forms import (
+    AttachmentCreateForm, AttachmentForm, LabelForm, PageForm, UserEditForm, UserForm,
+)
 from .utils import (
     ItemCollectionMeta, ItemMeta, default_admin_item_view, default_admin_list_view,
 )
@@ -22,8 +24,8 @@ page_item_meta = ItemMeta(
 )
 
 user_item_meta = ItemMeta(
-    dataobject=User, form=UserForm,
-    message='dane użytkownika {obj_name} zostały zmienione',
+    dataobject=User, form=UserEditForm,
+    message='dane konta {obj_name} zostały zmienione',
     success_url='admin.user_list', title_field='name',
 )
 
@@ -43,7 +45,7 @@ attachment_item_meta = ItemMeta(
 @admin_bp.before_request
 @login_required
 def before_request() -> Optional[Response]:
-    if not current_user.admin:
+    if not current_user.is_authenticated:
         abort(403)
 
 
@@ -52,12 +54,12 @@ def home() -> str:
     return render_template('admin/index.html')
 
 
-@admin_bp.route('/users/list')
+@admin_bp.route('/users/list', methods=['POST', 'GET'])
 def user_list() -> Union[Response, str]:
     return default_admin_list_view(
         ItemCollectionMeta(
             dataobject=User, order=[User.name], form=UserForm,
-            message='now konto zostało utworzone',
+            message='nowe konto zostało utworzone',
         )
     )
 

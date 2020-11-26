@@ -79,7 +79,7 @@ dev_reqs = [
 
 setup(
     name='biuletyn-bip',
-    version=find_version('src', 'bip', '__version__.py'),
+    version=find_version('src', 'bip', '_version.py'),
     author='Jarek Zgoda',
     author_email='jarek.zgoda@gmail.com',
     description='Polish BIP (Biuletyn Informacji Publicznej) as Flask application',

@@ -1,6 +1,6 @@
 from wtforms.fields import HiddenField
 
-from .. import __version__
+from .._version import get_version
 from ..utils.pagination import url_for_other_page
 from ..utils.text import pluralize, yesno
 
@@ -12,7 +12,7 @@ def extra_context(**kwargs) -> dict:
     :rtype: dict
     """
     extra = {
-        'version': __version__,
+        'version': get_version(),
         'is_hidden_field': lambda x: isinstance(x, HiddenField),
         'url_for_other_page': url_for_other_page,
     }

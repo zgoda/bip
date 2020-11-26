@@ -53,8 +53,8 @@ class TestUserAdminViews(BIPTests):
         }
         rv = self.client.post(url, data=data, follow_redirects=True)
         user = User.get(user_pk)
+        assert f'dane konta {name} zostały zmienione' in rv.text
         assert user.email == new_email
-        assert user.email in rv.text
 
     def test_detail_post_fail(self, user_factory):
         name = 'user_1'

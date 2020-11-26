@@ -39,6 +39,7 @@ class Pagination:
         return self.page < self.pages
 
     def iter_pages(self, left_edge=2, left_current=2, right_current=5, right_edge=2):
+        """Iterate over pages, yielding page nums."""
         last = 0
         for num in range(1, self.pages + 1):
             if num <= left_edge or \

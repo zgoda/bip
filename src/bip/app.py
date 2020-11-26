@@ -11,7 +11,7 @@ from keyrings.cryptfile.cryptfile import CryptFileKeyring
 from sentry_sdk.integrations.flask import FlaskIntegration
 from werkzeug.utils import ImportStringError
 
-from .__version__ import get_version
+from ._version import get_version
 from .admin import admin_bp
 from .auth import auth_bp
 from .ext import babel, bootstrap, csrf, login_manager
@@ -46,7 +46,8 @@ def make_app() -> Application:
     if instance_path:
         extra['instance_path'] = instance_path
     app = Application(__name__.split('.')[0], **extra)
-    app.logger.info(f'BIP application running in mode {flask_environment}')
+    if flask_environment != 'dev':
+        app.logger.info(f'BIP application running in mode {flask_environment}')
     configure_app(app)
     # setup keyring for headless environments
     if flask_environment in ('production', 'test'):

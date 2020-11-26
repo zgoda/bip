@@ -2,6 +2,7 @@
 
 {% from "macros/pagination.html" import render_pagination %}
 {% from "macros/navigation.html" import breadcrumbs %}
+{% from "macros/forms.html" import render_form %}
 
 {% block headpagetitle %}Konta użytkowników{% endblock %}
 
@@ -31,6 +32,10 @@
   </tbody>
 </table>
 {{ render_pagination(pagination) }}
+{% endif %}
+{% if current_user.admin %}
+<h2>Nowe konto</h2>
+{{ render_form(form, action=request.path) }}
 {% endif %}
 {% endblock %}
 

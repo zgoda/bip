@@ -21,7 +21,7 @@ class TestAdminViewHooks(BIPTests):
         regular = user_factory(name='regular')
         self.login(regular.name)
         rv = self.client.get(self.admin_url)
-        assert rv.status_code == 403
+        assert rv.status_code == 200
 
     def test_anon_access(self):
         login_url = url_for('auth.login')
