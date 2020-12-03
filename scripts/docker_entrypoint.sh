@@ -2,9 +2,12 @@
 
 set -euo pipefail
 
-bip db init
+rm -rf /home/bip/data/static
+ln -s /home/bip/venv/lib/python3.8/site-packages/bip/static /home/bip/data/static
 
-gunicorn \
+/home/bip/venv/bin/bip db init
+
+/home/bip/venv/bin/gunicorn \
 	--preload \
 	--workers=2 --threads=4 --worker-class=gthread \
 	--log-file - \
