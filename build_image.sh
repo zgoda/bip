@@ -2,6 +2,7 @@
 
 set -euo pipefail
 
+reponame="${1:-localhost}"
 imagename="bip"
 tag=$(git describe --tags --abbrev=0)
 username="bip"
@@ -22,8 +23,10 @@ buildah run ${builder_cnt} apt-get clean
 buildah run ${builder_cnt} rm -rf /var/lib/apt/lists/*
 
 buildah run ${builder_cnt} useradd --create-home ${username}
-buildah config --workingdir ${userhome} ${builder_cnt}
-buildah config --user ${username} ${builder_cnt}
+buildah config \
+	--user ${username} \
+	--workingdir ${userhome} \
+	${builder_cnt}
 
 buildah run ${builder_cnt} /usr/local/bin/python3 -m venv venv
 py=${userhome}/venv/bin/python3
@@ -60,8 +63,6 @@ cp -r ${builder_mnt}/${userhome}/venv ${runtime_mnt}/${userhome}/
 
 buildah config --volume ${userhome}/data ${runtime_cnt} 
 
-datadir=${runtime_mnt}/${userhome}/data
-
 mkdir -p ${runtime_mnt}/${userhome}/data/config ${runtime_mnt}/${userhome}/data/attachments
 
 cp conf/site.json.example ${runtime_mnt}/${userhome}/data/config/site.json
@@ -77,12 +78,11 @@ buildah config \
 
 cp scripts/docker_entrypoint.sh ${runtime_mnt}/${userhome}/
 
-buildah config --cmd '[]' ${runtime_cnt}
-buildah config --entrypoint '[ "./docker_entrypoint.sh" ]' ${runtime_cnt}
+buildah config --cmd '[ "./docker_entrypoint.sh" ]' ${runtime_cnt}
 
 buildah umount ${builder_cnt}
 buildah umount ${runtime_cnt}
-buildah commit --rm ${runtime_cnt} ${imagename}:${tag}
+buildah commit --rm ${runtime_cnt} ${reponame}/${imagename}:${tag}
 buildah rm ${builder_cnt}
 
 rm -rf requirements.txt build dist
