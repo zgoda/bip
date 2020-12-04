@@ -22,8 +22,6 @@ buildah run ${builder_cnt} apt-get update
 buildah run ${builder_cnt} \
 	apt-get -y install --no-install-recommends \
 	build-essential libffi-dev libicu-dev libmagic-dev
-buildah run ${builder_cnt} apt-get clean
-buildah run ${builder_cnt} rm -rf /var/lib/apt/lists/*
 
 buildah run ${builder_cnt} useradd --create-home ${username}
 buildah config \
