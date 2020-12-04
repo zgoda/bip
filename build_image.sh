@@ -15,10 +15,13 @@ pip-compile
 
 export DEBIAN_FRONTEND=noninteractive
 
+# builder container
 builder_cnt=$(buildah from "docker.io/library/python:3.8-buster")
 
 buildah run ${builder_cnt} apt-get update
-buildah run ${builder_cnt} apt-get -y install --no-install-recommends build-essential libffi-dev libicu-dev libmagic-dev
+buildah run ${builder_cnt} \
+	apt-get -y install --no-install-recommends \
+	build-essential libffi-dev libicu-dev libmagic-dev
 buildah run ${builder_cnt} apt-get clean
 buildah run ${builder_cnt} rm -rf /var/lib/apt/lists/*
 
@@ -43,13 +46,13 @@ buildah run ${builder_cnt} ${py} -m pip install --no-cache-dir -U --no-index --f
 rm -rf ${builder_mnt}/${userhome}/*.whl
 buildah run ${builder_cnt} ${py} -m pip uninstall --no-cache-dir -y Cython
 
+# runtime container
 runtime_cnt=$(buildah from "docker.io/library/python:3.8-slim-buster")
 
 buildah run ${runtime_cnt} apt-get update
 buildah run ${runtime_cnt} apt-get -y install --no-install-recommends libicu63 libmagic1 libffi6
 buildah run ${runtime_cnt} apt-get clean
 buildah run ${runtime_cnt} rm -rf /var/lib/apt/lists/*
-
 
 buildah run ${runtime_cnt} useradd --create-home ${username}
 buildah config \
@@ -61,11 +64,10 @@ runtime_mnt=$(buildah mount ${runtime_cnt})
 
 cp -r ${builder_mnt}/${userhome}/venv ${runtime_mnt}/${userhome}/
 
-buildah config --volume ${userhome}/data ${runtime_cnt} 
-
 mkdir -p ${runtime_mnt}/${userhome}/data/config ${runtime_mnt}/${userhome}/data/attachments
 
-cp conf/site.json.example ${runtime_mnt}/${userhome}/data/config/site.json
+buildah copy --chown=${username} ${runtime_cnt} conf/site.json.example data/config/site.json
+buildah copy --chown=${username} ${runtime_cnt} scripts/docker_entrypoint.sh ./
 
 buildah config \
 	--env FLASK_ENV=production \
@@ -74,11 +76,9 @@ buildah config \
 	--env SITE_JSON=${userhome}/data/config/site.json \
 	--env DB_DRIVER=sqlite \
 	--env DB_NAME=${userhome}/bip.sqlite \
+	--cmd '[ "./docker_entrypoint.sh" ]' \
+	--volume ${userhome}/data \
 	${runtime_cnt}
-
-cp scripts/docker_entrypoint.sh ${runtime_mnt}/${userhome}/
-
-buildah config --cmd '[ "./docker_entrypoint.sh" ]' ${runtime_cnt}
 
 buildah umount ${builder_cnt}
 buildah umount ${runtime_cnt}
