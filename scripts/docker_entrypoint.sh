@@ -7,7 +7,7 @@ ln -s /home/bip/venv/lib/python3.8/site-packages/bip/static /home/bip/data/stati
 
 /home/bip/venv/bin/bip db init
 
-/home/bip/venv/bin/gunicorn \
+exec /home/bip/venv/bin/gunicorn \
 	--name bip \
 	--preload \
 	--workers=2 --threads=4 --worker-class=gthread \
