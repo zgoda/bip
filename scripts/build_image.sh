@@ -62,20 +62,27 @@ runtime_mnt=$(buildah mount ${runtime_cnt})
 
 cp -r ${builder_mnt}/${userhome}/venv ${runtime_mnt}/${userhome}/
 
+# static content directories
 mkdir -p ${runtime_mnt}/${userhome}/data/config ${runtime_mnt}/${userhome}/data/attachments
+
+# gunicorn runtime and artifacts
+mkdir -p ${runtime_mnt}/${userhome}/run/logs
 
 buildah copy --chown=${username} ${runtime_cnt} conf/site.json.example data/config/site.json
 buildah copy --chown=${username} ${runtime_cnt} scripts/docker_entrypoint.sh ./
 
 buildah config \
+	--env PYTHONDONTWRITEBYTECODE=1 \
+	--env PYTHONUNBUFFERED=1 \
 	--env FLASK_ENV=production \
 	--env ENV=production \
 	--env INSTANCE_PATH=${userhome}/data \
 	--env SITE_JSON=${userhome}/data/config/site.json \
 	--env DB_DRIVER=sqlite \
-	--env DB_NAME=${userhome}/bip.sqlite \
+	--env DB_NAME=${userhome}/data/bip.sqlite \
 	--cmd '[ "./docker_entrypoint.sh" ]' \
 	--volume ${userhome}/data \
+	--volume ${userhome}/run \
 	${runtime_cnt}
 
 buildah umount ${builder_cnt}
