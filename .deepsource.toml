@@ -23,15 +23,6 @@ enabled = true
   skip_doc_coverage = ["module", "magic", "init"]
 
 [[analyzers]]
-name = "docker"
-enabled = true
-
-  [analyzers.meta]
-  dockerfile_paths = [
-      "dockerfiles/Dockerfile*"
-  ]
-
-[[analyzers]]
 name = "shell"
 enabled = true
 
