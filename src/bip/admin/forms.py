@@ -8,9 +8,11 @@ from flask_login import current_user
 from flask_wtf.file import FileField, FileRequired
 from markdown import markdown
 from werkzeug.utils import secure_filename
-from wtforms.fields import BooleanField, StringField, TextAreaField, HiddenField
+from wtforms.fields import (
+    BooleanField, HiddenField, PasswordField, StringField, TextAreaField,
+)
 from wtforms.fields.html5 import EmailField, IntegerField
-from wtforms.validators import InputRequired, Optional as ValueOptional
+from wtforms.validators import EqualTo, InputRequired, Optional as ValueOptional
 
 from ..models import Attachment, Change, ChangeRecord, Label, Page, User, db
 from ..utils.files import process_incoming_file
@@ -20,14 +22,22 @@ from ..utils.text import slugify
 
 class UserForm(ObjectForm):
     name = StringField('nazwa', validators=[InputRequired()])
+    password1 = PasswordField('hasło', validators=[InputRequired()])
+    password2 = PasswordField(
+        'hasło (powtórz)',
+        validators=[
+            InputRequired(),
+            EqualTo('password1', message='Wpisane hasła muszą być identyczne')
+        ]
+    )
     email = EmailField('email', validators=[EmailValidator(), ValueOptional()])
     active = BooleanField('aktywny')
     admin = BooleanField('administrator')
 
-    def save(self, obj: Optional[User] = None) -> User:
-        if obj is None:
-            obj = User()
-        return super().save(obj)
+    def save(self) -> User:
+        user = User()
+        user.set_password(self.password1.data)
+        return super().save(user)
 
 
 class UserEditForm(ObjectForm):

@@ -39,7 +39,7 @@ class TestUserAdminViews(BIPTests):
         assert f'value="{user.email}"' in rv.text
         assert f'action="{url}"' in rv.text
 
-    def test_detail_post_ok(self, user_factory):
+    def test_detail_post_change_ok(self, user_factory):
         name = 'user_1'
         user = user_factory(name=name)
         user_pk = user.pk
@@ -56,7 +56,7 @@ class TestUserAdminViews(BIPTests):
         assert f'dane konta {name} zostały zmienione' in rv.text
         assert user.email == new_email
 
-    def test_detail_post_fail(self, user_factory):
+    def test_detail_post_change_fail(self, user_factory):
         name = 'user_1'
         user = user_factory(name=name)
         user_pk = user.pk
@@ -73,3 +73,29 @@ class TestUserAdminViews(BIPTests):
         assert 'Nieprawidłowy adres email' in rv.text
         user = User.get(user_pk)
         assert user.email != new_email
+
+    def test_create_ok(self):
+        name = 'user_1'
+        password = 'pass'
+        self.login(self.admin.name)
+        data = {
+            'name': name,
+            'password1': password,
+            'password2': password,
+        }
+        rv = self.client.post(self.list_url, data=data, follow_redirects=True)
+        assert 'nowe konto zostało utworzone' in rv.text
+
+    def test_create_fail(self):
+        name = 'user_1'
+        password = 'pass'
+        self.login(self.admin.name)
+        data = {
+            'name': name,
+            'password1': password,
+            'password2': 'dummy',
+        }
+        rv = self.client.post(self.list_url, data=data, follow_redirects=True)
+        assert 'is-invalid' in rv.text
+        assert 'hasła muszą być identyczne' in rv.text
+        assert User.get_or_none(User.name == name) is None

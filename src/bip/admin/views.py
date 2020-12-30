@@ -1,10 +1,8 @@
 import os
 from typing import Optional, Union
 
-from flask import (
-    Response, abort, current_app, flash, redirect, render_template, request,
-)
-from flask_login import current_user, login_required
+from flask import Response, current_app, flash, redirect, render_template, request
+from flask_login import login_required
 from werkzeug.exceptions import BadRequest
 
 from ..models import Attachment, Label, Page, PageLabel, User, db
@@ -45,8 +43,7 @@ attachment_item_meta = ItemMeta(
 @admin_bp.before_request
 @login_required
 def before_request() -> Optional[Response]:
-    if not current_user.is_authenticated:
-        abort(403)
+    return
 
 
 @admin_bp.route('/home')
