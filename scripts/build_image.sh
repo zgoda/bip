@@ -31,7 +31,8 @@ buildah config \
 
 buildah run ${builder_cnt} /usr/local/bin/python3 -m venv venv
 py=${userhome}/venv/bin/python3
-buildah run ${builder_cnt} ${py} -m pip install --no-cache-dir -U pip wheel setuptools Cython
+buildah run ${builder_cnt} ${py} -m pip install --no-cache-dir -U \
+	pip wheel setuptools Cython psycopg2-binary
 
 builder_mnt=$(buildah mount ${builder_cnt})
 
@@ -48,7 +49,8 @@ buildah run ${builder_cnt} ${py} -m pip uninstall --no-cache-dir -y Cython
 runtime_cnt=$(buildah from "docker.io/library/python:3.8-slim-buster")
 
 buildah run ${runtime_cnt} apt-get update
-buildah run ${runtime_cnt} apt-get -y install --no-install-recommends libicu63 libmagic1 libffi6
+buildah run ${runtime_cnt} apt-get -y install --no-install-recommends \
+	libicu63 libmagic1 libffi6
 buildah run ${runtime_cnt} apt-get clean
 buildah run ${runtime_cnt} rm -rf /var/lib/apt/lists/*
 

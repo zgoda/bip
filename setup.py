@@ -44,7 +44,6 @@ base_reqs = [
     'python-magic',
     'passlib[argon2]',
     'PyICU',
-    'psycopg2-binary',
 ]
 
 test_reqs = [
