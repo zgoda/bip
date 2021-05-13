@@ -87,7 +87,7 @@ class User(Model, UserMixin):
     created = DateTimeField(default=datetime.utcnow)
     admin = BooleanField(default=False)
 
-    def __int__(self) -> int:
+    def __int__(self) -> int:  # pragma: nocover
         return self.pk
 
     def get_id(self) -> str:
