@@ -21,10 +21,10 @@ def find_version(*where):
 
 
 base_reqs = [
-    'Flask<2',
-    'Jinja2<3',
-    'MarkupSafe<2',
-    'itsdangerous<2',
+    'Flask',
+    'Jinja2',
+    'MarkupSafe',
+    'itsdangerous',
     'PeeWee',
     'Flask-Login',
     'WTForms!=2.3.2',
