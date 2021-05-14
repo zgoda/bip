@@ -2,11 +2,11 @@ import logging
 import logging.config
 import os
 import tempfile
-from typing import Optional
+from typing import Any, Optional, Tuple
 
 import keyring
 import sentry_sdk
-from flask import render_template, request, send_from_directory
+from flask import Response, render_template, request, send_from_directory
 from keyrings.cryptfile.cryptfile import CryptFileKeyring
 from sentry_sdk.integrations.flask import FlaskIntegration
 from werkzeug.utils import ImportStringError
@@ -63,7 +63,7 @@ def make_app() -> Application:
     return app
 
 
-def configure_app(app: Application):
+def configure_app(app: Application) -> None:
     """Load application configuration.
 
     :param app: application object
@@ -80,7 +80,7 @@ def configure_app(app: Application):
         app.config['TESTING'] = True
 
     @app.route('/attachment/<filename>', endpoint='attachment')
-    def serve_attachment(filename):
+    def serve_attachment(filename: str) -> Response:
         kw = {
             'as_attachment': True,
         }
@@ -91,7 +91,7 @@ def configure_app(app: Application):
         return send_from_directory(dir_name, filename, **kw)
 
 
-def configure_logging_handler(app: Application):
+def configure_logging_handler(app: Application) -> None:
     """Bind application logging to Gunicorn handler.
 
     This is done only in production and only if Gunicorn logger has any
@@ -108,7 +108,7 @@ def configure_logging_handler(app: Application):
         app.logger.setLevel(gunicorn_logger.level)
 
 
-def configure_database(_app: Application):
+def configure_database(_app: Application) -> None:
     """Configure application database connectivity.
 
     :param app: application object
@@ -143,7 +143,7 @@ def configure_database(_app: Application):
     db.init(db_name, **kw)
 
 
-def configure_hooks(app: Application):
+def configure_hooks(app: Application) -> None:
     """Set up application lifetime hooks.
 
     :param app: application object
@@ -151,7 +151,7 @@ def configure_hooks(app: Application):
     """
 
     @app.before_first_request
-    def load_site_objects():
+    def load_site_objects() -> None:
         if os.getenv('FLASK_ENV') == 'test' and not os.getenv('SITE_JSON'):
             site = test_site()
         else:
@@ -161,16 +161,16 @@ def configure_hooks(app: Application):
         app.site = app.jinja_env.globals['site'] = site
 
     @app.before_request
-    def db_connect():
+    def db_connect() -> None:
         db.connect(reuse_if_open=True)
 
     @app.teardown_request
-    def db_close(exc):
+    def db_close(exc: Any) -> None:
         if not db.is_closed():
             db.close()
 
 
-def configure_blueprints(app: Application):
+def configure_blueprints(app: Application) -> None:
     """Register (mount) blueprint objects.
 
     :param app: application object
@@ -182,7 +182,7 @@ def configure_blueprints(app: Application):
     app.register_blueprint(user_bp, url_prefix='/uzytkownik')
 
 
-def configure_extensions(app: Application):
+def configure_extensions(app: Application) -> None:
     """Register and configure framework extensions.
 
     :param app: application object
@@ -202,7 +202,7 @@ def configure_extensions(app: Application):
         return User.get_or_none(User.pk == userid)
 
 
-def configure_templating(app: Application):
+def configure_templating(app: Application) -> None:
     """Configure template system extensions.
 
     :param app: application object
@@ -212,7 +212,7 @@ def configure_templating(app: Application):
     app.jinja_env.filters.update(extra_filters())
 
 
-def configure_error_handlers(app: Application):
+def configure_error_handlers(app: Application) -> None:
     """Configure global error handlers.
 
     :param app: application object
@@ -220,19 +220,19 @@ def configure_error_handlers(app: Application):
     """
 
     @app.errorhandler(403)
-    def forbidden_page(error):  # pylint: disable=unused-variable
+    def forbidden_page(_error: Any) -> Tuple[str, int]:
         return render_template('errors/403.html'), 403
 
     @app.errorhandler(404)
-    def page_not_found(error):  # pylint: disable=unused-variable
+    def page_not_found(_error: Any) -> Tuple[str, int]:
         return render_template('errors/404.html'), 404
 
     @app.errorhandler(500)
-    def server_error_page(error):  # pylint: disable=unused-variable
+    def server_error_page(_error: Any) -> Tuple[str, int]:
         return render_template('errors/500.html'), 500
 
 
-def configure_logging():
+def configure_logging() -> None:
     """Configure application logging on prod.
 
     This configuration is overwritten if running under Gunicorn.

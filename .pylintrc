@@ -1,2 +1,3 @@
 disable=
     singleton-comparison
+    unused-variable
