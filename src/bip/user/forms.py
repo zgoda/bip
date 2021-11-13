@@ -1,5 +1,4 @@
-from wtforms.fields import PasswordField
-from wtforms.fields.html5 import EmailField
+from wtforms.fields import EmailField, PasswordField
 from wtforms.validators import EqualTo, InputRequired
 
 from ..models import User

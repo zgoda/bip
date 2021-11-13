@@ -9,9 +9,9 @@ from flask_wtf.file import FileField, FileRequired
 from markdown import markdown
 from werkzeug.utils import secure_filename
 from wtforms.fields import (
-    BooleanField, HiddenField, PasswordField, StringField, TextAreaField,
+    BooleanField, EmailField, HiddenField, IntegerField, PasswordField, StringField,
+    TextAreaField,
 )
-from wtforms.fields.html5 import EmailField, IntegerField
 from wtforms.validators import EqualTo, InputRequired, Optional as ValueOptional
 
 from ..models import Attachment, Change, ChangeRecord, Label, Page, User, db
@@ -97,7 +97,10 @@ class LabelForm(ObjectForm):
             obj = Label()
         label = super().save(obj, False)
         label.slug = slugify(label.name)
-        label.description_html = markdown(label.description)
+        if label.description:
+            label.description_html = markdown(label.description)
+        else:
+            label.description = None
         label.save()
         return label
 
