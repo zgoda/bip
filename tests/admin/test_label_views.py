@@ -47,10 +47,11 @@ class TestLabelAdminViews(BIPTests):
 
     def test_detail_post(self, label_factory):
         name = 'etykieta 1'
-        label = label_factory(name=name)
+        description = 'opis etykiety 1'
+        label = label_factory(name=name, description=description)
         url = self.detail_url(label)
         new_name = 'odnowiona etykieta 1'
-        data = {'name': new_name}
+        data = {'name': new_name, 'description': 'nowy opis etykiety 2'}
         self.login(self.admin_name)
         rv = self.client.post(url, data=data, follow_redirects=True)
         assert f'>{new_name}</a>' in rv.text
