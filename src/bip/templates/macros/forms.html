@@ -1,4 +1,4 @@
-{% from 'bootstrap/form.html' import form_errors %}
+{% from 'bootstrap4/form.html' import render_hidden_errors %}
 
 {% macro field_description(field) %}
 {% if field.errors %}
@@ -56,7 +56,7 @@
 
 {% macro render_form_fields(form) %}
   {{ form.hidden_tag() }}
-  {{ form_errors(form, hiddens='only') }}
+  {{ render_hidden_errors(form) }}
   {% for field in form %}
   {% if not bootstrap_is_hidden_field(field) %}
     {{ render_field(field) }}
