@@ -105,8 +105,9 @@ setup(
         'Natural Language :: Polish',
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python :: 3 :: Only',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content :: Content Management System',
     ],
     install_requires=base_reqs,
@@ -120,5 +121,5 @@ setup(
             'bip=bip.cli:main',
         ]
     },
-    python_requires='~=3.7',
+    python_requires='~=3.8',
 )

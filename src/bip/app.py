@@ -49,6 +49,7 @@ def make_app() -> Application:
     if flask_environment != 'dev':
         app.logger.info(f'BIP application running in mode {flask_environment}')
     configure_app(app)
+    prepare_app(app)
     # setup keyring for headless environments
     if flask_environment in ('production', 'test'):
         keyring.set_keyring(CryptFileKeyring())
@@ -143,22 +144,27 @@ def configure_database(_app: Application) -> None:
     db.init(db_name, **kw)
 
 
+def prepare_app(app: Application) -> None:
+    """Former ``before_first_request`` hook, now standalone function.
+
+    :param app: application object
+    :type app: Application
+    """
+    if os.getenv('FLASK_ENV') == 'test' and not os.getenv('SITE_JSON'):
+        site = test_site()
+    else:
+        site_object_path = os.path.abspath(os.environ['SITE_JSON'])
+        with open(site_object_path) as fp:
+            site = Site.from_json(fp.read())
+    app.site = app.jinja_env.globals['site'] = site
+
+
 def configure_hooks(app: Application) -> None:
     """Set up application lifetime hooks.
 
     :param app: application object
     :type app: Application
     """
-
-    @app.before_first_request
-    def load_site_objects() -> None:
-        if os.getenv('FLASK_ENV') == 'test' and not os.getenv('SITE_JSON'):
-            site = test_site()
-        else:
-            site_object_path = os.path.abspath(os.environ['SITE_JSON'])
-            with open(site_object_path) as fp:
-                site = Site.from_json(fp.read())
-        app.site = app.jinja_env.globals['site'] = site
 
     @app.before_request
     def db_connect() -> None:
