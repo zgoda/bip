@@ -10,8 +10,8 @@ from .pages import commands as page_commands
 from .users import commands as user_commands
 
 
-def create_app(_unused):  # pragma: no cover
-    os.environ['FLASK_ENV'] = 'dev'
+def create_app():  # pragma: no cover
+    os.environ['FLASK_DEBUG'] = '1'
     return make_app()
 
 

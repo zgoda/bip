@@ -9,7 +9,7 @@ class TestLogin(BIPTests):
 
     def test_login_user_exists(self, user_factory):
         url = url_for('main.home')
-        rv = self.client.get(url)
+        rv = self.client.get(url)  # type: ignore
         assert 'zaloguj' in rv.text
         password = 'pass_1'
         user = user_factory(name='Ivory Tower', password=password)
@@ -48,7 +48,7 @@ class TestLoginView(BIPTests):
         self.url = url_for('auth.login')
 
     def test_get(self):
-        rv = self.client.get(self.url)
+        rv = self.client.get(self.url)  # type: ignore
         assert rv.status_code == 200
 
     def test_post_invalid_login(self):
@@ -56,7 +56,9 @@ class TestLoginView(BIPTests):
             'username': 'invalid',
             'password': 'invalid',
         }
-        rv = self.client.post(self.url, data=data, follow_redirects=True)
+        rv = self.client.post(  # type: ignore
+            self.url, data=data, follow_redirects=True,
+        )
         assert 'nieprawidłowe dane logowania' in rv.text
 
     def test_post_empty_username(self):
@@ -64,7 +66,9 @@ class TestLoginView(BIPTests):
             'username': '',
             'password': 'invalid',
         }
-        rv = self.client.post(self.url, data=data, follow_redirects=True)
+        rv = self.client.post(  # type: ignore
+            self.url, data=data, follow_redirects=True,
+        )
         assert 'is-invalid' in rv.text
         assert 'To pole jest wymagane' in rv.text
 
@@ -73,6 +77,8 @@ class TestLoginView(BIPTests):
             'username': 'invalid',
             'password': '',
         }
-        rv = self.client.post(self.url, data=data, follow_redirects=True)
+        rv = self.client.post(  # type: ignore
+            self.url, data=data, follow_redirects=True,
+        )
         assert 'is-invalid' in rv.text
         assert 'To pole jest wymagane' in rv.text

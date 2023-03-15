@@ -129,7 +129,7 @@ Każdy z poniższych przykładów ładuje część ustawień ze zmiennych środo
 
 .. code-block:: shell
 
-    FLASK_ENV="production"
+    FLASK_DEBUG="0"
     INSTANCE_PATH="/home/mojekonto/bip/instance"
     SITE_JSON="/home/mojekonto/bip/conf/site.json"
     DB_NAME="/home/mojekonto/bip/db.sqlite3"

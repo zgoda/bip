@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 
 
@@ -17,3 +19,8 @@ class Application(Flask):
             'lstrip_blocks': True,
         })
         return options
+
+
+def is_test_env() -> bool:
+    testing_var = os.environ.get('FLASK_TESTING', '0').lower()
+    return testing_var in ['1', 'true', 'yes']

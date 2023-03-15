@@ -18,7 +18,7 @@ from .ext import babel, bootstrap, csrf, login_manager
 from .main import main_bp
 from .models import User, db, get_db_driver
 from .user import user_bp
-from .utils.app import Application
+from .utils.app import Application, is_test_env
 from .utils.site import Site, test_site
 from .utils.templates import extra_context, extra_filters
 
@@ -26,13 +26,22 @@ from .utils.templates import extra_context, extra_filters
 def make_app() -> Application:
     """Application object factory.
 
-    :param env: environment name, defaults to None
-    :type env: Optional[str], optional
     :return: application object
     :rtype: Application
     """
-    flask_environment = os.environ.get('FLASK_ENV', '')
-    if flask_environment == 'production':
+    extra = {}
+    instance_path = os.environ.get('INSTANCE_PATH')
+    if instance_path:
+        extra['instance_path'] = instance_path
+    app = Application(__name__.split('.')[0], **extra)
+    app.testing = is_test_env()
+    configure_app(app)
+    prepare_app(app)
+    # setup keyring for headless environments
+    if app.testing or not app.debug:
+        keyring.set_keyring(CryptFileKeyring())
+    # configure general logging
+    if not app.debug:
         sentry_dsn = os.getenv('SENTRY_DSN')
         if sentry_dsn:
             version = get_version()
@@ -41,18 +50,6 @@ def make_app() -> Application:
                 integrations=[FlaskIntegration()],
             )
         configure_logging()
-    extra = {}
-    instance_path = os.environ.get('INSTANCE_PATH')
-    if instance_path:
-        extra['instance_path'] = instance_path
-    app = Application(__name__.split('.')[0], **extra)
-    if flask_environment != 'dev':
-        app.logger.info(f'BIP application running in mode {flask_environment}')
-    configure_app(app)
-    prepare_app(app)
-    # setup keyring for headless environments
-    if flask_environment in ('production', 'test'):
-        keyring.set_keyring(CryptFileKeyring())
     with app.app_context():
         configure_logging_handler(app)
         configure_database(app)
@@ -73,12 +70,11 @@ def configure_app(app: Application) -> None:
     :type env: Optional[str]
     """
     app.config.from_object('bip.config')
-    if os.getenv('FLASK_ENV') == 'test':
+    if app.testing:
         try:
             app.config.from_object('bip.config_test')
         except ImportStringError:
             app.logger.info('no environment config for testing')
-        app.config['TESTING'] = True
 
     @app.route('/attachment/<filename>', endpoint='attachment')
     def serve_attachment(filename: str) -> Response:
@@ -87,7 +83,7 @@ def configure_app(app: Application) -> None:
         }
         attachment_filename = request.args.get('save')
         if attachment_filename:
-            kw['attachment_filename'] = attachment_filename
+            kw['attachment_filename'] = attachment_filename  # type: ignore
         dir_name = os.path.join(app.instance_path, app.config['ATTACHMENTS_DIR'])
         return send_from_directory(dir_name, filename, **kw)
 
@@ -101,7 +97,7 @@ def configure_logging_handler(app: Application) -> None:
     :param app: application object
     :type app: Application
     """
-    if os.getenv('FLASK_ENV') != 'production':
+    if app.debug:
         return
     gunicorn_logger = logging.getLogger('gunicorn.error')
     if gunicorn_logger.handlers:
@@ -109,14 +105,14 @@ def configure_logging_handler(app: Application) -> None:
         app.logger.setLevel(gunicorn_logger.level)
 
 
-def configure_database(_app: Application) -> None:
+def configure_database(app: Application) -> None:
     """Configure application database connectivity.
 
     :param app: application object
     :type app: Application
     """
     driver = get_db_driver()
-    if os.getenv('FLASK_ENV') == 'test':
+    if app.testing:
         tmp_dir = tempfile.mkdtemp()
         db_name = os.path.join(tmp_dir, 'bip.db')
     else:
@@ -150,13 +146,13 @@ def prepare_app(app: Application) -> None:
     :param app: application object
     :type app: Application
     """
-    if os.getenv('FLASK_ENV') == 'test' and not os.getenv('SITE_JSON'):
+    if app.debug and not os.getenv('SITE_JSON'):
         site = test_site()
     else:
         site_object_path = os.path.abspath(os.environ['SITE_JSON'])
-        with open(site_object_path) as fp:
+        with open(site_object_path, 'r') as fp:
             site = Site.from_json(fp.read())
-    app.site = app.jinja_env.globals['site'] = site
+    app.site = app.jinja_env.globals['site'] = site  # type: ignore
 
 
 def configure_hooks(app: Application) -> None:
@@ -194,12 +190,12 @@ def configure_extensions(app: Application) -> None:
     :param app: application object
     :type app: Application
     """
-    babel.init_app(app)
+    babel.init_app(app, default_locale='pl', default_timezone='Europe/Warsaw')
     csrf.init_app(app)
     bootstrap.init_app(app)
 
     login_manager.init_app(app)
-    login_manager.login_view = 'auth.login'
+    login_manager.login_view = 'auth.login'  # type: ignore
     login_manager.login_message_category = 'warning'
     login_manager.login_message = 'Musisz się zalogować by uzyskać dostęp do tej strony'
 

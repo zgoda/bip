@@ -23,7 +23,8 @@ class TestResponse(Response):
 
     @cached_property
     def text(self):
-        if self.mimetype.startswith('text'):
+        mimetype = self.mimetype or 'text/plain'
+        if mimetype.startswith('text'):
             return self.data.decode(self.charset)
         return self.data
 
@@ -52,7 +53,11 @@ def app(mocker, tmp_path):
 
     mocker.patch('bip.models.generate_password_hash', fake_gen_password_hash)
     mocker.patch('bip.models.check_password_hash', fake_check_password_hash)
-    os.environ['FLASK_ENV'] = 'test'
+    os.environ['FLASK_DEBUG'] = '1'
+    os.environ.update({
+        'FLASK_DEBUG': '1',
+        'FLASK_TESTING': '1',
+    })
     app = make_app()
     app.instance_path = tmp_path
     app.response_class = TestResponse

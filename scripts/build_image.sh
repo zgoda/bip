@@ -76,7 +76,7 @@ buildah copy --chown=${username} ${runtime_cnt} scripts/docker_entrypoint.sh ./
 buildah config \
 	--env PYTHONDONTWRITEBYTECODE=1 \
 	--env PYTHONUNBUFFERED=1 \
-	--env FLASK_ENV=production \
+	--env FLASK_DEBUG="0" \
 	--env ENV=production \
 	--env INSTANCE_PATH=${userhome}/data \
 	--env SITE_JSON=${userhome}/data/config/site.json \
