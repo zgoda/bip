@@ -10,7 +10,7 @@ Zakładanie konta pierwszego administratora
 
 W aplikacjach z zarządzeniem kontami użytkowników występuje problem zbliżony do paradoksu *jajka i kury* - do zakładania kont użytkowników potrzebne jest konto użytkownika administracyjnego, które jakoś musi zostać założone, pomimo braku jakiegokolwiek konta w systemie. W aplikacji BIP jest to rozwiązane tak, że konto pierwszego administratora jest zakładane przy użyciu wiersza poleceń aplikacji.
 
-Aby założyć konto użytkownika należy zalogować się do powłoki (*shell*) serwera na którym jest zainstalowana aplikacja, a następnie po aktywowaniu wirtualnego środowiska uruchomieniowego Pythona uruchomić program bip:
+Aby założyć konto użytkownika należy zalogować się do powłoki (*shell*) serwera na którym jest zainstalowana aplikacja, a następnie po aktywowaniu wirtualnego środowiska uruchomieniowego Pythona uruchomić program bip:
 
 .. code-block:: shell-session
 
@@ -57,7 +57,7 @@ Z powyższego opisu polecenia wynika, że do utworzenia konta konieczne jest pod
 
     $ bip user create --name nazwakonta --password haslo --active --admin
 
-Parametry ``name`` i ``password`` mają również formę skróconą:
+Parametry ``name`` i ``password`` mają również formę skróconą:
 
 .. code-block:: shell-session
 

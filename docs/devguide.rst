@@ -43,6 +43,7 @@ W tym momencie kod powinien już być uruchamialny, ale wcześniej dobrze będzi
 .. code-block:: shell
 
     export FLASK_DEBUG="1"
+    export FLASK_TESTING="0"
     export SITE_JSON="${PWD}/conf/site.json"
     export DB_NAME="${PWD}/db.sqlite3"
     export SECRET_KEY="losowe znaki"

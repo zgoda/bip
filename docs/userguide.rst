@@ -14,7 +14,7 @@ Odnośnik ten prowadzi do strony logowania, na której trzeba podać nazwę uży
 
 .. image:: /_static/login_page.png
 
-Po podaniu prawidłowych danych użytkownik zostanie przeniesiony z powrotem do ostatnio otwartej strony, a u góry strony pojawi się winieta informująca o pomyślnym logowaniu.
+Po podaniu prawidłowych danych użytkownik zostanie przeniesiony z powrotem do ostatnio otwartej strony, a u góry strony pojawi się winieta informująca o pomyślnym logowaniu.
 
 .. image:: /_static/login_confirmed.png
 
