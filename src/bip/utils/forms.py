@@ -2,8 +2,9 @@ from dataclasses import dataclass
 from typing import ClassVar
 
 import validators
-from flask import Markup, render_template_string
+from flask import render_template_string
 from flask_wtf import FlaskForm
+from markupsafe import Markup
 from peewee import Model
 from wtforms.fields import Field
 from wtforms.validators import ValidationError
